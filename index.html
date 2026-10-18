@@ -121,6 +121,13 @@ textarea.cin{font-size:18px;min-height:96px;line-height:1.4}
 .lockbar{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-top:12px;padding:10px 12px;border-radius:12px;
   background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--text);font-size:14px}
 .lockbar .btn{flex:0 0 auto}
+.ltbox{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--surface2)}
+.ltbox .jtext{font-size:17px}
+mark.lterr{background:color-mix(in srgb,var(--warn) 28%,transparent);color:inherit;border-radius:4px;padding:0 2px;text-decoration:underline wavy var(--warn);text-underline-offset:3px}
+mark.lterr sup{font-size:10px;color:var(--warn);margin-left:1px}
+.ltlist{margin:8px 0 0;padding-left:20px;font-size:14px;line-height:1.45}.ltlist li{margin-bottom:6px}
+.ltfix{color:var(--good)}.ltok{color:var(--good);font-weight:600}
+.jbadge.warn{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
 .key{font-size:13px;color:var(--muted);line-height:1.6}.key b{color:var(--text)}
 /* match */
 .match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -241,6 +248,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
       <h2>Settings</h2>
       <p class="muted small" id="statsLine" style="margin-top:-6px"></p>
       <label class="chk"><input type="checkbox" id="lenient"> Accept answers with missing accents (marked as “nearly”)</label>
+      <label class="chk"><input type="checkbox" id="ltChk"> 🔎 Check my sentences online (free, LanguageTool). Sentences are sent to LanguageTool to be checked; offline ones wait until you have signal.</label>
       <label class="chk"><input type="checkbox" id="lockChk"> 🔒 Sentence lock: from level 3, a word needs a new sentence (✍️ Create) for each level up</label>
       <label class="chk"><input type="checkbox" id="recNativeChk"> Record with my phone's recorder app (use this if Chrome blocks the microphone)</label>
       <div class="field" style="margin-top:12px"><label>French voice</label>
@@ -1238,12 +1246,19 @@ function saveSentence({kind, prompt, required}){
     if (ok && c.due <= now){ grade(c, true); leveled++; if (wasLocked) unlocked.push({fr:c.fr, up:c.box}); }
     else if (wasLocked) unlocked.push({fr:c.fr, up:0});
   });
-  state.journal.unshift({id:uid(), date:now, kind, prompt, text, words: ids, wordsFr: ids.map(id=>(state.cards.find(c=>c.id===id)||{}).fr).filter(Boolean),
-    corrected:"", notes:"", checked:false});
+  const entry = {id:uid(), date:now, kind, prompt, text, words: ids, wordsFr: ids.map(id=>(state.cards.find(c=>c.id===id)||{}).fr).filter(Boolean),
+    corrected:"", notes:"", checked:false, lt: checkOn() ? {status:"pending"} : null};
+  state.journal.unshift(entry);
   save(); paintCreateSeg();
   $("#cFb").innerHTML = `<div class="fb ok">✓ Saved to your journal${leveled?` · ${leveled} due word${leveled===1?"":"s"} reviewed`:""}</div>
     ${unlocked.length?`<div class="fb ok" style="margin-top:6px">🔓 ${unlocked.map(u=>u.up?`${esc(u.fr)} → level ${u.up}`:`${esc(u.fr)} unlocked (levels up at its next review)`).join(" · ")}</div>`:""}
+    <div id="cLt"></div>
     <div class="row" style="margin-top:10px"><button class="btn" id="cHear">🔊 Hear it</button><button class="btn primary" id="cNext">Next →</button></div>`;
+  if (checkOn()){
+    const paint = ()=>{ const box = $("#cLt"); if (box && $("#cText") && $("#cText").value.trim()===entry.text) box.innerHTML = ltBlock(entry).replace(/<div class="row"[\s\S]*?<\/div>\s*<\/div>$/,"</div>"); };
+    if (navigator.onLine===false){ paint(); }
+    else { entry.lt = {status:"checking"}; paint(); checkEntry(entry).then(paint, ()=>{ paint(); }); }
+  }
   $("#cText").readOnly = true; $("#cDone").disabled = true; $("#cSkip").disabled = true;
   $("#cHear").onclick = ()=>say(text);
   $("#cNext").onclick = ()=> kind==="words" ? newChallenge() : newPrompt();
@@ -1260,18 +1275,20 @@ function renderJournal(){
    <div class="card">
      <div class="muted small">${J.length} sentence${J.length===1?"":"s"} · <b>${todo}</b> waiting for corrections</div>
      <div class="row" style="margin-top:10px"><button class="btn" id="jExport" ${todo?"":"disabled"}>📤 Export for corrections</button><button class="btn" id="jImport">📥 Import corrections</button></div>
-     <div class="muted small" style="margin-top:8px">Send the exported file to Claude and ask it to correct your sentences. Import the file you get back to see the fixes here.</div>
+     <div class="muted small" style="margin-top:8px">${checkOn()?"🔎 Sentences are grammar-checked automatically when you have signal. ":""}For a full review with explanations, export them, send the file to Claude, and import the file you get back.</div>
    </div>
    ${J.map(j=>`<div class="card jent" data-id="${j.id}">
       <div class="row" style="align-items:center;gap:6px">
         <span class="muted small" style="flex:1">${new Date(j.date).toLocaleDateString([], {day:"numeric", month:"short"})} · ${j.kind==="me"?"About me":"Word challenge"}</span>
-        <span class="jbadge ${j.checked?"ok":""}">${j.checked?"✓ Corrected":"✏️ Not checked"}</span>
+        <span class="jbadge ${j.checked || (j.lt&&j.lt.status==="done"&&!j.lt.matches.length)?"ok":(j.lt&&j.lt.status==="done"?"warn":"")}">${j.checked?"✓ Corrected":
+          j.lt&&j.lt.status==="done" ? (j.lt.matches.length?`🔎 ${j.lt.matches.length} to fix`:"🔎 ✓ Looks good") : (checkOn()?"⏳ Not checked":"✏️ Not checked")}</span>
       </div>
       ${j.prompt?`<div class="muted small" style="margin-top:6px"><i>${esc(j.prompt)}</i></div>`:""}
       <div class="jtext ${j.checked && j.corrected && norm(j.corrected)!==norm(j.text)?"was":""}">${esc(j.text)}</div>
       ${j.checked && j.corrected ? (norm(j.corrected)===norm(j.text) ? `<div class="fb ok" style="margin-top:6px">Perfect, no changes needed 🎉</div>`
         : `<div class="jfix">${esc(j.corrected)}</div>`) : ""}
       ${j.notes?`<div class="muted small" style="margin-top:6px">💡 ${esc(j.notes)}</div>`:""}
+      ${j.checked ? "" : ltBlock(j)}
       ${j.wordsFr && j.wordsFr.length?`<div class="chips" style="margin-top:8px">${j.wordsFr.map(w=>`<span class="tag">${esc(w)}</span>`).join("")}</div>`:""}
       <div class="row" style="margin-top:8px;gap:6px">
         <button class="btn sm" data-j="say">🔊</button>
@@ -1284,6 +1301,8 @@ function renderJournal(){
     const b = e.target.closest("[data-j]"); if (!b) return;
     const j = state.journal.find(x=>x.id===card.dataset.id); if (!j) return;
     if (b.dataset.j==="say") say(j.checked && j.corrected ? j.corrected : j.text);
+    if (b.dataset.j==="sayfix" && j.lt && j.lt.fixed) say(j.lt.fixed);
+    if (b.dataset.j==="usefix" && j.lt && j.lt.fixed){ j.orig = j.orig || j.text; j.text = j.lt.fixed; j.lt = {status:"pending"}; save(); renderJournal(); processPending(); toast("Fix applied — re-checking"); }
     if (b.dataset.j==="del" && confirm("Delete this sentence?")){ state.journal = state.journal.filter(x=>x.id!==j.id); save(); renderJournal(); paintCreateSeg(); }
     if (b.dataset.j==="edit") editJournal(j);
   });
@@ -1298,7 +1317,7 @@ function editJournal(j){
   $("#jX").onclick = $("#jCancel").onclick = closeModal;
   $("#jSave").onclick = ()=>{
     const t = $("#jT").value.trim(); if (!t){ toast("The sentence can't be empty"); return; }
-    if (t!==j.text){ j.text = t; }
+    if (t!==j.text){ j.text = t; j.lt = checkOn() ? {status:"pending"} : null; setTimeout(processPending, 300); }
     j.corrected = $("#jC").value.trim(); j.notes = $("#jN").value.trim(); j.checked = !!j.corrected;
     save(); closeModal(); renderJournal(); paintCreateSeg();
   };
@@ -1336,6 +1355,78 @@ $("#jFile").onchange = e=>{
   };
   r.readAsText(f, "utf-8");
 };
+
+/* ---------- ONLINE: free grammar check (LanguageTool) ---------- */
+const LT_URL = "https://api.languagetool.org/v2/check";
+const LT_SKIP = /WHITESPACE|ESPACE|TYPO|APOS_TYP|DASH|GUILLEMET|QUOTE|ELLIPSIS/i;   // French typography rules = noise for learners
+const checkOn = () => state.settings.ltCheck !== false;
+let ltBusy = false;
+async function ltCheck(text){
+  const body = new URLSearchParams({text, language:"fr", level:"default"});
+  const r = await fetch(LT_URL, {method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded"}, body});
+  if (r.status===429) throw Object.assign(new Error("busy"), {retry:true});
+  if (!r.ok) throw new Error("http " + r.status);
+  const data = await r.json();
+  return (data.matches||[])
+    .filter(m=>!LT_SKIP.test((m.rule&&m.rule.id)||"") && !LT_SKIP.test((m.rule&&m.rule.category&&m.rule.category.id)||""))
+    .map(m=>({o:m.offset, l:m.length, msg:m.message||m.shortMessage||"", fix:(m.replacements&&m.replacements[0]&&m.replacements[0].value)||"",
+      alt:(m.replacements||[]).slice(1,3).map(x=>x.value), kind:(m.rule&&m.rule.category&&m.rule.category.name)||""}));
+}
+function applyFixes(text, matches){
+  let out = text;
+  matches.filter(m=>m.fix!=="" || m.l).slice().sort((a,b)=>b.o-a.o).forEach(m=>{ if (m.fix) out = out.slice(0,m.o) + m.fix + out.slice(m.o+m.l); });
+  return out;
+}
+async function checkEntry(j){
+  if (!checkOn() || !j || !j.text) return;
+  if (navigator.onLine===false){ j.lt = {status:"pending"}; save(); return; }
+  j.lt = {status:"checking"};
+  try{
+    const matches = await ltCheck(j.text);
+    j.lt = {status:"done", at:Date.now(), matches, fixed: applyFixes(j.text, matches)};
+  }catch(e){
+    j.lt = {status:"pending"};               // no signal / blocked / busy → try again later
+    save(); throw e;
+  }
+  save();
+}
+async function processPending(){
+  if (ltBusy || !checkOn() || navigator.onLine===false) return;
+  const todo = (state.journal||[]).filter(j=>!j.lt || j.lt.status==="pending" || j.lt.status==="checking");
+  if (!todo.length) return;
+  ltBusy = true; let n = 0, failed = false;
+  try{
+    for (const j of todo){
+      try{ await checkEntry(j); n++; }catch(e){ failed = true; break; }
+      if (curView==="create" && C.mode==="journal") renderJournal();
+      await new Promise(r=>setTimeout(r, 3200));   // the free service allows ~20 checks a minute
+    }
+  } finally { ltBusy = false; }
+  if (!failed && state.journal.some(j=>j.lt && j.lt.status==="pending")) setTimeout(processPending, 500);  // anything added meanwhile
+  if (n) toast(`🔎 Checked ${n} sentence${n===1?"":"s"} from your journal`);
+}
+function ltHighlight(j){
+  const t = j.text, ms = (j.lt.matches||[]).slice().sort((a,b)=>a.o-b.o);
+  let html = "", pos = 0;
+  ms.forEach((m,i)=>{ if (m.o < pos) return; html += esc(t.slice(pos, m.o)) + `<mark class="lterr">${esc(t.slice(m.o, m.o+m.l)) || "▲"}<sup>${i+1}</sup></mark>`; pos = m.o + m.l; });
+  return html + esc(t.slice(pos));
+}
+function ltBlock(j){
+  if (!checkOn() && !j.lt) return "";
+  const s = j.lt && j.lt.status;
+  if (!s || s==="pending") return `<div class="ltbox muted small">⏳ Grammar check waiting for signal</div>`;
+  if (s==="checking") return `<div class="ltbox muted small">🔎 Checking…</div>`;
+  const ms = j.lt.matches||[];
+  if (!ms.length) return `<div class="ltbox"><span class="ltok">🔎 ✓ No mistakes found</span><div class="muted small">The free checker catches spelling and grammar, not whether it sounds natural — export it to Claude for that.</div></div>`;
+  return `<div class="ltbox">
+    <div class="small" style="font-weight:600;margin-bottom:6px">🔎 ${ms.length} suggestion${ms.length===1?"":"s"}</div>
+    <div class="jtext" style="margin-top:0">${ltHighlight(j)}</div>
+    <ol class="ltlist">${ms.map(m=>`<li>${m.fix?`<b>${esc(j.text.slice(m.o,m.o+m.l))||"…"}</b> → <b class="ltfix">${esc(m.fix)}</b>${m.alt.length?` <span class="muted">(or ${m.alt.map(esc).join(", ")})</span>`:""}<br>`:""}<span class="muted">${esc(m.msg)}</span></li>`).join("")}</ol>
+    ${j.lt.fixed && j.lt.fixed!==j.text ? `<div class="small muted" style="margin-top:6px">With the fixes:</div><div class="jfix" style="margin-top:2px">${esc(j.lt.fixed)}</div>
+      <div class="row" style="margin-top:8px;gap:6px"><button class="btn sm" data-j="sayfix">🔊 Hear corrected</button><button class="btn sm" data-j="usefix">✓ Use the fix</button></div>` : ""}
+  </div>`;
+}
+window.addEventListener("online", ()=>setTimeout(processPending, 1500));
 
 /* ---------- modal ---------- */
 function openModal(html){ $("#modal").innerHTML = html; $("#modalBg").classList.add("on"); }
@@ -1977,6 +2068,7 @@ function renderSettings(){
   $("#lenient").checked = !!state.settings.lenient;
   $("#recNativeChk").checked = useNative();
   $("#lockChk").checked = !!state.settings.lock;
+  $("#ltChk").checked = checkOn();
   const h = state.cards.filter(c=>c.hard).length, m = state.cards.filter(c=>c.box>=4).length;
   $("#statsLine").textContent = `${state.cards.length} words · ${categories().length} categories · ${m} well known · ${h} marked hard`;
   loadVoices();
@@ -1984,6 +2076,7 @@ function renderSettings(){
 
 /* settings & backup */
 $("#installBtn").onclick = async ()=>{ if (!installEvt){ toast("Use Chrome's ⋮ menu → Install app"); return; } installEvt.prompt(); await installEvt.userChoice.catch(()=>{}); installEvt = null; $("#installBtn").hidden = true; };
+$("#ltChk").onchange = e=>{ state.settings.ltCheck = e.target.checked; save(); if (e.target.checked){ toast("🔎 Online checking on"); processPending(); } else toast("Online checking off"); };
 $("#lockChk").onchange = e=>{ state.settings.lock = e.target.checked; save(); toast(e.target.checked ? "🔒 Sentence lock on" : "Sentence lock off — words level up normally"); };
 $("#recNativeChk").onchange = e=>{ state.settings.recNative = e.target.checked; state.settings.recNativeAuto = false; save(); toast(e.target.checked ? "Recording will use your phone's recorder app" : "Recording will use the built-in microphone"); };
 $("#lenient").onchange = e=>{ state.settings.lenient = e.target.checked; save(); };
@@ -2023,6 +2116,7 @@ function paintNet(){ const p = $("#netPill"); if (p) p.hidden = navigator.onLine
 window.addEventListener("online", ()=>{ paintNet(); toast("Back online"); });
 window.addEventListener("offline", ()=>{ paintNet(); toast("Offline — everything still works"); });
 paintNet();
+setTimeout(processPending, 2500);   // check anything written while offline
 if (IS_WEB && "serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js").then(reg=>{
     reg.addEventListener("updatefound", ()=>{
