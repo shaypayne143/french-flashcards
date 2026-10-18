@@ -136,6 +136,8 @@ mark.lterr sup{font-size:10px;color:var(--warn);margin-left:1px}
 .studytools .tool:active{transform:scale(.96)}
 .studytools .tool[hidden]{display:none}
 .newtag{position:absolute;top:12px;left:14px;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--accent);background:var(--surface2);border-radius:99px;padding:3px 8px}
+.ltfr{font-size:12px;font-style:italic}
+.lttr{font-size:13px;color:var(--accent);white-space:nowrap}
 .key{font-size:13px;color:var(--muted);line-height:1.6}.key b{color:var(--text)}
 /* match */
 .match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -282,6 +284,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
     <div class="card">
       <button class="btn primary" id="installBtn" style="width:100%;margin-bottom:12px" hidden>📲 Install app on this phone</button>
       <h2>Backup</h2>
+      <p class="small" id="lastBackupInfo" style="margin:-6px 0 6px;font-weight:600"></p>
       <p class="muted small" style="margin-top:-6px">Your words are saved on this phone. Export a backup now and then, and before replacing the app file.</p>
       <div class="row" style="margin-bottom:10px">
         <button class="btn" id="exportBtn">Export backup</button>
@@ -1415,6 +1418,37 @@ async function ltCheck(text){
     .map(m=>({o:m.offset, l:m.length, msg:m.message||m.shortMessage||"", fix:(m.replacements&&m.replacements[0]&&m.replacements[0].value)||"",
       alt:(m.replacements||[]).slice(1,3).map(x=>x.value), kind:(m.rule&&m.rule.category&&m.rule.category.name)||""}));
 }
+/* LanguageTool only explains in French — translate the common notes */
+const Q = "(?:«\\s*|\"|“)(.+?)(?:\\s*»|\"|”)";
+const LT_EN = [
+  [new RegExp("Un verbe conjugué est (?:généralement )?attendu après (?:le pronom(?: personnel)?(?: sujet)? )?"+Q,"i"), m=>`After “${m[1]}” you need the verb in its conjugated form (e.g. j'ai, je suis, je vais), not the infinitive (avoir, être, aller).`],
+  [new RegExp(Q+" est une forme du verbe avoir","i"), m=>`“${m[1]}” means “has” (from avoir). If you mean “to / at”, write à with an accent.`],
+  [new RegExp("Le déterminant s[’']accorde avec le nom "+Q,"i"), m=>`The little word before “${m[1]}” (le/la/les/un/deux…) must match it: singular or plural, masculine or feminine.`],
+  [new RegExp("Le nom "+Q+" doit être au pluriel","i"), m=>`“${m[1]}” should be plural here (usually add -s).`],
+  [new RegExp("Le nom "+Q+" doit être au singulier","i"), m=>`“${m[1]}” should be singular here.`],
+  [new RegExp("L[’']adjectif "+Q+".*s[’']accorde","i"), m=>`The describing word “${m[1]}” must match its noun (masculine/feminine, singular/plural).`],
+  [/Faute d[’']orthographe|semble mal orthographié|orthographe possible/i, ()=>"Possible spelling mistake (check letters and accents)."],
+  [/élision|élidé|apostrophe/i, ()=>"Before a vowel or silent h, shorten it with an apostrophe: le → l', je → j', ne → n', de → d'."],
+  [/accord.*sujet|sujet.*accord|le verbe.*s[’']accorde/i, ()=>"The verb must match its subject (je/tu/il/nous/vous/ils)."],
+  [/participe passé/i, ()=>"The past participle (e.g. mangé, fini, pris) looks wrong here."],
+  [/infinitif/i, ()=>"An infinitive (the -er / -ir / -re form) is expected here."],
+  [/au pluriel|pluriel/i, ()=>"Singular / plural doesn't match."],
+  [/au singulier|singulier/i, ()=>"This should be singular."],
+  [/féminin|masculin|genre/i, ()=>"Masculine / feminine doesn't match."],
+  [/majuscule/i, ()=>"This needs a capital letter (e.g. at the start of a sentence)."],
+  [/répétition|répété|deux fois/i, ()=>"A word seems to be repeated."],
+  [/négation|« ne »|ne\s.*pas/i, ()=>"In a negative, use ne … pas around the verb (je ne mange pas). Before a vowel: n'."],
+  [/il manque|manquant|semble manquer/i, ()=>"Something seems to be missing here."],
+  [/conjugaison|conjugué/i, ()=>"This verb isn't conjugated correctly for its subject."]
+];
+function ltEnglish(msg){
+  if (!msg) return "";
+  const parts = [];
+  for (const [rx, fn] of LT_EN){ const m = msg.match(rx); if (m){ parts.push(fn(m)); break; } }
+  const dym = msg.match(new RegExp("(?:Voulez-vous dire|Vouliez-vous dire|Peut-être)\\s*:?\\s*"+Q,"i"));
+  if (dym) parts.push(`Did you mean “${dym[1]}”?`);
+  return parts.join(" ");
+}
 function applyFixes(text, matches){
   let out = text;
   matches.filter(m=>m.fix!=="" || m.l).slice().sort((a,b)=>b.o-a.o).forEach(m=>{ if (m.fix) out = out.slice(0,m.o) + m.fix + out.slice(m.o+m.l); });
@@ -1464,7 +1498,11 @@ function ltBlock(j){
   return `<div class="ltbox">
     <div class="small" style="font-weight:600;margin-bottom:6px">🔎 ${ms.length} suggestion${ms.length===1?"":"s"}</div>
     <div class="jtext" style="margin-top:0">${ltHighlight(j)}</div>
-    <ol class="ltlist">${ms.map(m=>`<li>${m.fix?`<b>${esc(j.text.slice(m.o,m.o+m.l))||"…"}</b> → <b class="ltfix">${esc(m.fix)}</b>${m.alt.length?` <span class="muted">(or ${m.alt.map(esc).join(", ")})</span>`:""}<br>`:""}<span class="muted">${esc(m.msg)}</span></li>`).join("")}</ol>
+    <ol class="ltlist">${ms.map(m=>{ const en = ltEnglish(m.msg);
+      return `<li>${m.fix?`<b>${esc(j.text.slice(m.o,m.o+m.l))||"…"}</b> → <b class="ltfix">${esc(m.fix)}</b>${m.alt.length?` <span class="muted">(or ${m.alt.map(esc).join(", ")})</span>`:""}<br>`:""}${en
+        ? `<span>${esc(en)}</span><br><span class="muted ltfr">${esc(m.msg)}</span>`
+        : `<span class="muted">${esc(m.msg)}</span> <a class="lttr" href="https://translate.google.com/?sl=fr&tl=en&op=translate&text=${encodeURIComponent(m.msg)}" target="_blank" rel="noopener">🌐 Translate</a>`}</li>`; }).join("")}</ol>
+    <div class="muted small" style="margin-top:4px">⚠️ The free checker's suggested fixes can be wrong — export to Claude if you're not sure.</div>
     ${j.lt.fixed && j.lt.fixed!==j.text ? `<div class="small muted" style="margin-top:6px">With the fixes:</div><div class="jfix" style="margin-top:2px">${esc(j.lt.fixed)}</div>
       <div class="row" style="margin-top:8px;gap:6px"><button class="btn sm" data-j="sayfix">🔊 Hear corrected</button><button class="btn sm" data-j="usefix">✓ Use the fix</button></div>` : ""}
   </div>`;
@@ -2111,6 +2149,7 @@ function renderSettings(){
   $("#lenient").checked = !!state.settings.lenient;
   $("#recNativeChk").checked = useNative();
   $("#lockChk").checked = !!state.settings.lock;
+  paintBackupInfo();
   $("#newPerDaySel").value = String(state.settings.newPerDay ?? 15);
   $("#ltChk").checked = checkOn();
   const h = state.cards.filter(c=>c.hard).length, m = state.cards.filter(c=>c.box>=4).length;
@@ -2125,12 +2164,45 @@ $("#ltChk").onchange = e=>{ state.settings.ltCheck = e.target.checked; save(); i
 $("#lockChk").onchange = e=>{ state.settings.lock = e.target.checked; save(); toast(e.target.checked ? "🔒 Sentence lock on" : "Sentence lock off — words level up normally"); };
 $("#recNativeChk").onchange = e=>{ state.settings.recNative = e.target.checked; state.settings.recNativeAuto = false; save(); toast(e.target.checked ? "Recording will use your phone's recorder app" : "Recording will use the built-in microphone"); };
 $("#lenient").onchange = e=>{ state.settings.lenient = e.target.checked; save(); };
-$("#exportBtn").onclick = ()=>{
+function exportBackup(){
+  state.settings.lastBackup = Date.now(); state.settings.backupSnooze = 0; save();
   const blob = new Blob([JSON.stringify(state,null,1)], {type:"application/json"});
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
   a.download = "french-flashcards-backup-" + new Date().toISOString().slice(0,10) + ".json";
   document.body.appendChild(a); a.click(); a.remove();
-};
+  toast("💾 Backup saved to your Downloads");
+  if ($("#lastBackupInfo")) paintBackupInfo();
+}
+$("#exportBtn").onclick = exportBackup;
+function backupAgeText(){
+  const t = state.settings.lastBackup; if (!t) return "never";
+  const d = Math.floor((Date.now()-t)/DAY);
+  return d<=0 ? "today" : d===1 ? "yesterday" : `${d} days ago`;
+}
+function paintBackupInfo(){ const el = $("#lastBackupInfo"); if (el) el.textContent = "Last backup: " + backupAgeText(); }
+/* nudge: no backup in the last 2 days */
+function maybeBackupNudge(){
+  const S = state.settings, now = Date.now();
+  if (!state.cards.length) return;
+  if (S.lastBackup && now - S.lastBackup < 2*DAY) return;
+  if (S.backupSnooze && now < S.backupSnooze) return;
+  if ($("#modalBg").classList.contains("on")) return;          // don't interrupt something you're doing
+  const j = (state.journal||[]).length;
+  openModal(`<div class="center">
+      <div style="font-size:44px;line-height:1">💾</div>
+      <h2 style="margin:8px 0 4px">Time to back up</h2>
+      <p class="muted" style="margin:0 0 6px">Last backup: <b>${backupAgeText()}</b></p>
+      <p class="small" style="margin:0 0 14px">Your ${state.cards.length} word${state.cards.length===1?"":"s"}${j?` and ${j} journal sentence${j===1?"":"s"}`:""} only live on this phone. A backup takes one tap and saves a file to your Downloads.</p>
+    </div>
+    <div class="stack">
+      <button class="btn primary" id="bkNow">💾 Back up now</button>
+      <button class="btn" id="bkLater">Remind me tomorrow</button>
+    </div>
+    <p class="muted small center" style="margin:8px 0 0">Tip: also save the file to Google Drive so it's safe if you lose your phone.</p>`);
+  $("#modal").onclick = null;
+  $("#bkNow").onclick = ()=>{ exportBackup(); closeModal(); };
+  $("#bkLater").onclick = ()=>{ S.backupSnooze = now + DAY; save(); closeModal(); };
+}
 $("#csvInBtn").onclick = pickCSV;
 $("#csvOutBtn").onclick = exportCSV;
 $("#importBtn").onclick = ()=>$("#importFile").click();
@@ -2162,6 +2234,29 @@ window.addEventListener("online", ()=>{ paintNet(); toast("Back online"); });
 window.addEventListener("offline", ()=>{ paintNet(); toast("Offline — everything still works"); });
 paintNet();
 setTimeout(processPending, 2500);   // check anything written while offline
+
+/* ---------- Share → French Flashcards: highlighted text arrives here ---------- */
+(function handleShare(){
+  const q = new URLSearchParams(location.search);
+  if (!q.has("share")){ setTimeout(maybeBackupNudge, 1200); return; }
+  let t = (q.get("text") || q.get("title") || "").trim();
+  history.replaceState(null, "", location.pathname);           // tidy the address so a refresh doesn't re-add it
+  t = t.replace(/https?:\/\/\S+/g, "").replace(/^["'«“‘\s]+|["'»”’\s.,;:!?]+$/g, "").replace(/\s+/g, " ").trim();
+  if (!t){ toast("Nothing to add — highlight a word, then Share"); return; }
+  if (t.length > 120) t = t.slice(0, 120);
+  // "le chien - the dog" style shares fill both boxes
+  const m = t.match(/^(.+?)\s+(?:-|–|—|=|:)\s+(.+)$/);
+  go("words");
+  setTimeout(()=>{
+    openAdd();
+    $("#aFr").value = m ? m[1] : t;
+    if (m) $("#aEn").value = m[2];
+    ["#aFr","#aEn"].forEach(id=>$(id).dispatchEvent(new Event("input", {bubbles:true})));
+    const dup = state.cards.find(c=>norm(c.fr)===norm($("#aFr").value));
+    if (dup) toast(`“${dup.fr}” is already in your list (${dup.en})`);
+    (m ? $("#aCat_sel") : $("#aEn")).focus();
+  }, 120);
+})();
 if (IS_WEB && "serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js", {updateViaCache:"none"}).then(reg=>{
     reg.update().catch(()=>{});
