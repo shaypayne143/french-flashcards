@@ -128,6 +128,14 @@ mark.lterr sup{font-size:10px;color:var(--warn);margin-left:1px}
 .ltlist{margin:8px 0 0;padding-left:20px;font-size:14px;line-height:1.45}.ltlist li{margin-bottom:6px}
 .ltfix{color:var(--good)}.ltok{color:var(--good);font-weight:600}
 .jbadge.warn{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
+.studytools{display:flex;gap:10px;margin:-2px 0 14px}
+.studytools .tool{min-height:56px;min-width:56px;border-radius:14px;border:1px solid var(--border);background:var(--surface);color:var(--text);
+  font:inherit;font-size:22px;cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;padding:0 12px}
+.studytools .big1{flex:1;font-size:18px;font-weight:600;background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.studytools .tool.heart.on{color:var(--bad)}
+.studytools .tool:active{transform:scale(.96)}
+.studytools .tool[hidden]{display:none}
+.newtag{position:absolute;top:12px;left:14px;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--accent);background:var(--surface2);border-radius:99px;padding:3px 8px}
 .key{font-size:13px;color:var(--muted);line-height:1.6}.key b{color:var(--text)}
 /* match */
 .match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -248,6 +256,11 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
       <h2>Settings</h2>
       <p class="muted small" id="statsLine" style="margin-top:-6px"></p>
       <label class="chk"><input type="checkbox" id="lenient"> Accept answers with missing accents (marked as “nearly”)</label>
+      <div class="field"><label>New words per day</label>
+        <select id="newPerDaySel" style="width:100%">
+          <option value="5">5</option><option value="10">10</option><option value="15">15 (recommended)</option><option value="20">20</option>
+          <option value="30">30</option><option value="50">50</option><option value="0">No limit</option></select>
+        <div class="muted small" style="margin-top:4px">Words you haven't studied yet are introduced a few at a time, in your category order (Words → ⋯ → Move up/down).</div></div>
       <label class="chk"><input type="checkbox" id="ltChk"> 🔎 Check my sentences online (free, LanguageTool). Sentences are sent to LanguageTool to be checked; offline ones wait until you have signal.</label>
       <label class="chk"><input type="checkbox" id="lockChk"> 🔒 Sentence lock: from level 3, a word needs a new sentence (✍️ Create) for each level up</label>
       <label class="chk"><input type="checkbox" id="recNativeChk"> Record with my phone's recorder app (use this if Chrome blocks the microphone)</label>
@@ -350,7 +363,7 @@ const catOf = c => c.cat || UNCAT;
 
 /* ---------- storage ---------- */
 function fixup(s){
-  s.settings = Object.assign({lenient:true, cat:"", hardOnly:false, sort:"fr", group:true, collapsed:{}, lastCat:"", lock:true, voice:"", rate:0.9, lMode:"repeat", lSrc:"word", lShowText:false, pBest:0}, s.settings||{});
+  s.settings = Object.assign({lenient:true, cat:"", hardOnly:false, sort:"fr", group:true, collapsed:{}, lastCat:"", lock:true, newPerDay:15, voice:"", rate:0.9, lMode:"repeat", lSrc:"word", lShowText:false, pBest:0}, s.settings||{});
   if (!s.settings.collapsed || typeof s.settings.collapsed!=="object") s.settings.collapsed = {};
   s.cards.forEach((c,i)=>{
     if (!c.cat) c.cat = STARTER_CAT[norm(c.fr)] || UNCAT;
@@ -422,6 +435,7 @@ const LOCK_LVL = 3;
 const isLocked = c => !!state.settings.lock && !/^conjugation/i.test(c.cat||"") && c.box >= LOCK_LVL && c.box < INTERVALS.length-1 && !c.sentOK;
 const lockedCards = () => pool().filter(isLocked);
 function grade(card, ok){
+  if (isNew(card)){ const L = newLog(); if (!L.ids.includes(card.id)) L.ids.push(card.id); }
   if (ok && isLocked(card)){
     card.right++; card.due = Date.now() + INTERVALS[card.box]*DAY; save();
     toast(`🔒 Write a sentence with “${card.fr}” in ✍️ Create to reach level ${card.box+1}`);
@@ -434,15 +448,31 @@ function grade(card, ok){
   else { card.box = 1; card.wrong++; card.due = Date.now() + 10*60*1000; } // see again in 10 min
   save();
 }
-const dueCards = () => pool().filter(c => c.due <= Date.now());
-function pick(n){ return pickFrom(pool(), n); }
+/* new words per day: unstudied cards only enter study a few at a time */
+const today = () => { const d = new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
+const isNew = c => !c.box && !c.right && !c.wrong;
+function newLog(){ if (!state.newLog || state.newLog.date!==today()) state.newLog = {date:today(), ids:[], extra:0}; return state.newLog; }
+const newLimit = () => { const v = state.settings.newPerDay; return v===0 ? Infinity : (v || 15) + newLog().extra; };
+function catRank(){ const r = {}; categories().forEach((c,i)=>r[c]=i); return r; }
+function newOrder(list){ const r = catRank(); return list.slice().sort((a,b)=>((r[catOf(a)]??999)-(r[catOf(b)]??999)) || (a.added||0)-(b.added||0)); }
+function allowedNew(p){
+  const left = Math.max(0, newLimit() - newLog().ids.length);
+  return newOrder(p.filter(isNew)).slice(0, left);
+}
+const dueCards = () => { const p = pool(); return p.filter(c=>!isNew(c) && c.due<=Date.now()).concat(allowedNew(p)); };
+const newWaiting = () => pool().filter(isNew).length - allowedNew(pool()).length;
+function seenPool(p){   // for games: words you've met (plus today's new ones); falls back to everything if that's too few
+  const ok = new Set(allowedNew(p).map(c=>c.id));
+  return p.filter(c=>!isNew(c) || ok.has(c.id));
+}
+function pick(n){ const p = pool(), s = seenPool(p); return pickFrom(s.length >= Math.min(n,3) ? s : p, n); }
 function pickFrom(p, n){
   const now = Date.now();
   const due = shuffle(p.filter(c=>c.due<=now));
   const rest = p.filter(c=>c.due>now).sort((a,b)=>a.box-b.box || a.due-b.due);
   return due.concat(rest).slice(0,n);
 }
-function updateDue(){ $("#duePill").textContent = dueCards().length + " due"; }
+function updateDue(){ const n = dueCards().length; $("#duePill").textContent = n + " due"; }
 
 /* ---------- speech ---------- */
 let frVoice = null;
@@ -523,9 +553,15 @@ function nextStudy(){
   if (!studyCard){
     const next = pool().reduce((m,c)=>Math.min(m,c.due), Infinity);
     const when = isFinite(next) ? new Date(next).toLocaleString([], {weekday:"short", hour:"2-digit", minute:"2-digit"}) : "";
-    el.innerHTML = `<div class="card center"><h2>🎉 All caught up</h2><p class="muted">Next review: ${esc(when)}</p>
+    const waiting = newWaiting(), lim = state.settings.newPerDay===0 ? 0 : (state.settings.newPerDay||15);
+    el.innerHTML = `<div class="card center"><h2>🎉 All caught up</h2>
+      ${waiting && lim ? `<p>You've learned today's <b>${newLog().ids.length}</b> new word${newLog().ids.length===1?"":"s"}.<br><span class="muted">${waiting} more waiting${state.settings.cat?` in ${esc(state.settings.cat)}`:""}.</span></p>
+        <div class="row" style="margin-bottom:10px"><button class="btn" id="more5">＋5 new words</button><button class="btn" id="more10">＋10 new words</button></div>` : ""}
+      <p class="muted">Next review: ${esc(when)}</p>
       <button class="btn primary" id="practise">Practise anyway (10 cards)</button></div>`;
-    $("#practise").onclick = ()=>{ studyQueue = shuffle(pick(10)); nextStudy(); };
+    $("#practise").onclick = ()=>{ studyQueue = shuffle(pickFrom(seenPool(pool()).filter(c=>!isNew(c)).length ? seenPool(pool()).filter(c=>!isNew(c)) : pool(), 10)); nextStudy(); };
+    const more = k=>{ newLog().extra += k; save(); renderStudy(); };
+    if ($("#more5")){ $("#more5").onclick = ()=>more(5); $("#more10").onclick = ()=>more(10); }
     return;
   }
   showStudyCard();
@@ -536,17 +572,21 @@ function showStudyCard(){
   el.innerHTML = `
    <div class="flip" id="flip">
      <div class="flip-inner">
-       <div class="face">${heartBtn(c)}
-         <button class="speak" aria-label="Play">🔊</button>
-         <div class="big">${esc(c.fr)}</div><div class="muted small" style="margin-top:14px">Tap to flip</div>
+       <div class="face">${isNew(c)?'<span class="newtag">NEW</span>':""}
+         <div class="big">${esc(c.fr)}</div><div class="muted small" style="margin-top:14px">Tap the card to flip</div>
          <span class="ctag">${esc(catOf(c))}</span></div>
-       <div class="face back">${heartBtn(c)}
-         <button class="speak" aria-label="Play">🔊</button>
+       <div class="face back">
          ${c.pron ? `<div class="pron">${esc(c.pron)}</div>` : `<div class="pron none">No “sounds like” yet — add it with ✏️ in Words</div>`}
          <div class="big">${esc(c.en)}</div>
-         ${c.ex?`<div class="ex"><button class="exsay" aria-label="Play example">🔊</button><i>${esc(c.ex)}</i><br><span class="muted">${esc(c.exEn)}</span></div>`:""}
+         ${c.ex?`<div class="ex"><i>${esc(c.ex)}</i><br><span class="muted">${esc(c.exEn)}</span></div>`:""}
          <span class="ctag">${esc(c.fr)}</span></div>
      </div>
+   </div>
+   <div class="studytools">
+     <button class="tool heart ${c.hard?"on":""}" data-heart="${c.id}" aria-label="Mark as hard" aria-pressed="${c.hard}">${c.hard?"♥":"♡"}</button>
+     <button class="tool big1" id="sSay">🔊 Hear it</button>
+     <button class="tool" id="sSlow" aria-label="Play slowly">🐢</button>
+     ${c.ex?`<button class="tool" id="sEx" aria-label="Play example" hidden>💬</button>`:""}
    </div>
    <div class="row">
      <button class="btn bad" id="again" disabled>Again</button>
@@ -555,11 +595,13 @@ function showStudyCard(){
    ${isLocked(c)?`<div class="lockbar"><span>🔒 Level ${c.box} — use it in a sentence to level up</span><button class="btn sm" id="lockGo">✍️ Write one</button></div>`:""}
    <p class="muted small center" style="margin-top:12px">${studyQueue.length} left in this session · level ${c.box}/${INTERVALS.length-1}</p>`;
   const flip = $("#flip");
-  flip.onclick = e=>{
-    if (e.target.closest(".speak")) { e.stopPropagation(); say(c.fr); return; }
-    if (e.target.closest(".exsay")) { e.stopPropagation(); say(c.ex); return; }
+  flip.onclick = ()=>{
     flip.classList.toggle("flipped"); $("#again").disabled = $("#gotit").disabled = false;
+    if ($("#sEx")) $("#sEx").hidden = !flip.classList.contains("flipped");
   };
+  $("#sSay").onclick = ()=>say(c.fr);
+  $("#sSlow").onclick = ()=>say(c.fr, true);
+  if ($("#sEx")) $("#sEx").onclick = ()=>say(c.ex);
   $("#again").onclick = ()=>{ grade(c,false); studyQueue.push(c); nextStudy(); };
   $("#gotit").onclick = ()=>{ grade(c,true); nextStudy(); };
   if ($("#lockGo")) $("#lockGo").onclick = ()=>writeWith([c]);
@@ -1097,7 +1139,8 @@ function startCreate(){
 /* --- 1. word challenge --- */
 function pickChallenge(){
   const now = Date.now();
-  const p = pool().filter(c=>!isConj(c));
+  const all = pool().filter(c=>!isConj(c)), seen = seenPool(all);
+  const p = seen.length >= 2 ? seen : all;
   const score = c => (isLocked(c)?-2.5:0) + (c.due<=now?0:2) + (c.hard?-1.5:0) + c.box*0.4 + (c.sent?0.6*Math.min(c.sent,3):0) + Math.random()*1.6;
   const sorted = p.slice().sort((a,b)=>score(a)-score(b));
   const n = p.length>=12 ? 3 : 2;
@@ -2068,6 +2111,7 @@ function renderSettings(){
   $("#lenient").checked = !!state.settings.lenient;
   $("#recNativeChk").checked = useNative();
   $("#lockChk").checked = !!state.settings.lock;
+  $("#newPerDaySel").value = String(state.settings.newPerDay ?? 15);
   $("#ltChk").checked = checkOn();
   const h = state.cards.filter(c=>c.hard).length, m = state.cards.filter(c=>c.box>=4).length;
   $("#statsLine").textContent = `${state.cards.length} words · ${categories().length} categories · ${m} well known · ${h} marked hard`;
@@ -2076,6 +2120,7 @@ function renderSettings(){
 
 /* settings & backup */
 $("#installBtn").onclick = async ()=>{ if (!installEvt){ toast("Use Chrome's ⋮ menu → Install app"); return; } installEvt.prompt(); await installEvt.userChoice.catch(()=>{}); installEvt = null; $("#installBtn").hidden = true; };
+$("#newPerDaySel").onchange = e=>{ state.settings.newPerDay = parseInt(e.target.value,10); save(); toast(state.settings.newPerDay ? `Up to ${state.settings.newPerDay} new words a day` : "No daily limit on new words"); };
 $("#ltChk").onchange = e=>{ state.settings.ltCheck = e.target.checked; save(); if (e.target.checked){ toast("🔎 Online checking on"); processPending(); } else toast("Online checking off"); };
 $("#lockChk").onchange = e=>{ state.settings.lock = e.target.checked; save(); toast(e.target.checked ? "🔒 Sentence lock on" : "Sentence lock off — words level up normally"); };
 $("#recNativeChk").onchange = e=>{ state.settings.recNative = e.target.checked; state.settings.recNativeAuto = false; save(); toast(e.target.checked ? "Recording will use your phone's recorder app" : "Recording will use the built-in microphone"); };
@@ -2093,7 +2138,7 @@ $("#importFile").onchange = e=>{
   const f = e.target.files[0]; if (!f) return;
   const r = new FileReader();
   r.onload = ()=>{ try{ const s = JSON.parse(r.result); if (!Array.isArray(s.cards)) throw 0;
-      state = fixup({cards:s.cards, cats:s.cats, settings:s.settings}); save(); renderWords(); toast("Backup restored"); }
+      state = fixup({cards:s.cards, cats:s.cats, settings:s.settings, journal:s.journal, newLog:s.newLog}); save(); renderWords(); toast("Backup restored"); }
     catch(err){ toast("That file isn't a valid backup"); } };
   r.readAsText(f); e.target.value="";
 };
@@ -2118,7 +2163,9 @@ window.addEventListener("offline", ()=>{ paintNet(); toast("Offline — everythi
 paintNet();
 setTimeout(processPending, 2500);   // check anything written while offline
 if (IS_WEB && "serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js").then(reg=>{
+  navigator.serviceWorker.register("sw.js", {updateViaCache:"none"}).then(reg=>{
+    reg.update().catch(()=>{});
+    document.addEventListener("visibilitychange", ()=>{ if (document.visibilityState==="visible") reg.update().catch(()=>{}); });
     reg.addEventListener("updatefound", ()=>{
       const nw = reg.installing; if (!nw) return;
       nw.addEventListener("statechange", ()=>{ if (nw.state==="installed" && navigator.serviceWorker.controller) toast("App updated — reopen it to use the new version"); });
