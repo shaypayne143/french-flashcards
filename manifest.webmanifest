@@ -1,0 +1,16 @@
+{
+  "name": "French Flashcards",
+  "short_name": "Flashcards FR",
+  "description": "Learn French words with flashcards, listening practice and sentence building. Works offline.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#11131b",
+  "theme_color": "#2b4cc4",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
