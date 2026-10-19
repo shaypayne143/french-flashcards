@@ -99,7 +99,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .irow.off .ifields{opacity:.45}
 .irow input.sugg{font-style:italic;color:var(--accent)}
 .inote-wrap{flex:0 0 auto;display:flex;gap:4px;align-items:center}
-.inote{font-size:12px;white-space:nowrap}.inote.warn{color:var(--warn);font-weight:600}
+.inote{font-size:12px;white-space:normal}.inote.upd{color:var(--good);font-weight:600}.inote.warn{color:var(--warn);font-weight:600}
 .catpick select{width:100%}.catpick input{margin-top:8px}
 .irow select{font-size:14px;padding:8px;flex:1;min-width:0}
 select.sugg{font-style:italic;color:var(--accent)}
@@ -136,6 +136,25 @@ mark.lterr sup{font-size:10px;color:var(--warn);margin-left:1px}
 .studytools .tool:active{transform:scale(.96)}
 .studytools .tool[hidden]{display:none}
 .newtag{position:absolute;top:12px;left:14px;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--accent);background:var(--surface2);border-radius:99px;padding:3px 8px}
+.ltfr{font-size:12px;font-style:italic}
+.lttr{font-size:13px;color:var(--accent);white-space:nowrap}
+#cModeSeg button{white-space:nowrap;padding:8px 4px}
+.jhead{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.jhead input{flex:1;font-size:16px;padding:10px 12px;min-width:0}
+.jicon{position:relative;flex:0 0 auto;min-width:44px;min-height:44px;border-radius:12px;border:1px solid var(--border);background:var(--surface);
+  color:var(--text);font:inherit;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0 8px}
+.jicon:disabled{opacity:.35}
+.jicon.sm{min-width:38px;min-height:38px;font-size:16px;border-radius:10px;background:none}
+.jcount{position:absolute;top:-6px;right:-6px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:700;border-radius:99px;padding:1px 6px}
+.daynav{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.daynav .jicon{font-size:26px;line-height:1}
+.dayc{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;border:0;background:none;color:var(--text);font:inherit;font-size:18px;cursor:pointer;padding:4px}
+.jday{font-weight:700;margin:14px 2px 8px;color:var(--muted);font-size:14px;text-transform:uppercase;letter-spacing:.04em}
+mark.jhl{background:color-mix(in srgb,var(--accent) 35%,transparent);color:inherit;border-radius:3px;padding:0 1px}
+.jfoot{display:flex;align-items:center;gap:4px;margin-top:10px}
+.jnotes{margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--surface2);line-height:1.45}
+details.ltd{margin-top:8px;border-radius:10px;background:var(--surface2);padding:8px 10px}
+details.ltd summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--warn)}
 .key{font-size:13px;color:var(--muted);line-height:1.6}.key b{color:var(--text)}
 /* match */
 .match{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -228,7 +247,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 
   <!-- CREATE -->
   <section class="view" id="v-create">
-    <div class="seg" id="cModeSeg"><button data-m="words">🎲 Word challenge</button><button data-m="me">🏠 About me</button><button data-m="journal">📓 Journal</button></div>
+    <div class="seg" id="cModeSeg"><button data-m="words">🎲 Challenge</button><button data-m="me">🏠 About me</button><button data-m="journal">📓 Journal</button></div>
     <div id="createArea"></div>
     <input type="file" id="jFile" accept=".csv,text/csv,text/plain" hidden>
   </section>
@@ -282,6 +301,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
     <div class="card">
       <button class="btn primary" id="installBtn" style="width:100%;margin-bottom:12px" hidden>📲 Install app on this phone</button>
       <h2>Backup</h2>
+      <p class="small" id="lastBackupInfo" style="margin:-6px 0 6px;font-weight:600"></p>
       <p class="muted small" style="margin-top:-6px">Your words are saved on this phone. Export a backup now and then, and before replacing the app file.</p>
       <div class="row" style="margin-bottom:10px">
         <button class="btn" id="exportBtn">Export backup</button>
@@ -513,9 +533,21 @@ function go(v){
   curView = v;
   document.querySelectorAll("#nav button").forEach(x=>x.classList.toggle("on", x.dataset.v===v));
   document.querySelectorAll(".view").forEach(el=>el.classList.toggle("on", el.id==="v-"+v));
-  $("#catbar").style.display = (v==="words" || v==="settings") ? "none" : "";
+  $("#catbar").style.display = (v==="words" || v==="settings" || (v==="create" && C.mode==="journal")) ? "none" : "";
+  if (canResume(v)){ if (v==="create") paintCreateSeg(); else if (v==="listen") paintListenSegs(); return; }   // pick up where you left off
   renderers[v]();
   window.scrollTo(0,0);
+}
+/* games remember where you were when you switch tabs (until you change category / Hard only) */
+const fkey = () => (state.settings.cat||"") + "|" + (state.settings.hardOnly?1:0);
+const live = {};
+function canResume(v){
+  if (live[v] !== fkey()) return false;
+  if (v==="study") return !!studyCard && !!$("#flip");
+  if (v==="match") return mLeft > 0 && !!document.querySelector("#matchGrid .tile");
+  if (v==="listen") return !!$("#listenArea").children.length && !L.done && !$("#lAgain");
+  if (v==="create") return C.mode!=="journal" && !!$("#cText");
+  return false;
 }
 $("#nav").addEventListener("click", e=>{ const b = e.target.closest("button"); if (b) go(b.dataset.v); });
 
@@ -542,6 +574,7 @@ function needCards(el, min){
 /* ---------- STUDY ---------- */
 let studyQueue = [], studyCard = null;
 function renderStudy(){
+  live.study = fkey();
   const el = $("#studyArea");
   if (needCards(el,1)) return;
   studyQueue = shuffle(dueCards());
@@ -606,14 +639,30 @@ function showStudyCard(){
   $("#gotit").onclick = ()=>{ grade(c,true); nextStudy(); };
   if ($("#lockGo")) $("#lockGo").onclick = ()=>writeWith([c]);
 }
-function writeWith(cards){ C.mode = "words"; C.force = cards; go("create"); }
+function writeWith(cards){ C.mode = "words"; C.force = cards; live.create = null; go("create"); }
 
 /* ---------- MATCH ---------- */
 let mSel = null, mLeft = 0, mMistakes = 0, mStart = 0;
+let recentMatch = [];
+function pickMatch(n){
+  // weighted shuffle: weaker, ♥ hard and due words come up more, but every word you've met gets a turn
+  const p = pool(), s = seenPool(p), src = s.length >= n ? s : p, now = Date.now();
+  const recent = new Set(recentMatch);
+  const scored = src.map(c=>{
+    let w = 1 + (INTERVALS.length-1-c.box)*0.35 + (c.hard?1.5:0) + (c.due<=now?1:0);
+    if (recent.has(c.id)) w *= 0.15;                       // just played → much less likely
+    return {c, k: Math.pow(Math.random(), 1/w)};           // weighted random order
+  }).sort((a,b)=>b.k-a.k);
+  const out = [], seenFr = new Set();
+  for (const {c} of scored){ const k = norm(c.fr); if (seenFr.has(k)) continue; seenFr.add(k); out.push(c); if (out.length>=n) break; }
+  recentMatch = recentMatch.concat(out.map(c=>c.id)).slice(-Math.max(10, Math.floor(src.length/2)));
+  return out;
+}
 function startMatch(){
+  live.match = fkey();
   const grid = $("#matchGrid"); $("#matchEnd").innerHTML = "";
   if (needCards(grid,3)) return;
-  const set = pick(Math.min(5, pool().length));
+  const set = pickMatch(Math.min(5, pool().length));
   mLeft = set.length; mMistakes = 0; mSel = null; mStart = Date.now();
   const L = shuffle(set), R = shuffle(set);
   grid.innerHTML = "";
@@ -748,6 +797,7 @@ $("#lSrcSeg").onclick = e=>{ const b=e.target.closest("button"); if (!b) return;
 $("#lShow").onchange = e=>{ state.settings.lShowText = e.target.checked; save(); if (!L.done && L.list.length) showRepeat(); };
 
 function startListen(){
+  live.listen = fkey();
   cleanupRec(); paintListenSegs();
   const el = $("#listenArea"), mode = state.settings.lMode;
   if (mode==="pairs"){ P.streak = 0; nextPair(); return; }
@@ -1040,7 +1090,7 @@ const REFL_RE = /^(me |m'|te |t'|se |s'|nous |vous )/;
 const IRREG = {
   "avoir":["ai","as","a","avons","avez","ont","eu"], "etre":["suis","es","est","sommes","etes","sont","ete"],
   "aller":["vais","vas","va","allons","allez","vont","alle"], "faire":["fais","fait","faisons","faites","font"],
-  "pouvoir":["peux","peut","pouvons","pouvez","peuvent","pu"], "devoir":["dois","doit","devons","devez","doivent","du"],
+  "pouvoir":["peux","peut","pouvons","pouvez","peuvent","pu"], "devoir":["dois","doit","devons","devez","doivent"],
   "vouloir":["veux","veut","voulons","voulez","veulent","voudrais","voudrait"], "voir":["vois","voit","voyons","voyez","voient","vu"],
   "prendre":["prends","prend","prenons","prenez","prennent","pris"], "venir":["viens","vient","venons","venez","viennent","venu"],
   "sortir":["sors","sort","sortons","sortez","sortent","sorti"], "boire":["bois","boit","buvons","buvez","boivent","bu"],
@@ -1125,11 +1175,12 @@ let C = {mode:"words", words:[], prompt:null, lastPrompt:-1};
 function paintCreateSeg(){
   document.querySelectorAll("#cModeSeg button").forEach(b=>b.classList.toggle("on", b.dataset.m===C.mode));
   const n = (state.journal||[]).filter(j=>!j.checked).length;
-  const jb = document.querySelector('#cModeSeg [data-m="journal"]'); if (jb) jb.textContent = "📓 Journal" + (state.journal.length?` (${state.journal.length})`:"");
+  const jb = document.querySelector('#cModeSeg [data-m="journal"]'); if (jb) jb.textContent = "📓 Journal";
   $("#catbar").style.display = C.mode==="journal" ? "none" : "";
 }
-$("#cModeSeg").onclick = e=>{ const b = e.target.closest("button"); if (!b) return; C.mode = b.dataset.m; startCreate(); };
+$("#cModeSeg").onclick = e=>{ const b = e.target.closest("button"); if (!b) return; snapDraft(); save(); C.mode = b.dataset.m; startCreate(); };
 function startCreate(){
+  live.create = fkey();
   paintCreateSeg();
   if (C.mode==="journal") return renderJournal();
   if (C.mode==="me") return newPrompt();
@@ -1156,11 +1207,23 @@ function pickChallenge(){
   }
   return pick;
 }
-function newChallenge(){
+/* drafts: a half-written sentence survives switching tabs, modes, or closing the app */
+let draftT = null;
+function snapDraft(){
+  const inp = $("#cText"); if (!inp || inp.readOnly) return;
+  state.cDraft = state.cDraft || {};
+  if (C.mode==="words" && C.words.length) state.cDraft.words = {ids: C.words.map(c=>c.id), text: inp.value};
+  if (C.mode==="me" && C.prompt) state.cDraft.me = {p: PROMPTS.indexOf(C.prompt), text: inp.value};
+}
+function clearDraft(mode){ if (state.cDraft) delete state.cDraft[mode]; save(); }
+function restoreText(text, check){ if (text && $("#cText")){ $("#cText").value = text; check(); } }
+function newChallenge(fresh){
   const el = $("#createArea");
   if (needCards(el,2)) return;
   if (pool().filter(c=>!isConj(c)).length < 2){ el.innerHTML = `<div class="card center"><p>This needs at least 2 words that aren't conjugation cards.</p><p class="muted">Pick another category above.</p></div>`; return; }
-  C.words = pickChallenge();
+  const d = !fresh && !C.force && state.cDraft && state.cDraft.words;
+  const dw = d ? d.ids.map(id=>state.cards.find(c=>c.id===id)).filter(Boolean) : [];
+  C.words = (d && dw.length===d.ids.length) ? dw : pickChallenge();
   const nl = lockedCards().length;
   el.innerHTML = `
    ${nl?`<div class="lockbar" style="margin:0 0 12px"><span>🔒 <b>${nl}</b> word${nl===1?"":"s"} waiting for a sentence to level up</span></div>`:""}
@@ -1174,8 +1237,9 @@ function newChallenge(){
    </div>
    <p class="muted small center">Tip: tap the 🎤 on your keyboard to say it instead of typing. Tap a word to hear it or see its example.</p>`;
   wireCreateInput(()=>checkChallenge());
+  if (d && dw.length===d.ids.length) restoreText(d.text, checkChallenge);
   $("#reqs").onclick = e=>{ const b = e.target.closest(".req"); if (!b) return; const c = state.cards.find(x=>x.id===b.dataset.id); if (c) showWordHelp(c); };
-  $("#cSkip").onclick = newChallenge;
+  $("#cSkip").onclick = ()=>{ clearDraft("words"); newChallenge(true); };
   $("#cDone").onclick = ()=>saveSentence({kind:"words", prompt:"", required:C.words});
 }
 function checkChallenge(){
@@ -1192,15 +1256,18 @@ function checkChallenge(){
 }
 
 /* --- 2. about me --- */
-function newPrompt(){
+function newPrompt(fresh){
   const el = $("#createArea");
   if (!state.cards.length){ needCards(el,1); return; }
   const list = usablePrompts();
   if (!list.length){
     el.innerHTML = `<div class="card center"><p>Add a few more words first.</p><p class="muted">Prompts use categories like Rooms, Furniture, Position, Daily routine, Colours and Describing things.</p></div>`; return;
   }
-  let i; do { i = Math.floor(Math.random()*list.length); } while (list.length>1 && PROMPTS.indexOf(list[i])===C.lastPrompt);
-  const p = C.prompt = list[i]; C.lastPrompt = PROMPTS.indexOf(p);
+  const d = !fresh && state.cDraft && state.cDraft.me;
+  let p;
+  if (d && PROMPTS[d.p] && list.includes(PROMPTS[d.p])) p = PROMPTS[d.p];
+  else { let i; do { i = Math.floor(Math.random()*list.length); } while (list.length>1 && PROMPTS.indexOf(list[i])===C.lastPrompt); p = list[i]; }
+  C.prompt = p; C.lastPrompt = PROMPTS.indexOf(p);
   const {cards} = promptCards(p);
   const ideas = shuffle(cards).slice(0,8);
   el.innerHTML = `
@@ -1219,8 +1286,9 @@ function newPrompt(){
    </div>`;
   $("#pSay").onclick = ()=>say(p.fr);
   wireCreateInput(()=>checkPrompt());
+  if (d && PROMPTS[d.p]===p) restoreText(d.text, checkPrompt);
   $("#ideas").onclick = e=>{ const b = e.target.closest(".req"); if (!b) return; const c = state.cards.find(x=>x.id===b.dataset.id); if (c) showWordHelp(c); };
-  $("#cSkip").onclick = newPrompt;
+  $("#cSkip").onclick = ()=>{ clearDraft("me"); newPrompt(true); };
   $("#cDone").onclick = ()=>saveSentence({kind:"me", prompt:p.fr, required:null});
 }
 function wordsUsedIn(text){
@@ -1248,13 +1316,16 @@ function checkPrompt(){
 /* shared */
 function wireCreateInput(onChange){
   const inp = $("#cText");
-  let t = null; inp.addEventListener("input", ()=>{ clearTimeout(t); t = setTimeout(onChange, 150); });
+  let t = null; inp.addEventListener("input", ()=>{
+    clearTimeout(t); t = setTimeout(onChange, 150);
+    snapDraft(); clearTimeout(draftT); draftT = setTimeout(save, 600);
+  });
   $("#cAcc").onmousedown = e=>e.preventDefault();
   $("#cAcc").onclick = e=>{
     const b = e.target.closest("button"); if (!b) return;
     const s = inp.selectionStart ?? inp.value.length, en = inp.selectionEnd ?? s;
     inp.value = inp.value.slice(0,s) + b.textContent + inp.value.slice(en);
-    inp.setSelectionRange(s+1, s+1); inp.focus(); onChange();
+    inp.setSelectionRange(s+1, s+1); inp.focus(); onChange(); snapDraft(); save();
   };
   setTimeout(()=>inp?.focus(), 50);
 }
@@ -1272,6 +1343,7 @@ function showWordHelp(c){
 }
 function saveSentence({kind, prompt, required}){
   const text = $("#cText").value.trim(); if (!text) return;
+  const draftMode = kind==="words" ? "words" : "me";
   const ok = kind==="words" ? checkChallenge() : checkPrompt();
   if (!ok){
     const msg = kind==="words" ? "Not all the words are in your sentence yet (the green ones are). Save anyway?" : `You've used fewer than ${C.prompt.n} of your words. Save anyway?`;
@@ -1304,7 +1376,8 @@ function saveSentence({kind, prompt, required}){
   }
   $("#cText").readOnly = true; $("#cDone").disabled = true; $("#cSkip").disabled = true;
   $("#cHear").onclick = ()=>say(text);
-  $("#cNext").onclick = ()=> kind==="words" ? newChallenge() : newPrompt();
+  if (state.cDraft) delete state.cDraft[draftMode]; save();
+  $("#cNext").onclick = ()=> kind==="words" ? newChallenge(true) : newPrompt(true);
 }
 
 /* --- 3. journal --- */
@@ -1312,34 +1385,51 @@ function renderJournal(){
   const el = $("#createArea"), J = state.journal;
   const todo = J.filter(j=>!j.checked).length;
   if (!J.length){
-    el.innerHTML = `<div class="card center"><h2>📓 Your journal is empty</h2><p class="muted">Every sentence you write in Word challenge or About me is saved here.</p></div>`; return;
+    el.innerHTML = `<div class="card center"><h2>📓 Your journal is empty</h2><p class="muted">Every sentence you write in Word challenge or About me is saved here, day by day.</p></div>`; return;
+  }
+  const keepFocus = document.activeElement && document.activeElement.id==="jSearch";
+  const q = JV.q.trim(), qn = q ? strip(norm(q)) : "";
+  const days = [...new Set(J.map(j=>dayKey(j.date)))].sort();          // days that have sentences, oldest → newest
+  if (!JV.day) JV.day = dayKey(Date.now());
+  const prev = days.filter(d=>d < JV.day).pop(), next = days.find(d=>d > JV.day);
+  const list = q
+    ? J.filter(j=>[j.text, j.corrected, j.prompt, (j.wordsFr||[]).join(" ")].some(x=>x && strip(norm(x)).includes(qn)))
+    : J.filter(j=>dayKey(j.date)===JV.day);
+  list.sort((a,b)=>b.date-a.date);
+
+  let body = "";
+  if (q){
+    body = list.length ? groupByDay(list).map(([d, items])=>`<div class="jday">${esc(dayLabel(d))}</div>${items.map(j=>jCard(j, qn)).join("")}`).join("")
+      : `<div class="card center muted">No sentences contain “${esc(q)}”.</div>`;
+  } else {
+    body = list.length ? list.map(j=>jCard(j)).join("")
+      : `<div class="card center"><p style="margin:4px 0">${JV.day===dayKey(Date.now()) ? "Nothing written today yet." : "Nothing written on this day."}</p>
+         <button class="btn primary sm" id="jWrite" style="margin-top:6px">🎲 Write a sentence</button></div>`;
   }
   el.innerHTML = `
-   <div class="card">
-     <div class="muted small">${J.length} sentence${J.length===1?"":"s"} · <b>${todo}</b> waiting for corrections</div>
-     <div class="row" style="margin-top:10px"><button class="btn" id="jExport" ${todo?"":"disabled"}>📤 Export for corrections</button><button class="btn" id="jImport">📥 Import corrections</button></div>
-     <div class="muted small" style="margin-top:8px">${checkOn()?"🔎 Sentences are grammar-checked automatically when you have signal. ":""}For a full review with explanations, export them, send the file to Claude, and import the file you get back.</div>
+   <div class="jhead">
+     <input type="search" id="jSearch" placeholder="Search words or sentences…" value="${esc(JV.q)}" autocomplete="off" autocapitalize="off">
+     <button class="jicon" id="jExport" ${todo?"":"disabled"} aria-label="Export for corrections" title="Export for Claude to correct">📤${todo?`<span class="jcount">${todo}</span>`:""}</button>
+     <button class="jicon" id="jImport" aria-label="Import corrections" title="Import corrections">📥</button>
    </div>
-   ${J.map(j=>`<div class="card jent" data-id="${j.id}">
-      <div class="row" style="align-items:center;gap:6px">
-        <span class="muted small" style="flex:1">${new Date(j.date).toLocaleDateString([], {day:"numeric", month:"short"})} · ${j.kind==="me"?"About me":"Word challenge"}</span>
-        <span class="jbadge ${j.checked || (j.lt&&j.lt.status==="done"&&!j.lt.matches.length)?"ok":(j.lt&&j.lt.status==="done"?"warn":"")}">${j.checked?"✓ Corrected":
-          j.lt&&j.lt.status==="done" ? (j.lt.matches.length?`🔎 ${j.lt.matches.length} to fix`:"🔎 ✓ Looks good") : (checkOn()?"⏳ Not checked":"✏️ Not checked")}</span>
-      </div>
-      ${j.prompt?`<div class="muted small" style="margin-top:6px"><i>${esc(j.prompt)}</i></div>`:""}
-      <div class="jtext ${j.checked && j.corrected && norm(j.corrected)!==norm(j.text)?"was":""}">${esc(j.text)}</div>
-      ${j.checked && j.corrected ? (norm(j.corrected)===norm(j.text) ? `<div class="fb ok" style="margin-top:6px">Perfect, no changes needed 🎉</div>`
-        : `<div class="jfix">${esc(j.corrected)}</div>`) : ""}
-      ${j.notes?`<div class="muted small" style="margin-top:6px">💡 ${esc(j.notes)}</div>`:""}
-      ${j.checked ? "" : ltBlock(j)}
-      ${j.wordsFr && j.wordsFr.length?`<div class="chips" style="margin-top:8px">${j.wordsFr.map(w=>`<span class="tag">${esc(w)}</span>`).join("")}</div>`:""}
-      <div class="row" style="margin-top:8px;gap:6px">
-        <button class="btn sm" data-j="say">🔊</button>
-        <button class="btn sm" data-j="edit">✏️ Edit</button>
-        <button class="btn sm" data-j="del">🗑️</button>
-      </div></div>`).join("")}`;
+   ${q ? `<div class="muted small" style="margin:0 2px 10px">${list.length} result${list.length===1?"":"s"} for “${esc(q)}”</div>` : `
+   <div class="daynav">
+     <button class="jicon" id="jPrev" ${prev?"":"disabled"} aria-label="Previous day">‹</button>
+     <button class="dayc" id="jToday"><b>${esc(dayLabel(JV.day))}</b><span class="muted small">${list.length} sentence${list.length===1?"":"s"}${JV.day!==dayKey(Date.now())?" · tap for today":""}</span></button>
+     <button class="jicon" id="jNext" ${next?"":"disabled"} aria-label="Next day">›</button>
+   </div>`}
+   ${body}`;
+  const s = $("#jSearch");
+  s.oninput = ()=>{ JV.q = s.value; const pos = s.selectionStart; renderJournal(); const n = $("#jSearch"); n.focus(); try{ n.setSelectionRange(pos,pos); }catch(e){} };
+  if (keepFocus) s.focus();
   if (todo) $("#jExport").onclick = exportJournal;
   $("#jImport").onclick = ()=>$("#jFile").click();
+  if (!q){
+    if (prev) $("#jPrev").onclick = ()=>{ JV.day = prev; renderJournal(); };
+    if (next) $("#jNext").onclick = ()=>{ JV.day = next; renderJournal(); };
+    $("#jToday").onclick = ()=>{ JV.day = dayKey(Date.now()); renderJournal(); };
+    if ($("#jWrite")) $("#jWrite").onclick = ()=>{ C.mode = "words"; startCreate(); };
+  }
   el.querySelectorAll(".jent").forEach(card=>card.onclick = e=>{
     const b = e.target.closest("[data-j]"); if (!b) return;
     const j = state.journal.find(x=>x.id===card.dataset.id); if (!j) return;
@@ -1349,6 +1439,60 @@ function renderJournal(){
     if (b.dataset.j==="del" && confirm("Delete this sentence?")){ state.journal = state.journal.filter(x=>x.id!==j.id); save(); renderJournal(); paintCreateSeg(); }
     if (b.dataset.j==="edit") editJournal(j);
   });
+}
+const JV = {day:"", q:""};
+const dayKey = t => { const d = new Date(t); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+function dayLabel(k){
+  const today = dayKey(Date.now()), yest = dayKey(Date.now()-DAY);
+  if (k===today) return "Today"; if (k===yest) return "Yesterday";
+  const [y,m,d] = k.split("-").map(Number);
+  return new Date(y, m-1, d).toLocaleDateString([], {weekday:"short", day:"numeric", month:"short"});
+}
+function groupByDay(items){ const g = {}; items.forEach(j=>{ (g[dayKey(j.date)] = g[dayKey(j.date)] || []).push(j); }); return Object.entries(g).sort((a,b)=>a[0]<b[0]?1:-1); }
+function hl(text, qn){                 // highlight a search match, ignoring accents
+  if (!qn) return esc(text);
+  const plain = text.split("").map(ch=>{ const t = ch.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(); return t.length===1 ? t : ch.toLowerCase(); }).join("");
+  let out = "", pos = 0, i;
+  while ((i = plain.indexOf(qn, pos)) !== -1){ out += esc(text.slice(pos, i)) + `<mark class="jhl">${esc(text.slice(i, i+qn.length))}</mark>`; pos = i + qn.length; }
+  return out + esc(text.slice(pos));
+}
+function jBadge(j){
+  const done = j.lt && j.lt.status==="done", n = done ? j.lt.matches.length : 0;
+  if (j.checked) return `<span class="jbadge ok">✓ Corrected</span>`;
+  if (done) return n ? `<span class="jbadge warn">🔎 ${n} to fix</span>` : `<span class="jbadge ok">🔎 ✓ Looks good</span>`;
+  return `<span class="jbadge">${checkOn() && navigator.onLine===false ? "⏳ Not checked" : "✏️ Not checked"}</span>`;
+}
+function jCard(j, qn){
+  const time = new Date(j.date).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+  const corrected = j.checked && j.corrected, changed = corrected && norm(j.corrected)!==norm(j.text);
+  const lt = !j.checked && j.lt && j.lt.status==="done" && j.lt.matches.length ? j.lt : null;
+  const sentence = qn ? hl(j.text, qn) : lt ? ltHighlight(j) : esc(j.text);
+  return `<div class="card jent" data-id="${j.id}">
+    <div class="row" style="align-items:center;gap:6px">
+      <span class="muted small" style="flex:1">${qn?"":time+" · "}${j.kind==="me"?"About me":"Challenge"}</span>${jBadge(j)}
+    </div>
+    ${j.prompt?`<div class="muted small" style="margin-top:6px"><i>${qn?hl(j.prompt,qn):esc(j.prompt)}</i></div>`:""}
+    <div class="jtext ${changed?"was":""}">${sentence}</div>
+    ${corrected ? (changed ? `<div class="jfix">${qn?hl(j.corrected,qn):esc(j.corrected)}</div>` : `<div class="fb ok" style="margin-top:6px">Perfect, no changes needed 🎉</div>`) : ""}
+    ${j.notes?`<div class="small jnotes">💡 ${esc(j.notes)}</div>`:""}
+    ${lt ? `<details class="ltd"><summary>🔎 ${lt.matches.length} suggestion${lt.matches.length===1?"":"s"} — tap to see</summary>${ltList(j)}</details>`
+         : (!j.checked && checkOn() && (!j.lt || j.lt.status!=="done") ? `<div class="muted small" style="margin-top:6px">${j.lt&&j.lt.status==="checking"?"🔎 Checking…":"⏳ Grammar check waiting for signal"}</div>` : "")}
+    <div class="jfoot">
+      <div class="chips" style="margin:0;flex:1">${(j.wordsFr||[]).map(w=>`<span class="tag">${qn?hl(w,qn):esc(w)}</span>`).join("")}</div>
+      <button class="jicon sm" data-j="say" aria-label="Play">🔊</button>
+      <button class="jicon sm" data-j="edit" aria-label="Edit">✏️</button>
+      <button class="jicon sm" data-j="del" aria-label="Delete">🗑️</button>
+    </div></div>`;
+}
+function ltList(j){
+  const ms = j.lt.matches||[];
+  return `<ol class="ltlist">${ms.map(m=>{ const en = ltEnglish(m.msg);
+      return `<li>${m.fix?`<b>${esc(j.text.slice(m.o,m.o+m.l))||"…"}</b> → <b class="ltfix">${esc(m.fix)}</b>${m.alt.length?` <span class="muted">(or ${m.alt.map(esc).join(", ")})</span>`:""}<br>`:""}${en
+        ? `<span>${esc(en)}</span><br><span class="muted ltfr">${esc(m.msg)}</span>`
+        : `<span class="muted">${esc(m.msg)}</span> <a class="lttr" href="https://translate.google.com/?sl=fr&tl=en&op=translate&text=${encodeURIComponent(m.msg)}" target="_blank" rel="noopener">🌐 Translate</a>`}</li>`; }).join("")}</ol>
+    ${j.lt.fixed && j.lt.fixed!==j.text ? `<div class="small muted" style="margin-top:6px">With the fixes:</div><div class="jfix" style="margin-top:2px;font-size:16px">${esc(j.lt.fixed)}</div>
+      <div class="row" style="margin-top:8px;gap:6px"><button class="btn sm" data-j="sayfix">🔊 Hear</button><button class="btn sm" data-j="usefix">✓ Use the fix</button></div>` : ""}
+    <div class="muted small" style="margin-top:6px">⚠️ The free checker can be wrong — export to Claude if unsure.</div>`;
 }
 function editJournal(j){
   openModal(`<div class="row" style="align-items:center"><h2 style="margin:0;flex:1">Edit sentence</h2><button class="icon-btn" id="jX" aria-label="Close">✕</button></div>
@@ -1415,6 +1559,37 @@ async function ltCheck(text){
     .map(m=>({o:m.offset, l:m.length, msg:m.message||m.shortMessage||"", fix:(m.replacements&&m.replacements[0]&&m.replacements[0].value)||"",
       alt:(m.replacements||[]).slice(1,3).map(x=>x.value), kind:(m.rule&&m.rule.category&&m.rule.category.name)||""}));
 }
+/* LanguageTool only explains in French — translate the common notes */
+const Q = "(?:«\\s*|\"|“)(.+?)(?:\\s*»|\"|”)";
+const LT_EN = [
+  [new RegExp("Un verbe conjugué est (?:généralement )?attendu après (?:le pronom(?: personnel)?(?: sujet)? )?"+Q,"i"), m=>`After “${m[1]}” you need the verb in its conjugated form (e.g. j'ai, je suis, je vais), not the infinitive (avoir, être, aller).`],
+  [new RegExp(Q+" est une forme du verbe avoir","i"), m=>`“${m[1]}” means “has” (from avoir). If you mean “to / at”, write à with an accent.`],
+  [new RegExp("Le déterminant s[’']accorde avec le nom "+Q,"i"), m=>`The little word before “${m[1]}” (le/la/les/un/deux…) must match it: singular or plural, masculine or feminine.`],
+  [new RegExp("Le nom "+Q+" doit être au pluriel","i"), m=>`“${m[1]}” should be plural here (usually add -s).`],
+  [new RegExp("Le nom "+Q+" doit être au singulier","i"), m=>`“${m[1]}” should be singular here.`],
+  [new RegExp("L[’']adjectif "+Q+".*s[’']accorde","i"), m=>`The describing word “${m[1]}” must match its noun (masculine/feminine, singular/plural).`],
+  [/Faute d[’']orthographe|semble mal orthographié|orthographe possible/i, ()=>"Possible spelling mistake (check letters and accents)."],
+  [/élision|élidé|apostrophe/i, ()=>"Before a vowel or silent h, shorten it with an apostrophe: le → l', je → j', ne → n', de → d'."],
+  [/accord.*sujet|sujet.*accord|le verbe.*s[’']accorde/i, ()=>"The verb must match its subject (je/tu/il/nous/vous/ils)."],
+  [/participe passé/i, ()=>"The past participle (e.g. mangé, fini, pris) looks wrong here."],
+  [/infinitif/i, ()=>"An infinitive (the -er / -ir / -re form) is expected here."],
+  [/au pluriel|pluriel/i, ()=>"Singular / plural doesn't match."],
+  [/au singulier|singulier/i, ()=>"This should be singular."],
+  [/féminin|masculin|genre/i, ()=>"Masculine / feminine doesn't match."],
+  [/majuscule/i, ()=>"This needs a capital letter (e.g. at the start of a sentence)."],
+  [/répétition|répété|deux fois/i, ()=>"A word seems to be repeated."],
+  [/négation|« ne »|ne\s.*pas/i, ()=>"In a negative, use ne … pas around the verb (je ne mange pas). Before a vowel: n'."],
+  [/il manque|manquant|semble manquer/i, ()=>"Something seems to be missing here."],
+  [/conjugaison|conjugué/i, ()=>"This verb isn't conjugated correctly for its subject."]
+];
+function ltEnglish(msg){
+  if (!msg) return "";
+  const parts = [];
+  for (const [rx, fn] of LT_EN){ const m = msg.match(rx); if (m){ parts.push(fn(m)); break; } }
+  const dym = msg.match(new RegExp("(?:Voulez-vous dire|Vouliez-vous dire|Peut-être)\\s*:?\\s*"+Q,"i"));
+  if (dym) parts.push(`Did you mean “${dym[1]}”?`);
+  return parts.join(" ");
+}
 function applyFixes(text, matches){
   let out = text;
   matches.filter(m=>m.fix!=="" || m.l).slice().sort((a,b)=>b.o-a.o).forEach(m=>{ if (m.fix) out = out.slice(0,m.o) + m.fix + out.slice(m.o+m.l); });
@@ -1464,7 +1639,11 @@ function ltBlock(j){
   return `<div class="ltbox">
     <div class="small" style="font-weight:600;margin-bottom:6px">🔎 ${ms.length} suggestion${ms.length===1?"":"s"}</div>
     <div class="jtext" style="margin-top:0">${ltHighlight(j)}</div>
-    <ol class="ltlist">${ms.map(m=>`<li>${m.fix?`<b>${esc(j.text.slice(m.o,m.o+m.l))||"…"}</b> → <b class="ltfix">${esc(m.fix)}</b>${m.alt.length?` <span class="muted">(or ${m.alt.map(esc).join(", ")})</span>`:""}<br>`:""}<span class="muted">${esc(m.msg)}</span></li>`).join("")}</ol>
+    <ol class="ltlist">${ms.map(m=>{ const en = ltEnglish(m.msg);
+      return `<li>${m.fix?`<b>${esc(j.text.slice(m.o,m.o+m.l))||"…"}</b> → <b class="ltfix">${esc(m.fix)}</b>${m.alt.length?` <span class="muted">(or ${m.alt.map(esc).join(", ")})</span>`:""}<br>`:""}${en
+        ? `<span>${esc(en)}</span><br><span class="muted ltfr">${esc(m.msg)}</span>`
+        : `<span class="muted">${esc(m.msg)}</span> <a class="lttr" href="https://translate.google.com/?sl=fr&tl=en&op=translate&text=${encodeURIComponent(m.msg)}" target="_blank" rel="noopener">🌐 Translate</a>`}</li>`; }).join("")}</ol>
+    <div class="muted small" style="margin-top:4px">⚠️ The free checker's suggested fixes can be wrong — export to Claude if you're not sure.</div>
     ${j.lt.fixed && j.lt.fixed!==j.text ? `<div class="small muted" style="margin-top:6px">With the fixes:</div><div class="jfix" style="margin-top:2px">${esc(j.lt.fixed)}</div>
       <div class="row" style="margin-top:8px;gap:6px"><button class="btn sm" data-j="sayfix">🔊 Hear corrected</button><button class="btn sm" data-j="usefix">✓ Use the fix</button></div>` : ""}
   </div>`;
@@ -1988,18 +2167,31 @@ function openMapping(rows, name){
 }
 
 /* review screen */
+/* words you already have: the file can fill in / update their details — your progress is never touched */
+const UPD_FIELDS = [["en","English"],["pron","sounds like"],["ex","example"],["exEn","example English"],["exPron","example sounds like"]];
+function classifyRow(r){
+  const card = state.cards.find(c=>norm(c.fr)===norm(r.fr));
+  r.cardId = card ? card.id : null;
+  r.changes = card ? UPD_FIELDS.filter(([k])=>(r[k]||"").trim() && (r[k]||"").trim()!==(card[k]||"").trim()).map(([,l])=>l) : [];
+  if (card && r.cat && catOf(card)!==UNCAT && r.cat!==catOf(card) && r.catTouched) r.changes.push("category");
+  r.dup = !!card;
+  return r;
+}
 function openReview(rows, defCat, source){
-  const seen = new Set(state.cards.map(c=>norm(c.fr)));
+  const seenFile = new Set();
   imp = rows.map(r=>{
     const fr = (r.fr||"").trim(), en = (r.en||"").trim();
-    const dup = seen.has(norm(fr)); seen.add(norm(fr));
-    let cat = (r.cat||"").trim() || defCat, sugg = false;
+    const fileDup = seenFile.has(norm(fr)); seenFile.add(norm(fr));
+    const card = state.cards.find(c=>norm(c.fr)===norm(fr));
+    let cat = card && catOf(card)!==UNCAT ? catOf(card) : ((r.cat||"").trim() || defCat), sugg = false;
     if (!cat){ const s = suggestCats(fr, en)[0]; if (s){ cat = s.name; sugg = true; } }
-    return {fr, en, pron:r.pron||"", ex:r.ex||"", exEn:r.exEn||"", exPron:r.exPron||"", hard:!!r.hard, cat, sugg, dup, on: !dup && !!fr};
+    const row = classifyRow({fr, en, pron:r.pron||"", ex:r.ex||"", exEn:r.exEn||"", exPron:r.exPron||"", hard:!!r.hard, cat, sugg, fileDup});
+    row.on = !fileDup && !!fr && (!row.dup || row.changes.length>0);
+    return row;
   });
   impCats = new Set(imp.map(r=>r.cat).concat(defCat).filter(Boolean));
   openModal(`<div class="row" style="align-items:center"><h2 style="margin:0;flex:1">Check ${imp.length} word${imp.length===1?"":"s"}</h2><button class="icon-btn" id="rX" aria-label="Close">✕</button></div>
-    <p class="small muted" style="margin:4px 0 10px">Fix anything the camera misread, untick words you don't want, then import. 💡 = suggested category.</p>
+    <p class="small muted" style="margin:4px 0 10px">Fix anything that looks wrong and untick words you don't want. Words you already have are <b>updated</b> (sounds like, examples…) — your levels, due dates and ♥ stay the same. 💡 = suggested category.</p>
     <div class="row" style="margin-bottom:8px">
       <select id="rAll" style="flex:2;font-size:15px">${`<option value="__none" selected>Category for all…</option>` + catOptions("", [...impCats])}</select>
       <button class="btn sm" id="rApply">Apply</button>
@@ -2018,7 +2210,7 @@ function openReview(rows, defCat, source){
     if (v==="__new"){ const n = prompt("New category name"); if (!n || !n.trim()) return; v = cleanCat(n); impCats.add(v); } imp.forEach(r=>{ r.cat = v; r.sugg = false; }); drawReview(); toast(v ? "All set to " + v : "Categories cleared"); };
   $("#rSwap").onclick = ()=>{
     const seen2 = new Set(state.cards.map(c=>norm(c.fr)));
-    imp.forEach(r=>{ [r.fr, r.en] = [r.en, r.fr]; r.dup = seen2.has(norm(r.fr)); seen2.add(norm(r.fr)); r.on = !r.dup && !!r.fr; });
+    imp.forEach(r=>{ [r.fr, r.en] = [r.en, r.fr]; classifyRow(r); r.on = !!r.fr && (!r.dup || r.changes.length>0); });
     drawReview();
   };
   const onRow = e=>{
@@ -2027,28 +2219,40 @@ function openReview(rows, defCat, source){
       if (e.type!=="change") return;
       let v = el.value;
       if (v==="__new"){ const n = prompt("New category name"); if (!n || !n.trim()){ drawReview(); return; } v = cleanCat(n); }
-      imp[i].cat = v; imp[i].sugg = false; if (v) impCats.add(v); drawReview(); return;
+      imp[i].cat = v; imp[i].sugg = false; imp[i].catTouched = true; classifyRow(imp[i]); if (imp[i].dup && imp[i].changes.length) imp[i].on = true; if (v) impCats.add(v); drawReview(); return;
     }
     if (k==="on") imp[i].on = el.checked; else { imp[i][k] = el.value; if (k==="cat") imp[i].sugg = false; }
-    if (k==="fr"){ imp[i].dup = state.cards.some(c=>norm(c.fr)===norm(el.value)); }
+    if (k!=="on"){ classifyRow(imp[i]); }
     if (k!=="on") paintRow(i);
     updateReviewCount();
   };
   $("#rList").addEventListener("input", onRow); $("#rList").addEventListener("change", onRow);
   $("#rGo").onclick = ()=>{
-    let n = 0, skipped = 0;
+    let n = 0, skipped = 0, u = 0;
     imp.forEach(r=>{
       if (!r.on) return;
+      if (r.cardId){
+        const c = state.cards.find(x=>x.id===r.cardId); if (!c){ skipped++; return; }
+        UPD_FIELDS.forEach(([k])=>{ const v = (r[k]||"").trim(); if (v) c[k] = v; });   // levels, due dates, ♥ and sentences stay as they are
+        if (r.catTouched && r.cat) c.cat = ensureCat(r.cat);
+        else if (catOf(c)===UNCAT && r.cat) c.cat = ensureCat(r.cat);
+        u++; return;
+      }
       if (!r.fr.trim() || !r.en.trim()){ skipped++; return; }
       if (addWord(r.fr, r.en, r.cat, r.pron, r.ex, r.exEn, r.exPron)){ n++; if (r.hard) state.cards[state.cards.length-1].hard = true; }
       else skipped++;
     });
     save(); closeModal(); if (curView==="words") renderWords();
-    toast(`Imported ${n} word${n===1?"":"s"}` + (skipped?` · ${skipped} skipped`:""));
+    toast([n?`Added ${n} new word${n===1?"":"s"}`:"", u?`updated ${u} existing (progress kept)`:"", skipped?`${skipped} skipped`:""].filter(Boolean).join(" · ") || "Nothing imported");
   };
 }
+function impNote(r){
+  if (r.fileDup) return `<span class="inote warn">Repeated in the file</span>`;
+  if (r.dup) return r.changes.length ? `<span class="inote upd">↻ Updates ${esc(r.changes.join(", "))} · progress kept</span>` : `<span class="inote">✓ Already up to date</span>`;
+  return !r.en.trim() ? `<span class="inote warn">Needs English</span>` : "";
+}
 function rowHtml(r, i){
-  const note = r.dup ? `<span class="inote warn">Already in your list</span>` : !r.en.trim() ? `<span class="inote warn">Needs English</span>` : "";
+  const note = impNote(r);
   return `<div class="irow ${r.on?"":"off"}" data-row="${i}">
     <input type="checkbox" data-i="${i}" data-k="on" ${r.on?"checked":""} aria-label="Include">
     <div class="ifields">
@@ -2063,13 +2267,14 @@ function drawReview(){ $("#rList").innerHTML = imp.map(rowHtml).join(""); update
 function paintRow(i){
   const el = document.querySelector(`.irow[data-row="${i}"] .inote-wrap`); if (!el) return;
   const r = imp[i];
-  el.innerHTML = (r.sugg?'<span class="inote">💡</span>':"") + (r.dup ? `<span class="inote warn">Already in your list</span>` : !r.en.trim() ? `<span class="inote warn">Needs English</span>` : "");
+  el.innerHTML = (r.sugg?'<span class="inote">💡</span>':"") + (impNote(r));
   const c = document.querySelector(`.irow[data-row="${i}"] [data-k=cat]`); if (c) c.classList.toggle("sugg", r.sugg);
 }
 function updateReviewCount(){
   document.querySelectorAll(".irow").forEach(el=>el.classList.toggle("off", !imp[+el.dataset.row].on));
-  const n = imp.filter(r=>r.on && r.fr.trim() && r.en.trim()).length;
-  const b = $("#rGo"); if (b){ b.textContent = `Import ${n} word${n===1?"":"s"}`; b.disabled = !n; }
+  const n = imp.filter(r=>r.on && !r.cardId && r.fr.trim() && r.en.trim()).length;
+  const u = imp.filter(r=>r.on && r.cardId).length;
+  const b = $("#rGo"); if (b){ b.textContent = [n?`Add ${n} new`:"", u?`Update ${u}`:""].filter(Boolean).join(" · ") || "Import"; b.disabled = !(n+u); }
 }
 
 /* export words as CSV (opens in Excel / Google Sheets) */
@@ -2111,6 +2316,7 @@ function renderSettings(){
   $("#lenient").checked = !!state.settings.lenient;
   $("#recNativeChk").checked = useNative();
   $("#lockChk").checked = !!state.settings.lock;
+  paintBackupInfo();
   $("#newPerDaySel").value = String(state.settings.newPerDay ?? 15);
   $("#ltChk").checked = checkOn();
   const h = state.cards.filter(c=>c.hard).length, m = state.cards.filter(c=>c.box>=4).length;
@@ -2125,12 +2331,45 @@ $("#ltChk").onchange = e=>{ state.settings.ltCheck = e.target.checked; save(); i
 $("#lockChk").onchange = e=>{ state.settings.lock = e.target.checked; save(); toast(e.target.checked ? "🔒 Sentence lock on" : "Sentence lock off — words level up normally"); };
 $("#recNativeChk").onchange = e=>{ state.settings.recNative = e.target.checked; state.settings.recNativeAuto = false; save(); toast(e.target.checked ? "Recording will use your phone's recorder app" : "Recording will use the built-in microphone"); };
 $("#lenient").onchange = e=>{ state.settings.lenient = e.target.checked; save(); };
-$("#exportBtn").onclick = ()=>{
+function exportBackup(){
+  state.settings.lastBackup = Date.now(); state.settings.backupSnooze = 0; save();
   const blob = new Blob([JSON.stringify(state,null,1)], {type:"application/json"});
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
   a.download = "french-flashcards-backup-" + new Date().toISOString().slice(0,10) + ".json";
   document.body.appendChild(a); a.click(); a.remove();
-};
+  toast("💾 Backup saved to your Downloads");
+  if ($("#lastBackupInfo")) paintBackupInfo();
+}
+$("#exportBtn").onclick = exportBackup;
+function backupAgeText(){
+  const t = state.settings.lastBackup; if (!t) return "never";
+  const d = Math.floor((Date.now()-t)/DAY);
+  return d<=0 ? "today" : d===1 ? "yesterday" : `${d} days ago`;
+}
+function paintBackupInfo(){ const el = $("#lastBackupInfo"); if (el) el.textContent = "Last backup: " + backupAgeText(); }
+/* nudge: no backup in the last 2 days */
+function maybeBackupNudge(){
+  const S = state.settings, now = Date.now();
+  if (!state.cards.length) return;
+  if (S.lastBackup && now - S.lastBackup < 2*DAY) return;
+  if (S.backupSnooze && now < S.backupSnooze) return;
+  if ($("#modalBg").classList.contains("on")) return;          // don't interrupt something you're doing
+  const j = (state.journal||[]).length;
+  openModal(`<div class="center">
+      <div style="font-size:44px;line-height:1">💾</div>
+      <h2 style="margin:8px 0 4px">Time to back up</h2>
+      <p class="muted" style="margin:0 0 6px">Last backup: <b>${backupAgeText()}</b></p>
+      <p class="small" style="margin:0 0 14px">Your ${state.cards.length} word${state.cards.length===1?"":"s"}${j?` and ${j} journal sentence${j===1?"":"s"}`:""} only live on this phone. A backup takes one tap and saves a file to your Downloads.</p>
+    </div>
+    <div class="stack">
+      <button class="btn primary" id="bkNow">💾 Back up now</button>
+      <button class="btn" id="bkLater">Remind me tomorrow</button>
+    </div>
+    <p class="muted small center" style="margin:8px 0 0">Tip: also save the file to Google Drive so it's safe if you lose your phone.</p>`);
+  $("#modal").onclick = null;
+  $("#bkNow").onclick = ()=>{ exportBackup(); closeModal(); };
+  $("#bkLater").onclick = ()=>{ S.backupSnooze = now + DAY; save(); closeModal(); };
+}
 $("#csvInBtn").onclick = pickCSV;
 $("#csvOutBtn").onclick = exportCSV;
 $("#importBtn").onclick = ()=>$("#importFile").click();
@@ -2162,8 +2401,33 @@ window.addEventListener("online", ()=>{ paintNet(); toast("Back online"); });
 window.addEventListener("offline", ()=>{ paintNet(); toast("Offline — everything still works"); });
 paintNet();
 setTimeout(processPending, 2500);   // check anything written while offline
+
+/* ---------- Share → French Flashcards: highlighted text arrives here ---------- */
+(function handleShare(){
+  const q = new URLSearchParams(location.search);
+  if (!q.has("share")){ setTimeout(maybeBackupNudge, 1200); return; }
+  let t = (q.get("text") || q.get("title") || "").trim();
+  history.replaceState(null, "", location.pathname);           // tidy the address so a refresh doesn't re-add it
+  t = t.replace(/https?:\/\/\S+/g, "").replace(/^["'«“‘\s]+|["'»”’\s.,;:!?]+$/g, "").replace(/\s+/g, " ").trim();
+  if (!t){ toast("Nothing to add — highlight a word, then Share"); return; }
+  if (t.length > 120) t = t.slice(0, 120);
+  // "le chien - the dog" style shares fill both boxes
+  const m = t.match(/^(.+?)\s+(?:-|–|—|=|:)\s+(.+)$/);
+  go("words");
+  setTimeout(()=>{
+    openAdd();
+    $("#aFr").value = m ? m[1] : t;
+    if (m) $("#aEn").value = m[2];
+    ["#aFr","#aEn"].forEach(id=>$(id).dispatchEvent(new Event("input", {bubbles:true})));
+    const dup = state.cards.find(c=>norm(c.fr)===norm($("#aFr").value));
+    if (dup) toast(`“${dup.fr}” is already in your list (${dup.en})`);
+    (m ? $("#aCat_sel") : $("#aEn")).focus();
+  }, 120);
+})();
 if (IS_WEB && "serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js").then(reg=>{
+  navigator.serviceWorker.register("sw.js", {updateViaCache:"none"}).then(reg=>{
+    reg.update().catch(()=>{});
+    document.addEventListener("visibilitychange", ()=>{ if (document.visibilityState==="visible") reg.update().catch(()=>{}); });
     reg.addEventListener("updatefound", ()=>{
       const nw = reg.installing; if (!nw) return;
       nw.addEventListener("statechange", ()=>{ if (nw.state==="installed" && navigator.serviceWorker.controller) toast("App updated — reopen it to use the new version"); });
