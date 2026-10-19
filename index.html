@@ -153,6 +153,18 @@ mark.lterr sup{font-size:10px;color:var(--warn);margin-left:1px}
 mark.jhl{background:color-mix(in srgb,var(--accent) 35%,transparent);color:inherit;border-radius:3px;padding:0 1px}
 .jfoot{display:flex;align-items:center;gap:4px;margin-top:10px}
 .jnotes{margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--surface2);line-height:1.45}
+.jent{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:10px 12px 6px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer}
+.jent.open{border-color:color-mix(in srgb,var(--accent) 45%,var(--border))}
+.jtop{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.jtop .jbadge{font-size:11px;padding:2px 8px}
+.jline{display:flex;align-items:flex-start;gap:6px;margin-top:4px}
+.jsent{flex:1;font-size:16px;line-height:1.4;padding-top:6px}
+.jbtns{display:flex;gap:2px;flex:0 0 auto}
+.jwords{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.wchip{font-size:12px;border-radius:99px;padding:2px 9px;background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);font-weight:600}
+.jdel{border:0;background:none;color:var(--bad);font:inherit;font-size:13px;padding:6px 4px;cursor:pointer;opacity:.85}
+.jmore{font-size:11px;color:var(--muted);text-align:center;margin-top:4px;letter-spacing:.03em}
+.jdetail{border-top:1px solid var(--border);margin-top:6px;padding:10px 0 6px;cursor:default}
 details.ltd{margin-top:8px;border-radius:10px;background:var(--surface2);padding:8px 10px}
 details.ltd summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--warn)}
 .key{font-size:13px;color:var(--muted);line-height:1.6}.key b{color:var(--text)}
@@ -271,6 +283,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
   </section>
 
   <section class="view" id="v-settings">
+    <p class="muted small center" id="appVer" style="margin:0 0 10px"></p>
     <div class="card">
       <h2>Settings</h2>
       <p class="muted small" id="statsLine" style="margin-top:-6px"></p>
@@ -339,6 +352,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 <script>
 (function(){
 "use strict";
+const APP_VERSION = "ff-2026-10-19-2";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -1431,8 +1445,12 @@ function renderJournal(){
     if ($("#jWrite")) $("#jWrite").onclick = ()=>{ C.mode = "words"; startCreate(); };
   }
   el.querySelectorAll(".jent").forEach(card=>card.onclick = e=>{
-    const b = e.target.closest("[data-j]"); if (!b) return;
     const j = state.journal.find(x=>x.id===card.dataset.id); if (!j) return;
+    const b = e.target.closest("[data-j]");
+    if (!b){                                                        // tap anywhere else on the card → open / close it
+      if (e.target.closest("a, .jdetail")) return;
+      jOpen.has(j.id) ? jOpen.delete(j.id) : jOpen.add(j.id); renderJournal(); return;
+    }
     if (b.dataset.j==="say") say(j.checked && j.corrected ? j.corrected : j.text);
     if (b.dataset.j==="sayfix" && j.lt && j.lt.fixed) say(j.lt.fixed);
     if (b.dataset.j==="usefix" && j.lt && j.lt.fixed){ j.orig = j.orig || j.text; j.text = j.lt.fixed; j.lt = {status:"pending"}; save(); renderJournal(); processPending(); toast("Fix applied — re-checking"); }
@@ -1462,27 +1480,35 @@ function jBadge(j){
   if (done) return n ? `<span class="jbadge warn">🔎 ${n} to fix</span>` : `<span class="jbadge ok">🔎 ✓ Looks good</span>`;
   return `<span class="jbadge">${checkOn() && navigator.onLine===false ? "⏳ Not checked" : "✏️ Not checked"}</span>`;
 }
+const jOpen = new Set();   // which journal cards are expanded
 function jCard(j, qn){
   const time = new Date(j.date).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
   const corrected = j.checked && j.corrected, changed = corrected && norm(j.corrected)!==norm(j.text);
   const lt = !j.checked && j.lt && j.lt.status==="done" && j.lt.matches.length ? j.lt : null;
-  const sentence = qn ? hl(j.text, qn) : lt ? ltHighlight(j) : esc(j.text);
-  return `<div class="card jent" data-id="${j.id}">
-    <div class="row" style="align-items:center;gap:6px">
-      <span class="muted small" style="flex:1">${qn?"":time+" · "}${j.kind==="me"?"About me":"Challenge"}</span>${jBadge(j)}
-    </div>
-    ${j.prompt?`<div class="muted small" style="margin-top:6px"><i>${qn?hl(j.prompt,qn):esc(j.prompt)}</i></div>`:""}
-    <div class="jtext ${changed?"was":""}">${sentence}</div>
-    ${corrected ? (changed ? `<div class="jfix">${qn?hl(j.corrected,qn):esc(j.corrected)}</div>` : `<div class="fb ok" style="margin-top:6px">Perfect, no changes needed 🎉</div>`) : ""}
-    ${j.notes?`<div class="small jnotes">💡 ${esc(j.notes)}</div>`:""}
-    ${lt ? `<details class="ltd"><summary>🔎 ${lt.matches.length} suggestion${lt.matches.length===1?"":"s"} — tap to see</summary>${ltList(j)}</details>`
-         : (!j.checked && checkOn() && (!j.lt || j.lt.status!=="done") ? `<div class="muted small" style="margin-top:6px">${j.lt&&j.lt.status==="checking"?"🔎 Checking…":"⏳ Grammar check waiting for signal"}</div>` : "")}
-    <div class="jfoot">
-      <div class="chips" style="margin:0;flex:1">${(j.wordsFr||[]).map(w=>`<span class="tag">${qn?hl(w,qn):esc(w)}</span>`).join("")}</div>
-      <button class="jicon sm" data-j="say" aria-label="Play">🔊</button>
-      <button class="jicon sm" data-j="edit" aria-label="Edit">✏️</button>
-      <button class="jicon sm" data-j="del" aria-label="Delete">🗑️</button>
-    </div></div>`;
+  const open = jOpen.has(j.id);
+  const shown = changed ? j.corrected : j.text;                       // closed card: just the sentence (the fixed one if corrected)
+  const text = qn ? hl(shown, qn) : esc(shown);
+  let detail = "";
+  if (open){
+    detail = `<div class="jdetail">
+      ${j.prompt?`<div class="muted small"><i>${esc(j.prompt)}</i></div>`:""}
+      ${changed ? `<div class="small muted" style="margin-top:6px">You wrote:</div><div class="jtext was" style="margin-top:2px">${esc(j.text)}</div>`
+                : corrected ? `<div class="fb ok" style="margin-top:6px">Perfect, no changes needed 🎉</div>` : ""}
+      ${j.notes?`<div class="small jnotes">💡 ${esc(j.notes)}</div>`:""}
+      ${lt ? `<div class="small muted" style="margin-top:8px">Mistakes found:</div><div class="jtext" style="margin-top:2px;font-size:17px">${ltHighlight(j)}</div>${ltList(j)}` : ""}
+      ${!j.checked && checkOn() && (!j.lt || j.lt.status!=="done") ? `<div class="muted small" style="margin-top:8px">${j.lt&&j.lt.status==="checking"?"🔎 Checking…":"⏳ Grammar check waiting for signal"}</div>` : ""}
+      ${!j.checked && j.lt && j.lt.status==="done" && !lt ? `<div class="small ltok" style="margin-top:8px">🔎 The free checker found no mistakes.</div>` : ""}
+      <div style="margin-top:10px;text-align:right"><button class="jdel" data-j="del">🗑️ Delete sentence</button></div>
+    </div>`;
+  }
+  return `<div class="jent ${open?"open":""}" data-id="${j.id}">
+    <div class="jtop"><span class="muted small">${qn?"":time+" · "}${j.kind==="me"?"About me":"Challenge"}</span>${jBadge(j)}</div>
+    <div class="jline"><div class="jsent">${text}</div>
+      <div class="jbtns"><button class="jicon sm" data-j="say" aria-label="Play">🔊</button><button class="jicon sm" data-j="edit" aria-label="Edit">✏️</button></div></div>
+    ${(j.wordsFr||[]).length?`<div class="jwords">${j.wordsFr.map(w=>`<span class="wchip">${qn?hl(w,qn):esc(w)}</span>`).join("")}</div>`:""}
+    <div class="jmore">${open?"▲ Less":"▼ Details"}</div>
+    ${detail}
+  </div>`;
 }
 function ltList(j){
   const ms = j.lt.matches||[];
@@ -1499,9 +1525,10 @@ function editJournal(j){
     <div class="field" style="margin-top:10px"><label>My sentence</label><textarea id="jT">${esc(j.text)}</textarea></div>
     <div class="field"><label>Corrected (optional)</label><textarea id="jC" placeholder="Type or paste the corrected version">${esc(j.corrected||"")}</textarea></div>
     <div class="field"><label>Notes (optional)</label><input type="text" id="jN" value="${esc(j.notes||"")}"></div>
-    <div class="row"><button class="btn" id="jCancel">Cancel</button><button class="btn primary" id="jSave">Save</button></div>`);
+    <div class="row"><button class="btn bad" id="jDel">🗑️</button><button class="btn" id="jCancel">Cancel</button><button class="btn primary" id="jSave">Save</button></div>`);
   $("#modal").onclick = null;
   $("#jX").onclick = $("#jCancel").onclick = closeModal;
+  $("#jDel").onclick = ()=>{ if (!confirm("Delete this sentence?")) return; state.journal = state.journal.filter(x=>x.id!==j.id); save(); closeModal(); renderJournal(); paintCreateSeg(); };
   $("#jSave").onclick = ()=>{
     const t = $("#jT").value.trim(); if (!t){ toast("The sentence can't be empty"); return; }
     if (t!==j.text){ j.text = t; j.lt = checkOn() ? {status:"pending"} : null; setTimeout(processPending, 300); }
@@ -1569,6 +1596,7 @@ const LT_EN = [
   [new RegExp("Le nom "+Q+" doit être au singulier","i"), m=>`“${m[1]}” should be singular here.`],
   [new RegExp("L[’']adjectif "+Q+".*s[’']accorde","i"), m=>`The describing word “${m[1]}” must match its noun (masculine/feminine, singular/plural).`],
   [/Faute d[’']orthographe|semble mal orthographié|orthographe possible/i, ()=>"Possible spelling mistake (check letters and accents)."],
+  [/trait d[’']union/i, ()=>"These words should be joined with a hyphen (-)."],
   [/élision|élidé|apostrophe/i, ()=>"Before a vowel or silent h, shorten it with an apostrophe: le → l', je → j', ne → n', de → d'."],
   [/accord.*sujet|sujet.*accord|le verbe.*s[’']accorde/i, ()=>"The verb must match its subject (je/tu/il/nous/vous/ils)."],
   [/participe passé/i, ()=>"The past participle (e.g. mangé, fini, pris) looks wrong here."],
@@ -2313,6 +2341,7 @@ function deleteSelected(){
 
 /* ---------- SETTINGS ---------- */
 function renderSettings(){
+  $("#appVer").textContent = "App version " + APP_VERSION.replace(/^ff-/,"");
   $("#lenient").checked = !!state.settings.lenient;
   $("#recNativeChk").checked = useNative();
   $("#lockChk").checked = !!state.settings.lock;
