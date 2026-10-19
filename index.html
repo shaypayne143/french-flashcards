@@ -163,6 +163,8 @@ mark.jhl{background:color-mix(in srgb,var(--accent) 35%,transparent);color:inher
 .jwords{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
 .wchip{font-size:12px;border-radius:99px;padding:2px 9px;background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good);font-weight:600}
 .jdel{border:0;background:none;color:var(--bad);font:inherit;font-size:13px;padding:6px 4px;cursor:pointer;opacity:.85}
+.conjrow{display:flex;justify-content:space-between;align-items:center;width:100%;border:0;border-bottom:1px solid var(--border);background:none;color:var(--text);font:inherit;font-size:17px;padding:9px 2px;cursor:pointer;text-align:left}
+.conjrow:last-child{border-bottom:0}
 .jmore{font-size:11px;color:var(--muted);text-align:center;margin-top:4px;letter-spacing:.03em}
 .jdetail{border-top:1px solid var(--border);margin-top:6px;padding:10px 0 6px;cursor:default}
 details.ltd{margin-top:8px;border-radius:10px;background:var(--surface2);padding:8px 10px}
@@ -352,7 +354,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-10-19-2";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-10-19-3";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -1343,14 +1345,108 @@ function wireCreateInput(onChange){
   };
   setTimeout(()=>inp?.focus(), 50);
 }
+/* ---------- present-tense conjugator (offline) ---------- */
+const PRON = ["je","tu","il/elle/on","nous","vous","ils/elles"];
+const CONJ_IRR = {
+  "être":["suis","es","est","sommes","êtes","sont"], "avoir":["ai","as","a","avons","avez","ont"],
+  "aller":["vais","vas","va","allons","allez","vont"], "faire":["fais","fais","fait","faisons","faites","font"],
+  "pouvoir":["peux","peux","peut","pouvons","pouvez","peuvent"], "vouloir":["veux","veux","veut","voulons","voulez","veulent"],
+  "devoir":["dois","dois","doit","devons","devez","doivent"], "savoir":["sais","sais","sait","savons","savez","savent"],
+  "prendre":["prends","prends","prend","prenons","prenez","prennent"], "apprendre":["apprends","apprends","apprend","apprenons","apprenez","apprennent"],
+  "comprendre":["comprends","comprends","comprend","comprenons","comprenez","comprennent"],
+  "venir":["viens","viens","vient","venons","venez","viennent"], "revenir":["reviens","reviens","revient","revenons","revenez","reviennent"],
+  "devenir":["deviens","deviens","devient","devenons","devenez","deviennent"], "tenir":["tiens","tiens","tient","tenons","tenez","tiennent"],
+  "voir":["vois","vois","voit","voyons","voyez","voient"], "croire":["crois","crois","croit","croyons","croyez","croient"],
+  "sortir":["sors","sors","sort","sortons","sortez","sortent"], "partir":["pars","pars","part","partons","partez","partent"],
+  "dormir":["dors","dors","dort","dormons","dormez","dorment"], "sentir":["sens","sens","sent","sentons","sentez","sentent"],
+  "servir":["sers","sers","sert","servons","servez","servent"], "courir":["cours","cours","court","courons","courez","courent"],
+  "boire":["bois","bois","boit","buvons","buvez","boivent"], "mettre":["mets","mets","met","mettons","mettez","mettent"],
+  "dire":["dis","dis","dit","disons","dites","disent"], "lire":["lis","lis","lit","lisons","lisez","lisent"],
+  "écrire":["écris","écris","écrit","écrivons","écrivez","écrivent"], "connaître":["connais","connais","connaît","connaissons","connaissez","connaissent"],
+  "vivre":["vis","vis","vit","vivons","vivez","vivent"], "ouvrir":["ouvre","ouvres","ouvre","ouvrons","ouvrez","ouvrent"],
+  "offrir":["offre","offres","offre","offrons","offrez","offrent"], "recevoir":["reçois","reçois","reçoit","recevons","recevez","reçoivent"],
+  "falloir":[null,null,"faut",null,null,null], "pleuvoir":[null,null,"pleut",null,null,null]
+};
+function conjugate(inf){
+  inf = inf.trim().toLowerCase();
+  let refl = false, v = inf;
+  if (/^se\s/.test(v)){ refl = true; v = v.slice(3).trim(); } else if (/^s['’]/.test(v)){ refl = true; v = v.slice(2).trim(); }
+  let f;
+  if (CONJ_IRR[v]) f = CONJ_IRR[v].slice();
+  else if (/er$/.test(v)){
+    const st = v.slice(0,-2), E = ["e","es","e","ons","ez","ent"];
+    f = E.map((e,i)=>{
+      let s = st;
+      if (i===3 && /g$/.test(s)) s += "e";                                  // mangeons
+      if (i===3 && /c$/.test(s)) s = s.slice(0,-1) + "ç";                   // commençons
+      const boot = i!==3 && i!==4;                                           // je/tu/il/ils change, nous/vous don't
+      if (boot){
+        if (/^(appel|rappel|jet|rejet|épel)$/.test(s)) s += s.slice(-1);                       // appelle, jette
+        else if (/(lev|men|chet|pes|sem|gel)$/.test(s)) s = s.replace(/e([^aeiou]+)$/, "è$1"); // lève, promène, achète
+        else if (/é[^aeiouyéèêë]+$/.test(s)) s = s.replace(/é([^aeiouyéèêë]+)$/, "è$1");     // préfère, répète
+        if (/(oy|uy)$/.test(s)) s = s.slice(0,-1) + "i";                                       // nettoie, essuie
+      }
+      return s + e;
+    });
+  }
+  else if (/ir$/.test(v)){ const st = v.slice(0,-2); f = ["is","is","it","issons","issez","issent"].map(e=>st+e); }   // finir type
+  else if (/re$/.test(v)){ const st = v.slice(0,-2); f = ["s","s","","ons","ez","ent"].map(e=>st+e); }                // vendre type
+  else return null;
+  const vowel = w => /^[aeiouyhâàéèêëîïôûœ]/i.test(w||"");
+  const subj = ["je","tu","il/elle","nous","vous","ils/elles"];
+  return f.map((form,i)=>{
+    if (!form) return null;
+    const rp = refl ? ["me","te","se","nous","vous","se"][i] : "";
+    let pre = subj[i], mid = rp;
+    if (refl && i!==3 && i!==4 && vowel(form)) mid = rp[0]+"'";             // m'habille, s'appelle
+    if (i===0 && !refl && vowel(form)) pre = "j'";                          // j'ai, j'habite
+    const sp = (a,b) => a.endsWith("'") ? a+b : a+" "+b;
+    return mid ? sp(sp(pre, mid), form) : sp(pre, form);
+  });
+}
+/* find which verb a card belongs to: "faire", "tu fais", "se lever", "je me lève" → infinitive */
+function infinitiveOf(c){
+  const fr = norm(c.fr).replace(/\(.*?\)/g,"").trim();
+  const conjCat = (catOf(c).match(/^conjugation\s*[–-]\s*(.+)$/i)||[])[1];
+  if (conjCat) return conjCat.trim();
+  if (/^to\s/.test(norm(c.en)) && !/\s/.test(fr.replace(/^(se |s')/,""))) return fr;           // the card is an infinitive
+  // conjugated form: strip the subject (+ reflexive) and search known verbs
+  const m = fr.match(/^(je|j'|tu|il\/elle|ils\/elles|il|elle|on|nous|vous|ils|elles)\s*(me |m'|te |t'|se |s'|nous |vous )?(.+)$/);
+  if (!m) return null;
+  const form = strip(m[3].trim()), refl = !!m[2];
+  const cands = new Set(Object.keys(CONJ_IRR));
+  state.cards.forEach(x=>{ const f = norm(x.fr).replace(/\(.*?\)/g,"").trim(); if (/^to\s/.test(norm(x.en))) cands.add(f.replace(/^(se |s')/,"")); });
+  for (const inf of cands){
+    const forms = (conjugate(inf)||[]).filter(Boolean).map(x=>strip(norm(x)).split(" ").pop().replace(/^.*'/,""));
+    if (forms.includes(form)){
+      return refl ? (/^[aeiouyhéè]/.test(inf) ? "s'"+inf : "se "+inf) : inf;
+    }
+  }
+  return null;
+}
+function conjTableHtml(inf){
+  const f = conjugate(inf); if (!f) return "";
+  const rows = f.map((x,i)=>x?`<button class="conjrow" data-say="${esc(x)}"><span>${esc(x)}</span><span class="muted">🔊</span></button>`:"").join("");
+  return `<div class="card" style="box-shadow:none;margin-bottom:10px;padding:10px 12px">
+    <div class="muted small" style="margin-bottom:6px">Present tense of <b>${esc(inf)}</b> — tap to hear</div>${rows}</div>`;
+}
+
+/* cards like "tu fais" / "nous partons" that are conjugated forms, with the verb they belong to */
+function conjFormsIn(cat){
+  if (/^conjugation/i.test(cat)) return [];
+  return inCat(cat).filter(c=>/^(je|j'|tu|il\/elle|ils\/elles|il|elle|on|nous|vous|ils|elles)\s*\S/i.test(norm(c.fr)) && !/^to\s/.test(norm(c.en)))
+    .map(c=>({c, inf: infinitiveOf(c)})).filter(x=>x.inf);
+}
 function showWordHelp(c){
   openModal(`<div class="row" style="align-items:center"><h2 style="margin:0;flex:1">${esc(c.fr)}</h2><button class="icon-btn" id="hX" aria-label="Close">✕</button></div>
     ${c.pron?`<div style="color:var(--accent);font-weight:600;margin-top:4px">${esc(c.pron)}</div>`:""}
     <div class="muted" style="margin:4px 0 12px">${esc(c.en)} · ${esc(catOf(c))}</div>
     ${c.ex?`<div class="card" style="box-shadow:none;margin-bottom:10px"><div class="muted small">Example</div><i>${esc(c.ex)}</i><div class="muted small">${esc(c.exEn)}</div></div>`:""}
-    ${(()=>{ const forms = state.cards.filter(x=>norm(catOf(x))===norm("Conjugation – "+c.fr)); return forms.length?`<div class="card" style="box-shadow:none;margin-bottom:10px"><div class="muted small">Present tense</div>${forms.map(x=>esc(x.fr)).join("<br>")}</div>`:""; })()}
+    ${(()=>{ const inf = infinitiveOf(c); if (inf && conjugate(inf)) return conjTableHtml(inf);
+       const forms = state.cards.filter(x=>norm(catOf(x))===norm("Conjugation – "+c.fr));
+       return forms.length?`<div class="card" style="box-shadow:none;margin-bottom:10px"><div class="muted small">Present tense</div>${forms.map(x=>esc(x.fr)).join("<br>")}</div>`:""; })()}
     <div class="row"><button class="btn" id="hSay">🔊 Word</button>${c.ex?`<button class="btn" id="hEx">🔊 Example</button>`:""}</div>`);
-  $("#modal").onclick = null;
+  $("#modal").onclick = e=>{ const r = e.target.closest(".conjrow"); if (r) say(r.dataset.say); };
   $("#hX").onclick = closeModal;
   $("#hSay").onclick = ()=>say(c.fr);
   if (c.ex) $("#hEx").onclick = ()=>say(c.ex);
@@ -1817,6 +1913,7 @@ function groupAction(act, cat){
       <button class="btn" data-m="down">⬇️ Move down in the list</button>
       ${cat!==UNCAT?`<button class="btn" data-m="rename">✏️ Rename</button>
       <button class="btn" data-m="del">🗑️ Delete category (keep words)</button>`:""}
+      ${conjFormsIn(cat).length ? `<button class="btn" data-m="sortconj">🧹 Sort out conjugated forms (${conjFormsIn(cat).length})</button>` : ""}
       <button class="btn bad" data-m="delall" ${n?"":"disabled"}>Delete category and its words</button>
       <button class="btn" data-m="close">Cancel</button>
     </div>`);
@@ -1825,6 +1922,14 @@ function groupAction(act, cat){
     const m = b.dataset.m;
     if (m==="close") return closeModal();
     if (m==="practise"){ closeModal(); groupAction("practise", cat); return; }
+    if (m==="sortconj"){
+      const list = conjFormsIn(cat); if (!list.length) return;
+      const verbs = [...new Set(list.map(x=>x.inf))];
+      if (!confirm(`Move ${list.length} conjugated form${list.length===1?"":"s"} into ${verbs.length} “Conjugation – …” categor${verbs.length===1?"y":"ies"} (${verbs.slice(0,4).join(", ")}${verbs.length>4?"…":""})? Your progress is kept.`)) return;
+      list.forEach(({c, inf})=>{ c.cat = ensureCat("Conjugation – " + inf); });
+      // keep each verb's conjugations right after the category the verb came from
+      save(); closeModal(); renderWords(); toast(`🧹 Moved ${list.length} into ${verbs.length} conjugation categor${verbs.length===1?"y":"ies"}`); return;
+    }
     if (m==="up" || m==="down"){
       const order = categories().filter(c=>c!==UNCAT);
       const i = order.indexOf(cat), j = m==="up" ? i-1 : i+1;
