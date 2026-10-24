@@ -165,6 +165,10 @@ mark.jhl{background:color-mix(in srgb,var(--accent) 35%,transparent);color:inher
 .jdel{border:0;background:none;color:var(--bad);font:inherit;font-size:13px;padding:6px 4px;cursor:pointer;opacity:.85}
 .conjrow{display:flex;justify-content:space-between;align-items:center;width:100%;border:0;border-bottom:1px solid var(--border);background:none;color:var(--text);font:inherit;font-size:17px;padding:9px 2px;cursor:pointer;text-align:left}
 .conjrow:last-child{border-bottom:0}
+.rwbtn{display:flex;justify-content:space-between;align-items:center;width:100%;margin:-2px 0 12px;padding:12px 14px;border-radius:14px;
+  border:1px solid color-mix(in srgb,var(--accent) 50%,var(--border));background:color-mix(in srgb,var(--accent) 14%,var(--surface));color:var(--text);font:inherit;font-weight:600;cursor:pointer}
+.rwbtn span{font-size:13px;background:var(--accent);color:var(--accent-ink);border-radius:99px;padding:2px 10px}
+.rwbtn.quiet{background:var(--surface);border-color:var(--border);font-weight:500}.rwbtn.quiet span{background:var(--surface2);color:var(--good)}
 .jmore{font-size:11px;color:var(--muted);text-align:center;margin-top:4px;letter-spacing:.03em}
 .jdetail{border-top:1px solid var(--border);margin-top:6px;padding:10px 0 6px;cursor:default}
 details.ltd{margin-top:8px;border-radius:10px;background:var(--surface2);padding:8px 10px}
@@ -230,6 +234,19 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--text);color:var(--bg);
   padding:10px 16px;border-radius:12px;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:30}
 .toast.on{opacity:.95}
+/* speak tab */
+.spk{padding:0;overflow:hidden}
+.spk-in{display:block;width:100%;min-height:150px;border:0;background:none;color:var(--text);font:inherit;font-size:22px;line-height:1.4;padding:16px 16px 6px;resize:none;outline:none}
+.spk-in::placeholder{color:var(--muted)}
+.spk-bar{display:flex;align-items:center;gap:6px;padding:6px 10px 10px}
+.spk-bar .grow{flex:1}
+.spk-en{min-height:110px;padding:14px 16px 6px;font-size:20px;line-height:1.4;border-top:1px solid var(--border);background:var(--surface2);white-space:pre-wrap;word-break:break-word}
+.spk-en.ph{color:var(--muted);font-size:16px}
+.spk-enbar{background:var(--surface2)}
+.spk-mic{width:62px;height:62px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font-size:28px;cursor:pointer;flex:0 0 auto}
+.spk-mic.on{background:var(--bad);color:#fff;animation:spkPulse 1.2s ease-in-out infinite}
+@keyframes spkPulse{0%,100%{box-shadow:0 0 0 0 rgba(214,69,69,.5)}50%{box-shadow:0 0 0 12px rgba(214,69,69,0)}}
+.spk-live{color:var(--muted);font-size:13px;padding:0 16px}
 </style>
 </head>
 <body>
@@ -261,17 +278,14 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 
   <!-- CREATE -->
   <section class="view" id="v-create">
-    <div class="seg" id="cModeSeg"><button data-m="words">🎲 Challenge</button><button data-m="me">🏠 About me</button><button data-m="journal">📓 Journal</button></div>
+    <div class="seg" id="cModeSeg"><button data-m="me">🏠 About me</button><button data-m="journal">📓 Journal</button></div>
     <div id="createArea"></div>
     <input type="file" id="jFile" accept=".csv,text/csv,text/plain" hidden>
   </section>
 
-  <!-- LISTEN -->
-  <section class="view" id="v-listen">
-    <div class="seg" id="lModeSeg"><button data-m="repeat">🎧 Repeat</button><button data-m="pairs">👂 Sound-alikes</button></div>
-    <div class="seg" id="lSrcSeg"><button data-s="word">Words</button><button data-s="sent">Sentences</button></div>
-    <label class="chk small" id="lShowWrap" style="margin:-4px 0 12px"><input type="checkbox" id="lShow"> Show the text straight away (easier)</label>
-    <div id="listenArea"></div>
+  <!-- SPEAK -->
+  <section class="view" id="v-speak">
+    <div id="speakArea"></div>
   </section>
 
   <!-- WORDS -->
@@ -297,7 +311,6 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
         <div class="muted small" style="margin-top:4px">Words you haven't studied yet are introduced a few at a time, in your category order (Words → ⋯ → Move up/down).</div></div>
       <label class="chk"><input type="checkbox" id="ltChk"> 🔎 Check my sentences online (free, LanguageTool). Sentences are sent to LanguageTool to be checked; offline ones wait until you have signal.</label>
       <label class="chk"><input type="checkbox" id="lockChk"> 🔒 Sentence lock: from level 3, a word needs a new sentence (✍️ Create) for each level up</label>
-      <label class="chk"><input type="checkbox" id="recNativeChk"> Record with my phone's recorder app (use this if Chrome blocks the microphone)</label>
       <div class="field" style="margin-top:12px"><label>French voice</label>
         <div class="row"><select id="voiceSel" style="flex:3"></select><button class="btn sm" id="voiceTest">▶ Test</button></div>
       </div>
@@ -341,7 +354,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 <nav id="nav">
   <button data-v="study" class="on"><span class="ic">🃏</span>Study</button>
   <button data-v="match"><span class="ic">🧩</span>Match</button>
-  <button data-v="listen"><span class="ic">🎧</span>Listen</button>
+  <button data-v="speak"><span class="ic">🎙️</span>Speak</button>
   <button data-v="create"><span class="ic">✍️</span>Create</button>
   <button data-v="words"><span class="ic">📚</span>Words</button>
   <button data-v="settings"><span class="ic">⚙️</span>Settings</button>
@@ -354,7 +367,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-10-19-3";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-10-24-1";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -544,13 +557,13 @@ function say(text, slow, onend){
 
 /* ---------- navigation ---------- */
 let curView = "study";
-const renderers = {study:renderStudy, match:startMatch, listen:startListen, create:startCreate, words:renderWords, settings:renderSettings};
+const renderers = {study:renderStudy, match:startMatch, speak:startSpeak, create:startCreate, words:renderWords, settings:renderSettings};
 function go(v){
   curView = v;
   document.querySelectorAll("#nav button").forEach(x=>x.classList.toggle("on", x.dataset.v===v));
   document.querySelectorAll(".view").forEach(el=>el.classList.toggle("on", el.id==="v-"+v));
-  $("#catbar").style.display = (v==="words" || v==="settings" || (v==="create" && C.mode==="journal")) ? "none" : "";
-  if (canResume(v)){ if (v==="create") paintCreateSeg(); else if (v==="listen") paintListenSegs(); return; }   // pick up where you left off
+  $("#catbar").style.display = (v==="words" || v==="settings" || v==="speak" || (v==="create" && (C.mode==="journal" || C.mode==="rewrite"))) ? "none" : "";
+  if (canResume(v)){ if (v==="create") paintCreateSeg(); return; }   // pick up where you left off
   renderers[v]();
   window.scrollTo(0,0);
 }
@@ -561,8 +574,7 @@ function canResume(v){
   if (live[v] !== fkey()) return false;
   if (v==="study") return !!studyCard && !!$("#flip");
   if (v==="match") return mLeft > 0 && !!document.querySelector("#matchGrid .tile");
-  if (v==="listen") return !!$("#listenArea").children.length && !L.done && !$("#lAgain");
-  if (v==="create") return C.mode!=="journal" && !!$("#cText");
+  if (v==="create") return (C.mode==="rewrite" && !!RW.cur && !!$("#rwIn")) || (C.mode!=="journal" && C.mode!=="rewrite" && !!$("#cText"));
   return false;
 }
 $("#nav").addEventListener("click", e=>{ const b = e.target.closest("button"); if (b) go(b.dataset.v); });
@@ -655,7 +667,7 @@ function showStudyCard(){
   $("#gotit").onclick = ()=>{ grade(c,true); nextStudy(); };
   if ($("#lockGo")) $("#lockGo").onclick = ()=>writeWith([c]);
 }
-function writeWith(cards){ C.mode = "words"; C.force = cards; live.create = null; go("create"); }
+function writeWith(cards){ C.mode = "me"; C.force = cards; live.create = null; go("create"); }
 
 /* ---------- MATCH ---------- */
 let mSel = null, mLeft = 0, mMistakes = 0, mStart = 0;
@@ -771,169 +783,143 @@ function checkWrite(){
   inp.readOnly = true;
 }
 
-/* ---------- LISTEN ---------- */
-const PAIRS = [
- {tip:"“u” (ew) is said with rounded lips and the tongue forward; “ou” (oo) sits further back.", opts:[["tu","you","TEW"],["tout","all","TOO"]]},
- {tip:"le = “luh” (one), les = “lay” (several). In speech it's often the only clue that a noun is plural.", opts:[["le chat","the cat","luh SHAH"],["les chats","the cats","lay SHAH"]]},
- {tip:"The u / ou contrast again — and here the two words mean opposite things.", opts:[["dessus","on top","duh-SEW"],["dessous","underneath","duh-SOO"]]},
- {tip:"Three different nasal vowels: “in” (front, like van), “en” (open ah), “on” (rounded oh).", opts:[["le vin","wine","luh VA(N)"],["le vent","wind","luh VAH(N)"],["ils vont","they go","eel VOH(N)"]]},
- {tip:"rue has the rounded “ew”, roue has “oo”.", opts:[["la rue","the street","lah REW"],["la roue","the wheel","lah ROO"]]},
- {tip:"je = short relaxed “zhuh”, j'ai = “zhay” (like day). That one sound changes the tense.", opts:[["je parle","I speak","zhuh PARL"],["j'ai parlé","I spoke","zhay par-LAY"]]},
- {tip:"Listen to the final vowel: “uh” (cheveux) vs “oh” (chevaux).", opts:[["les cheveux","hair","lay shuh-VUH"],["les chevaux","horses","lay shuh-VOH"]]},
- {tip:"Double ss between vowels = “s”; a single s between vowels = “z”.", opts:[["le poisson","fish","luh pwah-SOH(N)"],["le poison","poison","luh pwah-ZOH(N)"]]},
- {tip:"“on” is rounded (oh), “an” is open (ah).", opts:[["bon","good","BOH(N)"],["le banc","the bench","luh BAH(N)"]]},
- {tip:"i = “ee”, u = “ee” with rounded lips (ew).", opts:[["le lit","the bed","luh LEE"],["j'ai lu","I read (past)","zhay LEW"]]},
- {tip:"un is nasal and links with an n sound; une has a clear “ew” before the n.", opts:[["un ami","a friend (m)","a(n)-nah-MEE"],["une amie","a friend (f)","ew-nah-MEE"]]},
- {tip:"il = “eel”, elle = “el”.", opts:[["il chante","he sings","eel SHAH(N)T"],["elle chante","she sings","el SHAH(N)T"]]},
- {tip:"sous = “soo”, sur = “sewr”.", opts:[["sous la table","under the table","soo lah TAH-bluh"],["sur la table","on the table","sewr lah TAH-bluh"]]},
- {tip:"“eu” (ur, lips rounded) vs “è” (air).", opts:[["la peur","fear","lah PUR"],["le père","the father","luh PAIR"]]},
- {tip:"deux = “duh” with pursed lips, des = “day”.", opts:[["deux chats","two cats","duh SHAH"],["des chats","some cats","day SHAH"]]}
-];
+/* ---------- SPEAK: talk in French → text + English ---------- */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let L = {list:[], idx:0, total:0, score:0, revealed:false, plays:0, done:false};
-let P = {streak:0, set:null, opts:[], target:-1, answered:false};
-let rec=null, recChunks=[], recUrl=null, stream=null, recTimer=null;
-
-const isSent = () => state.settings.lSrc==="sent";
-const lText = c => isSent() ? c.ex : c.fr;
-const lEn = c => isSent() ? (c.exEn||"") : c.en;
-const lPron = c => isSent() ? (c.exPron||"") : (c.pron||"");
-const listenPool = () => isSent() ? pool().filter(c=>c.ex) : pool();
-
-function paintListenSegs(){
-  if (!["repeat","pairs"].includes(state.settings.lMode)) state.settings.lMode = "repeat";
-  document.querySelectorAll("#lModeSeg button").forEach(b=>b.classList.toggle("on", b.dataset.m===state.settings.lMode));
-  document.querySelectorAll("#lSrcSeg button").forEach(b=>b.classList.toggle("on", b.dataset.s===state.settings.lSrc));
-  $("#lSrcSeg").style.display = state.settings.lMode==="pairs" ? "none" : "";
-  $("#lShowWrap").style.display = state.settings.lMode==="repeat" ? "" : "none";
-  $("#lShow").checked = !!state.settings.lShowText;
-}
-$("#lModeSeg").onclick = e=>{ const b=e.target.closest("button"); if (!b) return; state.settings.lMode=b.dataset.m; save(); startListen(); };
-$("#lSrcSeg").onclick = e=>{ const b=e.target.closest("button"); if (!b) return; state.settings.lSrc=b.dataset.s; save(); startListen(); };
-$("#lShow").onchange = e=>{ state.settings.lShowText = e.target.checked; save(); if (!L.done && L.list.length) showRepeat(); };
-
-function startListen(){
-  live.listen = fkey();
-  cleanupRec(); paintListenSegs();
-  const el = $("#listenArea"), mode = state.settings.lMode;
-  if (mode==="pairs"){ P.streak = 0; nextPair(); return; }
-  if (needCards(el,1)) return;
-  if (isSent() && !listenPool().length){
-    el.innerHTML = `<div class="card center"><p>None of these words have an example sentence yet.</p>
-      <p class="muted">Add one with ✏️ in the Words tab, or switch to Words above.</p></div>`; return;
-  }
-  L.list = pickFrom(listenPool(), mode==="dict" ? 10 : 15);
-  L.idx = 0; L.total = L.list.length; L.score = 0; L.done = false;
-  mode==="dict" ? showDict() : showRepeat();
-}
-function lProgress(){ return `<div class="progress"><div style="width:${L.idx/L.total*100}%"></div></div>`; }
-function lTop(c, label){
-  return `<div class="muted small" style="display:flex;align-items:center;justify-content:space-between">
-    <span>${label} · ${L.idx+1} of ${L.total} · ${esc(catOf(c))}</span>${heartBtn(c)}</div>`;
-}
-function playModel(c, slow){
-  L.plays++; const p = $("#lPlays"); if (p) p.textContent = "Played " + L.plays + "×";
-  say(lText(c), slow);
-}
-function lNext(){
-  cleanupRec(); L.idx++;
-  if (L.idx >= L.total){ L.done = true; lEnd(); return; }
-  state.settings.lMode==="dict" ? showDict() : showRepeat();
-}
-function lEnd(){
-  $("#listenArea").innerHTML = `<div class="progress"><div style="width:100%"></div></div>
-   <div class="card center"><h2>Session complete</h2>
-   <p style="font-size:34px;font-weight:650;margin:8px 0">${L.score} / ${L.total}</p>
-   <p class="muted">${state.settings.lMode==="dict" ? "written correctly" : "understood"}</p>
-   <button class="btn primary" id="lAgain">New session</button></div>`;
-  $("#lAgain").onclick = startListen;
-}
-
-/* --- mode 1: listen & repeat --- */
-function showRepeat(){
-  cleanupRec();
-  const c = L.list[L.idx], el = $("#listenArea");
-  L.revealed = !!state.settings.lShowText; L.plays = 0;
-  el.innerHTML = `${lProgress()}
-   <div class="card center">
-     ${lTop(c, "Listen & repeat")}
-     <div id="lReveal"></div>
-     <div class="row" style="margin-top:12px"><button class="btn primary" id="lPlay">🔊 Play</button><button class="btn" id="lSlow">🐢 Slow</button></div>
-     <div class="muted small" id="lPlays" style="margin-top:6px">&nbsp;</div>
+const SP = {rec:null, base:"", seq:0, lt:null, ltFor:"", saveT:null, trT:null};
+const spState = () => (state.speak = state.speak || {fr:"", en:"", enFor:""});
+function startSpeak(){
+  const d = spState();
+  $("#speakArea").innerHTML = `
+   <div class="card spk">
+     <textarea id="spFr" class="spk-in" lang="fr" placeholder="Tap 🎙️ and speak French…" autocapitalize="sentences" spellcheck="false"></textarea>
+     <div class="spk-live" id="spLive"></div>
+     <div class="spk-bar">
+       <button class="jicon" id="spSayFr" aria-label="Hear the French">🔊</button>
+       <button class="jicon" id="spClear" aria-label="Clear">✕</button>
+       <span class="grow"></span>
+       <button class="spk-mic" id="spMic" aria-label="Speak">🎙️</button>
+     </div>
+     <div class="spk-en ph" id="spEn"></div>
+     <div class="spk-bar spk-enbar">
+       <button class="jicon" id="spSayEn" aria-label="Hear the English">🔊</button>
+       <span class="grow muted small" style="text-align:right">🇫🇷 French → 🇬🇧 English</span>
+     </div>
    </div>
-   <div class="card">
-     <h2>Repeat it</h2>
-     <div class="muted small" style="margin:-6px 0 10px">Shadow plays the audio, records you straight after, then plays both back so you can compare.</div>
-     <div class="muted small" id="recNote" style="margin:-4px 0 10px"></div>
-     <button class="btn primary" style="width:100%" id="lShadow">🔁 Shadow</button>
-     <div class="row" style="margin-top:8px"><button class="btn" id="lRec">🎙️ Record</button><button class="btn" id="lMine" disabled>⚖️ Compare</button></div>
-     ${SR?`<button class="btn" style="width:100%;margin-top:8px" id="lCheck">🗣️ Check my pronunciation</button>
-       <div class="muted small" style="margin-top:6px">The pronunciation check may need internet. Recording works offline.</div>`:""}
-     <div id="lFb"></div>
-   </div>
-   <div class="row">
-     <button class="btn bad" id="lNo">✗ Didn't catch it</button>
-     <button class="btn good" id="lYes">✓ Understood</button>
-   </div>`;
-  paintReveal(c); paintRecNote();
-  $("#lPlay").onclick = ()=>playModel(c);
-  $("#lSlow").onclick = ()=>playModel(c, true);
-  $("#lRec").onclick = ()=>{ if (rec && rec.state==="recording") stopRec(); else startRec(8000, playMine); };
-  $("#lMine").onclick = ()=>compare(c);
-  $("#lShadow").onclick = ()=>shadow(c);
-  if (SR) $("#lCheck").onclick = ()=>checkPron(c);
-  const gradeIt = ok=>{ if (ok) L.score++; if (!isSent()) grade(c, ok); lNext(); };
-  $("#lYes").onclick = ()=>gradeIt(true);
-  $("#lNo").onclick = ()=>gradeIt(false);
-  setTimeout(()=>playModel(c), 300);
-}
-function paintReveal(c){
-  const box = $("#lReveal");
-  const yes = $("#lYes"), no = $("#lNo");
-  if (yes) yes.disabled = no.disabled = !L.revealed;
-  if (!L.revealed){
-    box.innerHTML = `<div style="font-size:30px;margin:14px 0 4px" class="muted">? ? ?</div>
-      <div class="muted small">Listen and work out what it means, then reveal.</div>
-      <button class="btn" style="margin-top:10px" id="lShowBtn">👁 Reveal</button>`;
-    $("#lShowBtn").onclick = ()=>{ L.revealed = true; paintReveal(c); };
-  } else {
-    box.innerHTML = `<div style="font-size:${isSent()?24:32}px;font-weight:650;margin:10px 0 4px;word-break:break-word">${esc(lText(c))}</div>
-      ${lPron(c)?`<div style="color:var(--accent);font-weight:600;font-size:17px">${esc(lPron(c))}</div>`:""}
-      <div class="muted" style="margin-top:4px">${esc(lEn(c))}</div>`;
-  }
-}
-
-/* --- mode 2: dictation --- */
-function showDict(){
-  cleanupRec();
-  const c = L.list[L.idx], el = $("#listenArea");
-  L.plays = 0; L.checked = false;
-  el.innerHTML = `${lProgress()}
-   <div class="card">
-     ${lTop(c, "Dictation")}
-     <div class="center" style="margin:14px 0 4px;font-size:15px">Type exactly what you hear${isSent()?" — the whole sentence":""}.</div>
-     <div class="row" style="margin:10px 0 2px"><button class="btn primary" id="lPlay">🔊 Play</button><button class="btn" id="lSlow">🐢 Slow</button></div>
-     <div class="muted small center" id="lPlays" style="margin-bottom:10px">&nbsp;</div>
-     <input type="text" id="dIn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Type what you heard…">
-     <div class="accents" id="dAcc">${ACCENTS.map(a=>`<button type="button">${a}</button>`).join("")}</div>
-     <div class="row"><button class="btn" id="dGive">Show answer</button><button class="btn primary" id="dCheck">Check</button></div>
-     <div id="dFb"></div>
-   </div>`;
-  const inp = $("#dIn");
-  $("#lPlay").onclick = ()=>playModel(c);
-  $("#lSlow").onclick = ()=>playModel(c, true);
-  $("#dAcc").onmousedown = e=>e.preventDefault();
-  $("#dAcc").onclick = e=>{
-    const b = e.target.closest("button"); if (!b || inp.readOnly) return;
-    const s = inp.selectionStart ?? inp.value.length, en = inp.selectionEnd ?? s;
-    inp.value = inp.value.slice(0,s) + b.textContent + inp.value.slice(en);
-    inp.setSelectionRange(s+1, s+1); inp.focus();
+   <div class="row"><button class="btn" id="spCheck">🔎 Check grammar</button><button class="btn primary" id="spSave">📓 Add to journal</button></div>
+   <div id="spLt"></div>
+   <div id="spMsg"></div>`;
+  const fr = $("#spFr");
+  fr.value = d.fr || "";
+  paintEn(d.enFor===fr.value.trim() ? d.en : "");
+  if (fr.value.trim() && d.enFor!==fr.value.trim()) translateNow();
+  fr.oninput = ()=>{ spChanged(); clearTimeout(SP.trT); SP.trT = setTimeout(translateNow, 700); };
+  $("#spMic").onclick = ()=> SP.rec ? SP.rec.stop() : spListen();
+  $("#spSayFr").onclick = ()=>{ const t = fr.value.trim(); if (t) say(t); };
+  $("#spSayEn").onclick = ()=>{ const t = spState().enFor===fr.value.trim() ? spState().en : ""; if (t) sayEn(t); };
+  $("#spClear").onclick = ()=>{ spStop(); fr.value = ""; spChanged(); paintEn(""); $("#spMsg").innerHTML = ""; fr.focus(); };
+  $("#spCheck").onclick = spCheck;
+  $("#spSave").onclick = spSave;
+  $("#spLt").onclick = e=>{
+    const b = e.target.closest("[data-j]"); if (!b || !SP.lt || !SP.lt.fixed) return;
+    if (b.dataset.j==="sayfix") say(SP.lt.fixed);
+    if (b.dataset.j==="usefix"){ fr.value = SP.lt.fixed; spChanged(); translateNow(); toast("Fix applied"); }
   };
-  $("#dCheck").onclick = ()=>L.checked ? lNext() : checkDict(c, false);
-  $("#dGive").onclick = ()=>{ if (!L.checked) checkDict(c, true); };
-  inp.onkeydown = e=>{ if (e.key==="Enter") $("#dCheck").click(); };
-  setTimeout(()=>{ playModel(c); inp.focus(); }, 300);
+  if (!SR) $("#spMsg").innerHTML = `<div class="fb no">Speech typing doesn't work in this browser — open the app in Chrome. You can still type in the French box.</div>`;
 }
+function spChanged(){
+  const fr = $("#spFr"); if (!fr) return;
+  const d = spState(); d.fr = fr.value;
+  if (SP.ltFor !== fr.value.trim()){ SP.lt = null; $("#spLt").innerHTML = ""; }
+  clearTimeout(SP.saveT); SP.saveT = setTimeout(save, 400);
+}
+function paintEn(text, note){
+  const el = $("#spEn"); if (!el) return;
+  el.classList.toggle("ph", !text);
+  el.textContent = text || note || "English appears here";
+}
+function sayEn(text){
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text); u.lang = "en-GB";
+    const v = speechSynthesis.getVoices().find(v=>/^en[-_]GB/i.test(v.lang)) || speechSynthesis.getVoices().find(v=>/^en/i.test(v.lang));
+    if (v) u.voice = v; speechSynthesis.speak(u);
+  }catch(e){}
+}
+async function translateFr(text){
+  try{
+    const r = await fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=en&dt=t&q=" + encodeURIComponent(text));
+    if (r.ok){ const j = await r.json(); const t = (j[0]||[]).map(x=>x && x[0] || "").join("").trim(); if (t) return t; }
+  }catch(e){}
+  const r = await fetch("https://api.mymemory.translated.net/get?langpair=fr|en&q=" + encodeURIComponent(text));
+  const j = await r.json(); const t = j && j.responseData && j.responseData.translatedText;
+  if (!t) throw new Error("no translation"); return t;
+}
+async function translateNow(){
+  const fr = $("#spFr"); if (!fr) return;
+  const text = fr.value.trim(), d = spState(), my = ++SP.seq;
+  if (!text){ d.en = ""; d.enFor = ""; paintEn(""); return; }
+  if (d.enFor===text && d.en){ paintEn(d.en); return; }
+  if (navigator.onLine===false){ paintEn("", "🔌 The English translation needs internet"); return; }
+  paintEn("", "Translating…");
+  try{
+    const en = await translateFr(text);
+    if (my!==SP.seq) return;
+    d.en = en; d.enFor = text; save(); paintEn(en);
+  }catch(e){ if (my===SP.seq) paintEn("", "Couldn't translate right now — check your signal"); }
+}
+function spStop(){ if (SP.rec){ try{ SP.rec.abort(); }catch(e){} SP.rec = null; } const m = $("#spMic"); if (m) m.classList.remove("on"); const l = $("#spLive"); if (l) l.textContent = ""; }
+function spListen(){
+  if (!SR){ toast("Speech typing needs Chrome"); return; }
+  if (navigator.onLine===false){ $("#spMsg").innerHTML = `<div class="fb no">🔌 Speech typing needs internet.</div>`; return; }
+  const fr = $("#spFr"), r = new SR();
+  r.lang = "fr-FR"; r.interimResults = true; r.continuous = false; r.maxAlternatives = 1;
+  const cur = fr.value.replace(/\s+$/,"");
+  SP.base = cur ? cur + " " : "";
+  let heard = "";
+  r.onstart = ()=>{ $("#spMic").classList.add("on"); $("#spLive").textContent = "Listening… speak now (tap 🎙️ to stop)"; $("#spMsg").innerHTML = ""; };
+  r.onresult = e=>{
+    let fin = "", inter = "";
+    for (let i=0; i<e.results.length; i++){ const t = e.results[i][0].transcript; if (e.results[i].isFinal) fin += t; else inter += t; }
+    heard = (fin + inter).trim();
+    let txt = heard; if (!SP.base && txt) txt = txt[0].toUpperCase() + txt.slice(1);
+    fr.value = SP.base + txt; spChanged();
+  };
+  r.onerror = e=>{
+    const m = {"not-allowed":"Allow the microphone: tap the 🔒 next to the web address → Permissions → Microphone.", "service-not-allowed":"Allow the microphone: tap the 🔒 next to the web address → Permissions → Microphone.",
+      "network":"Speech typing needs internet.", "no-speech":"Didn't hear anything — tap 🎙️ and try again.", "audio-capture":"No microphone found."}[e.error];
+    if (m && e.error!=="aborted") $("#spMsg").innerHTML = `<div class="fb ${e.error==="no-speech"?"near":"no"}">${m}</div>`;
+  };
+  r.onend = ()=>{ if (SP.rec===r) SP.rec = null; $("#spMic") && $("#spMic").classList.remove("on"); $("#spLive") && ($("#spLive").textContent = ""); if (heard) translateNow(); };
+  SP.rec = r;
+  try{ r.start(); }catch(e){ SP.rec = null; }
+}
+async function spCheck(){
+  const text = $("#spFr").value.trim(), box = $("#spLt");
+  if (!text){ toast("Say or type a sentence first"); return; }
+  if (navigator.onLine===false){ box.innerHTML = `<div class="ltbox muted small">🔌 The grammar check needs internet.</div>`; return; }
+  box.innerHTML = `<div class="ltbox muted small">🔎 Checking…</div>`;
+  try{
+    const matches = await ltCheck(text);
+    if ($("#spFr").value.trim()!==text) return;
+    SP.lt = {status:"done", at:Date.now(), matches, fixed: applyFixes(text, matches)}; SP.ltFor = text;
+    box.innerHTML = ltBlock({text, lt:SP.lt});
+  }catch(e){ box.innerHTML = `<div class="ltbox muted small">${e.retry ? "The checker is busy — wait a few seconds and try again." : "Couldn't reach the grammar checker — try again in a moment."}</div>`; }
+}
+function spSave(){
+  const fr = $("#spFr"), text = fr.value.trim();
+  if (!text){ toast("Say or type a sentence first"); return; }
+  if (state.journal[0] && state.journal[0].kind==="speak" && norm(state.journal[0].text)===norm(text)){ toast("Already in your journal"); return; }
+  const d = spState(), used = wordsUsedIn(text), ids = [...new Set(used.map(c=>c.id))];
+  const entry = {id:uid(), date:Date.now(), kind:"speak", prompt:"", text, words:ids, wordsFr: ids.map(id=>(state.cards.find(c=>c.id===id)||{}).fr).filter(Boolean),
+    corrected:"", notes:"", checked:false, en: d.enFor===text ? d.en : "",
+    lt: SP.lt && SP.ltFor===text ? SP.lt : (checkOn() ? {status:"pending"} : null)};
+  state.journal.unshift(entry);
+  spStop(); fr.value = ""; spChanged(); d.en = ""; d.enFor = ""; paintEn(""); save();
+  $("#spMsg").innerHTML = `<div class="fb ok">✓ Added to your journal (Create → 📓 Journal)</div>`;
+  if (entry.lt && entry.lt.status==="pending") processPending();
+}
+
+/* split a sentence into words for comparing (used by Rewrite it) */
 function toks(s){
   const out = [];
   String(s).replace(/['’]/g, m=>m+" ").split(/\s+/).filter(Boolean).forEach(piece=>{
@@ -942,162 +928,6 @@ function toks(s){
     out.push({disp:piece, key, loose:strip(key).replace(/'/g,"")});
   });
   return out;
-}
-function checkDict(c, gaveUp){
-  const inp = $("#dIn"); if (!gaveUp && !inp.value.trim()) return;
-  L.checked = true; inp.readOnly = true;
-  const T = toks(lText(c)), A = toks(gaveUp ? "" : inp.value);
-  // longest common subsequence on accent-free keys
-  const n=T.length, m=A.length, dp = Array.from({length:n+1},()=>new Array(m+1).fill(0));
-  for (let i=n-1;i>=0;i--) for (let j=m-1;j>=0;j--)
-    dp[i][j] = T[i].loose===A[j].loose ? dp[i+1][j+1]+1 : Math.max(dp[i+1][j], dp[i][j+1]);
-  const st = new Array(n).fill("miss"); let i=0, j=0, matched=0;
-  while (i<n && j<m){
-    if (T[i].loose===A[j].loose){ st[i] = T[i].key===A[j].key ? "ok" : "near"; matched++; i++; j++; }
-    else if (dp[i+1][j] >= dp[i][j+1]) i++; else j++;
-  }
-  const ok = st.filter(x=>x==="ok").length, near = st.filter(x=>x==="near").length, extra = m - matched;
-  const perfect = ok===n && extra===0, nearly = ok+near===n && extra===0 && near>0;
-  const correct = perfect || (nearly && state.settings.lenient);
-  if (correct) L.score++;
-  if (!isSent()) grade(c, correct);
-  let cls, msg;
-  if (gaveUp){ cls="no"; msg="Here's what was said:"; }
-  else if (perfect){ cls="ok"; msg = L.plays<=1 ? "✓ Perfect, first listen!" : `✓ Perfect (played ${L.plays}×)`; }
-  else if (nearly){ cls="near"; msg="Nearly — just the accents (underlined)"; }
-  else { cls="no"; msg = `${ok+near} of ${n} word${n===1?"":"s"} right` + (extra?` · ${extra} extra`:""); }
-  const sentence = T.map((t,k)=>`<span class="dw ${st[k]}">${esc(t.disp)}</span>`).join(" ").replace(/' /g,"'");
-  $("#dFb").innerHTML = `<div class="fb ${cls}">${msg}</div>
-    <div class="card" style="margin:10px 0 0;box-shadow:none">
-      <div style="font-size:${isSent()?20:26}px;font-weight:600;line-height:1.5">${sentence}</div>
-      ${lPron(c)?`<div style="color:var(--accent);font-weight:600;margin-top:4px">${esc(lPron(c))}</div>`:""}
-      <div class="muted" style="margin-top:4px">${esc(lEn(c))}</div>
-      ${!gaveUp && !perfect ? `<div class="muted small" style="margin-top:8px">You wrote: ${esc(inp.value)}</div>`:""}
-      <div class="muted small" style="margin-top:8px"><span class="dw ok">green</span> = right · <span class="dw near">underlined</span> = accent off · <span class="dw miss">red</span> = missed</div>
-    </div>`;
-  $("#dCheck").textContent = L.idx===L.total-1 ? "Finish" : "Next →";
-  $("#dGive").disabled = true;
-  say(lText(c));
-}
-
-/* --- mode 3: sound-alikes --- */
-function nextPair(){
-  let set; do { set = PAIRS[Math.floor(Math.random()*PAIRS.length)]; } while (PAIRS.length>1 && set===P.set);
-  P.set = set; P.opts = shuffle(set.opts); P.target = Math.floor(Math.random()*P.opts.length); P.answered = false;
-  $("#listenArea").innerHTML = `
-   <div class="card center">
-     <div class="muted small">Which one did you hear?</div>
-     <div style="margin:6px 0 12px">Streak <b>${P.streak}</b> · Best <b>${state.settings.pBest||0}</b></div>
-     <div class="row"><button class="btn primary" id="pPlay">🔊 Play</button><button class="btn" id="pSlow">🐢 Slow</button></div>
-   </div>
-   <div class="stack" id="pOpts">${P.opts.map((o,i)=>`<button class="btn popt" data-i="${i}"><b>${esc(o[0])}</b>
-      <span class="muted small">${esc(o[1])}</span></button>`).join("")}</div>
-   <div id="pFb"></div>`;
-  const t = P.opts[P.target][0];
-  $("#pPlay").onclick = ()=>say(t);
-  $("#pSlow").onclick = ()=>say(t, true);
-  $("#pOpts").onclick = e=>{
-    const b = e.target.closest(".popt"); if (!b) return;
-    if (P.answered){ say(P.opts[+b.dataset.i][0]); return; }
-    P.answered = true;
-    const right = +b.dataset.i === P.target;
-    document.querySelectorAll(".popt").forEach(x=>{
-      const k = +x.dataset.i;
-      if (k===P.target) x.classList.add("good"); else if (x===b) x.classList.add("bad");
-      x.insertAdjacentHTML("beforeend", `<div class="small" style="margin-top:2px;opacity:.9">${esc(P.opts[k][2])} · tap to hear</div>`);
-    });
-    if (right){ P.streak++; if (P.streak > (state.settings.pBest||0)){ state.settings.pBest = P.streak; save(); } }
-    else P.streak = 0;
-    $("#pFb").innerHTML = `<div class="fb ${right?"ok":"no"}">${right?"✓ Yes!":"✗ Not quite."} You heard “${esc(t)}”.</div>
-      <div class="card" style="margin-top:10px"><div class="small">💡 ${esc(P.set.tip)}</div></div>
-      <button class="btn primary" style="width:100%" id="pNext">Next →</button>`;
-    $("#pNext").onclick = nextPair;
-  };
-  setTimeout(()=>say(t), 300);
-}
-
-/* --- recording & shadowing --- */
-function setRecUI(on){
-  const b = $("#lRec"); if (b){ b.textContent = on ? "⏹️ Stop" : "🎙️ Record"; b.classList.toggle("bad",on); b.classList.toggle("rec",on); }
-  const s = $("#lShadow"); if (s){ s.textContent = on ? "🔴 Recording… speak now" : "🔁 Shadow"; s.classList.toggle("rec",on); }
-}
-/* Fallback: Chrome blocks the mic for files opened from phone storage, so hand over to the phone's recorder app */
-const recInput = document.createElement("input");
-recInput.type = "file"; recInput.accept = "audio/*"; recInput.setAttribute("capture", ""); recInput.hidden = true;
-document.body.appendChild(recInput);
-let recCb = null;
-recInput.onchange = ()=>{
-  const f = recInput.files && recInput.files[0]; recInput.value = "";
-  if (!f){ recCb = null; return; }
-  if (recUrl) URL.revokeObjectURL(recUrl);
-  recUrl = URL.createObjectURL(f);
-  const m = $("#lMine"); if (m) m.disabled = false;
-  const cb = recCb; recCb = null; if (cb) cb();
-};
-const useNative = () => !!state.settings.recNative || !navigator.mediaDevices || !window.MediaRecorder;
-function nativeRec(onDone){ recCb = onDone; recInput.click(); }
-async function startRec(maxMs, onDone){
-  if (useNative()){ nativeRec(onDone); return true; }
-  try{ stream = await navigator.mediaDevices.getUserMedia({audio:true}); }
-  catch(e){
-    state.settings.recNative = true; state.settings.recNativeAuto = true; save(); paintRecNote();
-    toast("Mic blocked here — tap again to record with your phone's recorder app");
-    return false;
-  }
-  recChunks = []; rec = new MediaRecorder(stream);
-  rec.ondataavailable = e=>{ if (e.data.size) recChunks.push(e.data); };
-  rec.onstop = ()=>{
-    if (recUrl) URL.revokeObjectURL(recUrl);
-    recUrl = URL.createObjectURL(new Blob(recChunks, {type: rec.mimeType || "audio/webm"}));
-    if (stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
-    setRecUI(false);
-    const m = $("#lMine"); if (m) m.disabled = false;
-    if (onDone) onDone();
-  };
-  rec.start(); setRecUI(true);
-  recTimer = setTimeout(stopRec, maxMs);
-  return true;
-}
-function paintRecNote(){
-  const n = $("#recNote"); if (!n) return;
-  n.innerHTML = useNative() ? "📱 Recording uses your phone's recorder app: record, tap <b>Save / ✓</b>, and you'll come straight back here." : "";
-}
-function stopRec(){ clearTimeout(recTimer); if (rec && rec.state==="recording") rec.stop(); }
-function cleanupRec(){
-  clearTimeout(recTimer);
-  if (rec){ rec.onstop = null; if (rec.state==="recording") rec.stop(); rec = null; }
-  if (stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
-  if (recUrl){ URL.revokeObjectURL(recUrl); recUrl=null; }
-}
-function playMine(){ if (recUrl) new Audio(recUrl).play(); }
-function compare(c){ if (!recUrl) return; say(lText(c), false, ()=>setTimeout(playMine, 300)); }
-function shadow(c){
-  if (useNative()){
-    const b = $("#lShadow");
-    if (b.dataset.step==="rec"){ b.dataset.step = ""; b.textContent = "🔁 Shadow"; nativeRec(()=>setTimeout(()=>compare(c), 250)); return; }
-    say(lText(c)); b.dataset.step = "rec"; b.textContent = "🎙️ Now tap to record yourself"; return;
-  }
-  if (rec && rec.state==="recording"){ stopRec(); return; }
-  const text = lText(c);
-  const ms = Math.max(2200, text.length*140) + 900;
-  let started = false;
-  const go = ()=>{ if (started) return; started = true; startRec(ms, ()=>setTimeout(()=>compare(c), 250)); };
-  say(text, false, go);
-  setTimeout(go, Math.max(2500, text.length*110) + 1500); // fallback if the voice never reports it finished
-}
-function checkPron(c){
-  const fb = $("#lFb"), r = new SR();
-  r.lang = "fr-FR"; r.maxAlternatives = 5; r.interimResults = false;
-  fb.innerHTML = `<div class="fb near">Listening… say it now</div>`;
-  r.onresult = e=>{
-    const alts = Array.from(e.results[0]).map(a=>norm(a.transcript));
-    const t = norm(lText(c)), ts = strip(t);
-    const hit = alts.some(a=>a===t || strip(a)===ts || strip(a).includes(ts));
-    fb.innerHTML = hit ? `<div class="fb ok">✓ Sounded right! (heard “${esc(alts[0])}”)</div>`
-                       : `<div class="fb no">Heard “${esc(alts[0]||"…")}”. Try again — play it slowly first.</div>`;
-  };
-  r.onerror = e=>{ fb.innerHTML = `<div class="fb no">${e.error==="network"?"Pronunciation check needs internet right now.":"Couldn't hear that — try again."}</div>`; };
-  try{ r.start(); }catch(e){}
 }
 
 /* ---------- CREATE: make sentences + journal ---------- */
@@ -1177,8 +1007,11 @@ const PROMPTS = [
   {fr:"Décris ta ville.", en:"Describe your town.", cats:["place","describ|adjective","position|direction"], n:3},
   {fr:"Qu'est-ce que tu dois faire demain ?", en:"What do you have to do tomorrow?", cats:["verb","routine","time"], n:3},
   {fr:"Qu'est-ce que tu peux voir de ta fenêtre ?", en:"What can you see from your window?", cats:["place","colour|color","position|direction","describ|adjective"], n:3},
-  {fr:"Ta maison idéale, c'est comment ?", en:"What's your ideal home like?", cats:["room|building|home|house","furniture|household","describ|adjective"], n:4}
+  {fr:"Ta maison idéale, c'est comment ?", en:"What's your ideal home like?", cats:["room|building|home|house","furniture|household","describ|adjective"], n:4},
+  {fr:"Qu'est-ce que tu as fait aujourd'hui ?", en:"What did you do today?", cats:["."], n:2},
+  {fr:"Décris un endroit que tu aimes.", en:"Describe a place you like.", cats:["."], n:2}
 ];
+const GENERAL_PROMPT = {fr:"Écris une ou deux phrases sur ta vie avec ces mots.", en:"Write one or two sentences about your life using these words.", cats:["."], n:1};
 function promptCards(p){
   const cs = state.cards.filter(c=>!isConj(c) && p.cats.some(rx=>new RegExp(rx,"i").test(catOf(c))));
   const conj = state.cards.filter(c=>isConj(c) && p.cats.some(rx=>/verb|routine/.test(rx)));
@@ -1187,20 +1020,21 @@ function promptCards(p){
 const usablePrompts = () => PROMPTS.filter(p=>promptCards(p).cards.length >= p.n);
 
 /* state */
-let C = {mode:"words", words:[], prompt:null, lastPrompt:-1};
+let C = {mode:"me", words:[], prompt:null, lastPrompt:-1};
 function paintCreateSeg(){
-  document.querySelectorAll("#cModeSeg button").forEach(b=>b.classList.toggle("on", b.dataset.m===C.mode));
+  document.querySelectorAll("#cModeSeg button").forEach(b=>b.classList.toggle("on", b.dataset.m===(C.mode==="rewrite"?"journal":C.mode)));
   const n = (state.journal||[]).filter(j=>!j.checked).length;
   const jb = document.querySelector('#cModeSeg [data-m="journal"]'); if (jb) jb.textContent = "📓 Journal";
-  $("#catbar").style.display = C.mode==="journal" ? "none" : "";
+  $("#catbar").style.display = (C.mode==="journal" || C.mode==="rewrite") ? "none" : "";
 }
 $("#cModeSeg").onclick = e=>{ const b = e.target.closest("button"); if (!b) return; snapDraft(); save(); C.mode = b.dataset.m; startCreate(); };
 function startCreate(){
   live.create = fkey();
   paintCreateSeg();
   if (C.mode==="journal") return renderJournal();
+  if (C.mode==="rewrite") return startRewrite();
   if (C.mode==="me") return newPrompt();
-  return newChallenge();
+  C.mode = "me"; return newPrompt();   // Challenge mode was retired — About me does the job
 }
 
 /* --- 1. word challenge --- */
@@ -1229,7 +1063,7 @@ function snapDraft(){
   const inp = $("#cText"); if (!inp || inp.readOnly) return;
   state.cDraft = state.cDraft || {};
   if (C.mode==="words" && C.words.length) state.cDraft.words = {ids: C.words.map(c=>c.id), text: inp.value};
-  if (C.mode==="me" && C.prompt) state.cDraft.me = {p: PROMPTS.indexOf(C.prompt), text: inp.value};
+  if (C.mode==="me" && C.prompt) state.cDraft.me = {p: PROMPTS.indexOf(C.prompt), text: inp.value, must: (C.must||[]).map(c=>c.id)};
 }
 function clearDraft(mode){ if (state.cDraft) delete state.cDraft[mode]; save(); }
 function restoreText(text, check){ if (text && $("#cText")){ $("#cText").value = text; check(); } }
@@ -1279,33 +1113,46 @@ function newPrompt(fresh){
   if (!list.length){
     el.innerHTML = `<div class="card center"><p>Add a few more words first.</p><p class="muted">Prompts use categories like Rooms, Furniture, Position, Daily routine, Colours and Describing things.</p></div>`; return;
   }
-  const d = !fresh && state.cDraft && state.cDraft.me;
+  const force = (C.force||[]).filter(c=>state.cards.includes(c)); C.force = null;
+  const d = !fresh && !force.length && state.cDraft && state.cDraft.me;
   let p;
-  if (d && PROMPTS[d.p] && list.includes(PROMPTS[d.p])) p = PROMPTS[d.p];
+  if (force.length){                                         // came from 🔒 "Write one": a question that fits the word, else a general one
+    const fit = list.filter(q=>q.cats[0]!=="." && force.every(c=>q.cats.some(rx=>new RegExp(rx,"i").test(catOf(c)))));
+    p = fit.length ? fit[Math.floor(Math.random()*fit.length)] : GENERAL_PROMPT;
+  }
+  else if (d && d.p===-1) p = GENERAL_PROMPT;
+  else if (d && PROMPTS[d.p] && list.includes(PROMPTS[d.p])) p = PROMPTS[d.p];
   else { let i; do { i = Math.floor(Math.random()*list.length); } while (list.length>1 && PROMPTS.indexOf(list[i])===C.lastPrompt); p = list[i]; }
-  C.prompt = p; C.lastPrompt = PROMPTS.indexOf(p);
+  C.prompt = p; C.lastPrompt = PROMPTS.indexOf(p); C.must = force;
+  if (d && d.must) C.must = d.must.map(id=>state.cards.find(c=>c.id===id)).filter(Boolean);
   const {cards} = promptCards(p);
-  const ideas = shuffle(cards).slice(0,8);
+  const locked = lockedCards().filter(c=>!C.must.includes(c) && cards.includes(c));
+  const ideas = locked.slice(0,3).concat(shuffle(cards.filter(c=>!locked.includes(c) && !C.must.includes(c)))).slice(0,8);
+  const nl = lockedCards().length;
   el.innerHTML = `
+   ${nl && !C.must.length ? `<div class="lockbar" style="margin:0 0 12px"><span>🔒 <b>${nl}</b> word${nl===1?"":"s"} waiting for a sentence — 🔒 ideas below</span></div>` : ""}
    <div class="card">
      <div class="row" style="align-items:flex-start;gap:6px"><div style="flex:1">
        <div style="font-size:22px;font-weight:650;line-height:1.25">${esc(p.fr)}</div>
        <div class="muted small" style="margin-top:2px">${esc(p.en)}</div></div>
        <button class="icon-btn" id="pSay" aria-label="Play">🔊</button></div>
-     <div class="muted small" style="margin:12px 0 4px">Use at least <b>${p.n}</b> of your words. Ideas:</div>
-     <div class="reqs small-reqs" id="ideas">${ideas.map(c=>`<button class="req" data-id="${c.id}"><b>${esc(c.fr)}</b></button>`).join("")}</div>
+     ${C.must.length ? `<div class="muted small" style="margin:12px 0 4px">🔒 Must use:</div>
+       <div class="reqs" id="must">${C.must.map(c=>`<button class="req" data-id="${c.id}"><b>${esc(c.fr)}</b><span>${esc(c.en)}</span></button>`).join("")}</div>` : ""}
+     <div class="muted small" style="margin:12px 0 4px">Use at least <b>${(C.must.length || p.n)}</b> of your words${C.must.length?"":". Ideas"}${C.must.length?". More ideas":""}:</div>
+     <div class="reqs small-reqs" id="ideas">${ideas.map(c=>`<button class="req" data-id="${c.id}"><b>${isLocked(c)?"🔒 ":""}${esc(c.fr)}</b></button>`).join("")}</div>
      <textarea id="cText" class="cin" style="min-height:130px" placeholder="Écris 1 à 3 phrases…" autocapitalize="sentences" spellcheck="false"></textarea>
      <div class="accents" id="cAcc">${ACCENTS.map(a=>`<button type="button">${a}</button>`).join("")}</div>
-     <div class="muted small" id="cUsed" style="margin-bottom:10px">Words used: 0 / ${p.n}</div>
+     <div class="muted small" id="cUsed" style="margin-bottom:10px">Words used: 0 / ${(C.must.length || p.n)}</div>
      <div class="row"><button class="btn" id="cSkip">↻ Another question</button><button class="btn primary" id="cDone" disabled>Save</button></div>
      <div id="cFb"></div>
    </div>`;
   $("#pSay").onclick = ()=>say(p.fr);
   wireCreateInput(()=>checkPrompt());
-  if (d && PROMPTS[d.p]===p) restoreText(d.text, checkPrompt);
+  if (d && (PROMPTS[d.p]===p || (d.p===-1 && p===GENERAL_PROMPT))) restoreText(d.text, checkPrompt);
   $("#ideas").onclick = e=>{ const b = e.target.closest(".req"); if (!b) return; const c = state.cards.find(x=>x.id===b.dataset.id); if (c) showWordHelp(c); };
+  if ($("#must")) $("#must").onclick = e=>{ const b = e.target.closest(".req"); if (!b) return; const c = state.cards.find(x=>x.id===b.dataset.id); if (c) showWordHelp(c); };
   $("#cSkip").onclick = ()=>{ clearDraft("me"); newPrompt(true); };
-  $("#cDone").onclick = ()=>saveSentence({kind:"me", prompt:p.fr, required:null});
+  $("#cDone").onclick = ()=>saveSentence({kind:"me", prompt:p.fr, required:C.must.length?C.must:null});
 }
 function wordsUsedIn(text){
   const t = toksOf(text);
@@ -1320,10 +1167,12 @@ function checkPrompt(){
   const p = C.prompt, used = wordsUsedIn($("#cText").value);
   const fromPrompt = used.filter(c=>p.cats.some(rx=>new RegExp(rx,"i").test(catOf(c))));
   const n = used.length;
-  $("#cUsed").innerHTML = `Words used: <b>${n}</b> / ${p.n}` + (n?` — ${used.map(c=>`<span class="usedw">${esc(c.fr)}</span>`).join(" ")}`:"");
+  $("#cUsed").innerHTML = `Words used: <b>${n}</b> / ${((C.must||[]).length || p.n)}` + (n?` — ${used.map(c=>`<span class="usedw">${esc(c.fr)}</span>`).join(" ")}`:"");
   document.querySelectorAll("#ideas .req").forEach(b=>b.classList.toggle("ok", used.some(c=>c.id===b.dataset.id)));
+  const t = toksOf($("#cText").value);
+  const mustOk = (C.must||[]).every(c=>{ const hit = usesCard(c, t); const b = document.querySelector(`#must .req[data-id="${c.id}"]`); if (b) b.classList.toggle("ok", hit); return hit; });
   $("#cDone").disabled = !$("#cText").value.trim();
-  const ok = n >= p.n;
+  const ok = n >= ((C.must||[]).length || p.n) && mustOk;
   $("#cDone").textContent = ok ? "✓ Save" : "Save";
   $("#cDone").classList.toggle("good", ok); $("#cDone").classList.toggle("primary", !ok);
   return ok;
@@ -1456,7 +1305,7 @@ function saveSentence({kind, prompt, required}){
   const draftMode = kind==="words" ? "words" : "me";
   const ok = kind==="words" ? checkChallenge() : checkPrompt();
   if (!ok){
-    const msg = kind==="words" ? "Not all the words are in your sentence yet (the green ones are). Save anyway?" : `You've used fewer than ${C.prompt.n} of your words. Save anyway?`;
+    const msg = kind==="words" ? "Not all the words are in your sentence yet (the green ones are). Save anyway?" : (C.must&&C.must.length ? "You haven't used all the 🔒 must-use words yet (they turn green). Save anyway?" : `You've used fewer than ${C.prompt.n} of your words. Save anyway?`);
     if (!confirm(msg)) return;
   }
   const used = wordsUsedIn(text);
@@ -1522,6 +1371,7 @@ function renderJournal(){
      <button class="jicon" id="jExport" ${todo?"":"disabled"} aria-label="Export for corrections" title="Export for Claude to correct">📤${todo?`<span class="jcount">${todo}</span>`:""}</button>
      <button class="jicon" id="jImport" aria-label="Import corrections" title="Import corrections">📥</button>
    </div>
+   ${rwItems().length && !q ? (()=>{ const n = rwDue().length; return `<button class="rwbtn ${n?"":"quiet"}" id="jRewrite">🔁 Rewrite practice<span>${n ? n+" due" : "all done ✓"}</span></button>`; })() : ""}
    ${q ? `<div class="muted small" style="margin:0 2px 10px">${list.length} result${list.length===1?"":"s"} for “${esc(q)}”</div>` : `
    <div class="daynav">
      <button class="jicon" id="jPrev" ${prev?"":"disabled"} aria-label="Previous day">‹</button>
@@ -1534,6 +1384,7 @@ function renderJournal(){
   if (keepFocus) s.focus();
   if (todo) $("#jExport").onclick = exportJournal;
   $("#jImport").onclick = ()=>$("#jFile").click();
+  if ($("#jRewrite")) $("#jRewrite").onclick = startRewrite;
   if (!q){
     if (prev) $("#jPrev").onclick = ()=>{ JV.day = prev; renderJournal(); };
     if (next) $("#jNext").onclick = ()=>{ JV.day = next; renderJournal(); };
@@ -1598,7 +1449,7 @@ function jCard(j, qn){
     </div>`;
   }
   return `<div class="jent ${open?"open":""}" data-id="${j.id}">
-    <div class="jtop"><span class="muted small">${qn?"":time+" · "}${j.kind==="me"?"About me":"Challenge"}</span>${jBadge(j)}</div>
+    <div class="jtop"><span class="muted small">${qn?"":time+" · "}${j.kind==="me"?"About me":j.kind==="speak"?"🎙️ Spoken":"Challenge"}</span>${jBadge(j)}</div>
     <div class="jline"><div class="jsent">${text}</div>
       <div class="jbtns"><button class="jicon sm" data-j="say" aria-label="Play">🔊</button><button class="jicon sm" data-j="edit" aria-label="Edit">✏️</button></div></div>
     ${(j.wordsFr||[]).length?`<div class="jwords">${j.wordsFr.map(w=>`<span class="wchip">${qn?hl(w,qn):esc(w)}</span>`).join("")}</div>`:""}
@@ -1620,6 +1471,7 @@ function editJournal(j){
   openModal(`<div class="row" style="align-items:center"><h2 style="margin:0;flex:1">Edit sentence</h2><button class="icon-btn" id="jX" aria-label="Close">✕</button></div>
     <div class="field" style="margin-top:10px"><label>My sentence</label><textarea id="jT">${esc(j.text)}</textarea></div>
     <div class="field"><label>Corrected (optional)</label><textarea id="jC" placeholder="Type or paste the corrected version">${esc(j.corrected||"")}</textarea></div>
+    <div class="field"><label>English meaning (optional, used in Rewrite practice)</label><input type="text" id="jE" value="${esc(j.en||"")}"></div>
     <div class="field"><label>Notes (optional)</label><input type="text" id="jN" value="${esc(j.notes||"")}"></div>
     <div class="row"><button class="btn bad" id="jDel">🗑️</button><button class="btn" id="jCancel">Cancel</button><button class="btn primary" id="jSave">Save</button></div>`);
   $("#modal").onclick = null;
@@ -1628,15 +1480,15 @@ function editJournal(j){
   $("#jSave").onclick = ()=>{
     const t = $("#jT").value.trim(); if (!t){ toast("The sentence can't be empty"); return; }
     if (t!==j.text){ j.text = t; j.lt = checkOn() ? {status:"pending"} : null; setTimeout(processPending, 300); }
-    j.corrected = $("#jC").value.trim(); j.notes = $("#jN").value.trim(); j.checked = !!j.corrected;
+    j.corrected = $("#jC").value.trim(); j.notes = $("#jN").value.trim(); j.en = $("#jE").value.trim(); j.checked = !!j.corrected;
     save(); closeModal(); renderJournal(); paintCreateSeg();
   };
 }
 function csvq(v){ v = String(v==null?"":v); return /[",\n;]/.test(v) ? `"${v.replace(/"/g,'""')}"` : v; }
 function exportJournal(){
   const rows = state.journal.filter(j=>!j.checked);
-  const head = ["ID","Date","Question","Words used","My sentence","Corrected","Notes"];
-  const lines = [head.join(",")].concat(rows.map(j=>[j.id, new Date(j.date).toISOString().slice(0,10), j.prompt||"", (j.wordsFr||[]).join(" / "), j.text, "", ""].map(csvq).join(",")));
+  const head = ["ID","Date","Question","Words used","My sentence","Corrected","English","Notes"];
+  const lines = [head.join(",")].concat(rows.map(j=>[j.id, new Date(j.date).toISOString().slice(0,10), j.prompt||"", (j.wordsFr||[]).join(" / "), j.text, "", "", ""].map(csvq).join(",")));
   const blob = new Blob(["﻿"+lines.join("\r\n")], {type:"text/csv;charset=utf-8"});
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
   a.download = "french-journal-" + new Date().toISOString().slice(0,10) + ".csv";
@@ -1650,7 +1502,7 @@ $("#jFile").onchange = e=>{
     const rows = parseCSV(r.result); if (rows.length<2){ toast("That file looks empty"); return; }
     const h = rows[0].map(x=>strip(norm(x)));
     const col = rx => h.findIndex(x=>rx.test(x));
-    const iId = col(/^id$/), iMine = col(/my sentence|sentence|phrase/), iCor = col(/correct/), iNotes = col(/note|comment|explan/);
+    const iId = col(/^id$/), iMine = col(/my sentence|sentence|phrase/), iCor = col(/correct/), iNotes = col(/note|comment|explan/), iEn = col(/english|meaning|translation|anglais/);
     if (iCor<0){ toast("Couldn't find a “Corrected” column"); return; }
     let n = 0;
     rows.slice(1).forEach(row=>{
@@ -1658,7 +1510,7 @@ $("#jFile").onchange = e=>{
       let j = iId>=0 ? state.journal.find(x=>x.id===(row[iId]||"").trim()) : null;
       if (!j && iMine>=0) j = state.journal.find(x=>norm(x.text)===norm(row[iMine]||""));
       if (!j) return;
-      j.corrected = cor; j.notes = iNotes>=0 ? (row[iNotes]||"").trim() : j.notes; j.checked = true; n++;
+      j.corrected = cor; j.notes = iNotes>=0 ? (row[iNotes]||"").trim() : j.notes; if (iEn>=0 && (row[iEn]||"").trim()) j.en = row[iEn].trim(); j.checked = true; n++;
     });
     save(); renderJournal(); paintCreateSeg();
     toast(n ? `✓ ${n} correction${n===1?"":"s"} added` : "No matching sentences found in that file");
@@ -1773,6 +1625,99 @@ function ltBlock(j){
   </div>`;
 }
 window.addEventListener("online", ()=>setTimeout(processPending, 1500));
+
+/* ---------- REWRITE IT: practise the sentences Claude corrected ---------- */
+const RW_DAYS = [0, 1, 3, 7, 14, 30];
+const rwItems = () => (state.journal||[]).filter(j=>j.checked && j.corrected && norm(j.corrected)!==norm(j.text));
+const rwDue = () => rwItems().filter(j=>!j.rw || j.rw.due <= Date.now());
+let RW = {queue:[], cur:null, done:0, right:0, checked:false};
+function startRewrite(){
+  C.mode = "rewrite"; paintCreateSeg();
+  RW.queue = shuffle(rwDue()); RW.done = 0; RW.right = 0;
+  nextRewrite();
+}
+function rwBack(){ C.mode = "journal"; startCreate(); }
+function nextRewrite(){
+  const el = $("#createArea");
+  RW.cur = RW.queue.shift() || null; RW.checked = false;
+  if (!RW.cur){
+    const next = rwItems().filter(j=>j.rw && j.rw.due > Date.now()).sort((a,b)=>a.rw.due-b.rw.due)[0];
+    el.innerHTML = `<div class="card center">
+      <h2>${RW.done ? "🎉 Rewrite practice done" : "Nothing to rewrite right now"}</h2>
+      ${RW.done ? `<p style="font-size:28px;font-weight:650;margin:6px 0">${RW.right} / ${RW.done}</p><p class="muted">written correctly</p>` : ""}
+      <p class="muted small">${next ? "Next one due: " + esc(dayLabel(dayKey(next.rw.due))) : rwItems().length ? "" : "Sentences appear here after you import corrections from Claude."}</p>
+      <button class="btn primary" id="rwDone">← Back to Journal</button></div>`;
+    $("#rwDone").onclick = rwBack; return;
+  }
+  const j = RW.cur, total = RW.done + RW.queue.length + 1;
+  el.innerHTML = `
+   <div class="row" style="align-items:center;margin-bottom:10px">
+     <button class="jicon sm" id="rwBack" aria-label="Back to Journal" style="font-size:20px">←</button>
+     <div class="muted small" style="flex:1;text-align:center">🔁 Rewrite it · ${RW.done+1} of ${total}</div>
+     <span style="width:38px"></span>
+   </div>
+   <div class="progress"><div style="width:${RW.done/total*100}%"></div></div>
+   <div class="card">
+     ${j.en ? `<div class="muted small">Write this in French:</div><div style="font-size:20px;font-weight:650;margin:4px 0 10px;line-height:1.35">🇬🇧 ${esc(j.en)}</div>`
+            : `<div class="muted small">Write this correctly in French:</div>`}
+     <div class="muted small">Your first try:</div>
+     <div class="jtext was" style="margin:2px 0 12px">${esc(j.text)}</div>
+     <textarea id="rwIn" class="cin" placeholder="Écris la phrase correcte…" autocapitalize="sentences" spellcheck="false"></textarea>
+     <div class="accents" id="rwAcc">${ACCENTS.map(a=>`<button type="button">${a}</button>`).join("")}</div>
+     <div id="rwHintBox"></div>
+     <div class="row"><button class="btn" id="rwHint">💡 Hint</button><button class="btn primary" id="rwCheck">Check</button></div>
+     <div id="rwFb"></div>
+   </div>`;
+  const inp = $("#rwIn");
+  $("#rwBack").onclick = rwBack;
+  $("#rwAcc").onmousedown = e=>e.preventDefault();
+  $("#rwAcc").onclick = e=>{
+    const b = e.target.closest("button"); if (!b || inp.readOnly) return;
+    const s = inp.selectionStart ?? inp.value.length, en = inp.selectionEnd ?? s;
+    inp.value = inp.value.slice(0,s) + b.textContent + inp.value.slice(en); inp.setSelectionRange(s+1, s+1); inp.focus();
+  };
+  $("#rwHint").onclick = ()=>{ $("#rwHintBox").innerHTML = j.notes ? `<div class="small jnotes" style="margin:0 0 10px">💡 ${esc(j.notes)}</div>` : `<div class="muted small" style="margin-bottom:10px">No notes for this one — compare with your first try.</div>`; RW.hinted = true; };
+  $("#rwCheck").onclick = ()=> RW.checked ? nextRewrite() : checkRewrite();
+  RW.hinted = false;
+  setTimeout(()=>inp.focus(), 50);
+}
+function rwDiff(target, answer){
+  const T = toks(target), A = toks(answer);
+  const n=T.length, m=A.length, dp = Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for (let i=n-1;i>=0;i--) for (let k=m-1;k>=0;k--) dp[i][k] = T[i].loose===A[k].loose ? dp[i+1][k+1]+1 : Math.max(dp[i+1][k], dp[i][k+1]);
+  const st = new Array(n).fill("miss"); let i=0, k=0, matched=0;
+  while (i<n && k<m){
+    if (T[i].loose===A[k].loose){ st[i] = T[i].key===A[k].key ? "ok" : "near"; matched++; i++; k++; }
+    else if (dp[i+1][k] >= dp[i][k+1]) i++; else k++;
+  }
+  const ok = st.filter(x=>x==="ok").length, near = st.filter(x=>x==="near").length;
+  return {T, st, perfect: ok===n && m===matched, nearly: ok+near===n && m===matched && near>0, wrong: n-ok-near + (m-matched)};
+}
+function checkRewrite(){
+  const inp = $("#rwIn"), j = RW.cur; if (!inp.value.trim()) return;
+  RW.checked = true; inp.readOnly = true;
+  const d = rwDiff(j.corrected, inp.value);
+  const good = d.perfect || (d.nearly && state.settings.lenient);
+  j.rw = j.rw || {box:0, due:0, right:0, wrong:0};
+  if (good){ j.rw.box = Math.min(j.rw.box+1, RW_DAYS.length-1); j.rw.right++; j.rw.due = Date.now() + RW_DAYS[j.rw.box]*DAY; RW.right++; }
+  else { j.rw.box = 0; j.rw.wrong++; j.rw.due = Date.now() + 10*60*1000; RW.queue.push(j); }   // see it again later in this session
+  RW.done++; save();
+  const sentence = d.T.map((t,k)=>`<span class="dw ${d.st[k]}">${esc(t.disp)}</span>`).join(" ").replace(/' /g,"'");
+  $("#rwFb").innerHTML = `
+    <div class="fb ${d.perfect?"ok":d.nearly?"near":"no"}">${d.perfect ? "✓ Perfect!" : d.nearly ? "Nearly — just the accents (underlined)" : `Not quite — ${d.wrong} thing${d.wrong===1?"":"s"} to fix`}</div>
+    <div class="card" style="margin:10px 0 0;box-shadow:none">
+      <div class="muted small">Correct:</div>
+      <div style="font-size:19px;font-weight:600;line-height:1.5">${sentence}</div>
+      ${!d.perfect ? `<div class="muted small" style="margin-top:6px">You wrote: ${esc(inp.value)}</div>` : ""}
+      ${j.notes && !d.perfect ? `<div class="small jnotes">💡 ${esc(j.notes)}</div>` : ""}
+      <div class="muted small" style="margin-top:8px">${good ? `Back in ${RW_DAYS[j.rw.box]} day${RW_DAYS[j.rw.box]===1?"":"s"}` : "You'll get this one again shortly"}</div>
+    </div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="rwSay">🔊 Hear it</button></div>`;
+  $("#rwSay").onclick = ()=>say(j.corrected);
+  $("#rwCheck").textContent = "Next →";
+  $("#rwHint").disabled = true;
+  say(j.corrected);
+}
 
 /* ---------- modal ---------- */
 function openModal(html){ $("#modal").innerHTML = html; $("#modalBg").classList.add("on"); }
@@ -1969,7 +1914,7 @@ function openEdit(c){
     <div class="field"><label>Sounds like</label><input type="text" id="ePron" value="${esc(c.pron||"")}" placeholder="e.g. boh(n)-ZHOOR" autocomplete="off" autocapitalize="off"></div>
     <div class="field"><label>Category</label>${catPicker("eCat", catOf(c))}
       <div class="chips" id="eSugg"></div></div>
-    <details ${c.ex?"open":""} style="margin-bottom:10px"><summary class="small" style="cursor:pointer">💬 Example sentence (for Listen → Sentences)</summary>
+    <details ${c.ex?"open":""} style="margin-bottom:10px"><summary class="small" style="cursor:pointer">💬 Example sentence</summary>
       <div class="field" style="margin-top:8px"><label>French sentence</label><input type="text" id="eEx" value="${esc(c.ex||"")}" autocomplete="off" autocapitalize="off"></div>
       <div class="field"><label>English</label><input type="text" id="eExEn" value="${esc(c.exEn||"")}" autocomplete="off"></div>
       <div class="field"><label>Sentence sounds like</label><input type="text" id="eExPron" value="${esc(c.exPron||"")}" autocomplete="off" autocapitalize="off"></div>
@@ -2448,7 +2393,6 @@ function deleteSelected(){
 function renderSettings(){
   $("#appVer").textContent = "App version " + APP_VERSION.replace(/^ff-/,"");
   $("#lenient").checked = !!state.settings.lenient;
-  $("#recNativeChk").checked = useNative();
   $("#lockChk").checked = !!state.settings.lock;
   paintBackupInfo();
   $("#newPerDaySel").value = String(state.settings.newPerDay ?? 15);
@@ -2463,7 +2407,6 @@ $("#installBtn").onclick = async ()=>{ if (!installEvt){ toast("Use Chrome's ⋮
 $("#newPerDaySel").onchange = e=>{ state.settings.newPerDay = parseInt(e.target.value,10); save(); toast(state.settings.newPerDay ? `Up to ${state.settings.newPerDay} new words a day` : "No daily limit on new words"); };
 $("#ltChk").onchange = e=>{ state.settings.ltCheck = e.target.checked; save(); if (e.target.checked){ toast("🔎 Online checking on"); processPending(); } else toast("Online checking off"); };
 $("#lockChk").onchange = e=>{ state.settings.lock = e.target.checked; save(); toast(e.target.checked ? "🔒 Sentence lock on" : "Sentence lock off — words level up normally"); };
-$("#recNativeChk").onchange = e=>{ state.settings.recNative = e.target.checked; state.settings.recNativeAuto = false; save(); toast(e.target.checked ? "Recording will use your phone's recorder app" : "Recording will use the built-in microphone"); };
 $("#lenient").onchange = e=>{ state.settings.lenient = e.target.checked; save(); };
 function exportBackup(){
   state.settings.lastBackup = Date.now(); state.settings.backupSnooze = 0; save();
@@ -2529,7 +2472,6 @@ $("#wipeAll").onclick = ()=>{
 
 /* ---------- installed web app: offline cache, online/offline badge ---------- */
 const IS_WEB = /^https?:$/.test(location.protocol);
-if (IS_WEB && state.settings.recNative && state.settings.recNativeAuto){ state.settings.recNative = false; state.settings.recNativeAuto = false; save(); } // the mic works on a real web address
 function paintNet(){ const p = $("#netPill"); if (p) p.hidden = navigator.onLine !== false; }
 window.addEventListener("online", ()=>{ paintNet(); toast("Back online"); });
 window.addEventListener("offline", ()=>{ paintNet(); toast("Offline — everything still works"); });
