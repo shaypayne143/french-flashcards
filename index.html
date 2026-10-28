@@ -247,6 +247,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 .spk-mic.on{background:var(--bad);color:#fff;animation:spkPulse 1.2s ease-in-out infinite}
 @keyframes spkPulse{0%,100%{box-shadow:0 0 0 0 rgba(214,69,69,.5)}50%{box-shadow:0 0 0 12px rgba(214,69,69,0)}}
 .spk-live{color:var(--muted);font-size:13px;padding:0 16px}
+.qopt{display:flex;align-items:center;gap:8px;margin:12px 0 2px;padding:10px 12px;border-radius:12px;background:var(--surface2);line-height:1.35}
 </style>
 </head>
 <body>
@@ -278,7 +279,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 
   <!-- CREATE -->
   <section class="view" id="v-create">
-    <div class="seg" id="cModeSeg"><button data-m="me">🏠 About me</button><button data-m="journal">📓 Journal</button></div>
+    <div class="seg" id="cModeSeg"><button data-m="words">🔒 3 words</button><button data-m="journal">📓 Journal</button></div>
     <div id="createArea"></div>
     <input type="file" id="jFile" accept=".csv,text/csv,text/plain" hidden>
   </section>
@@ -367,7 +368,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-10-24-1";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-10-24-3";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -667,7 +668,7 @@ function showStudyCard(){
   $("#gotit").onclick = ()=>{ grade(c,true); nextStudy(); };
   if ($("#lockGo")) $("#lockGo").onclick = ()=>writeWith([c]);
 }
-function writeWith(cards){ C.mode = "me"; C.force = cards; live.create = null; go("create"); }
+function writeWith(cards){ C.mode = "words"; C.force = cards; live.create = null; go("create"); }
 
 /* ---------- MATCH ---------- */
 let mSel = null, mLeft = 0, mMistakes = 0, mStart = 0;
@@ -994,11 +995,12 @@ const isConj = c => /^conjugation/i.test(catOf(c));
 
 /* prompts about you */
 const PROMPTS = [
-  {fr:"Décris ta chambre.", en:"Describe your bedroom.", cats:["room|building|home|house","furniture|household","position|direction"], n:3},
-  {fr:"Décris ta cuisine.", en:"Describe your kitchen.", cats:["room|building|home|house","furniture|household","position|direction"], n:3},
-  {fr:"Où se trouve ta salle de bains ?", en:"Where is your bathroom?", cats:["position|direction","room|building|home|house"], n:2},
+  {fr:"Décris ta chambre.", en:"Describe your bedroom.", cats:["room|building|home|house","furniture|household","position|direction"], n:3, need:"\\b(bed|bedroom|pillow|wardrobe|duvet|bedside|blanket|sheets?|alarm clock|chest of drawers|curtains?|dressing table)\\b"},
+  {fr:"Décris ta cuisine.", en:"Describe your kitchen.", cats:["room|building|home|house","furniture|household","position|direction"], n:3, need:"\\b(kitchen|oven|cooker|fridge|freezer|sink|dishwasher|microwave|kettle|toaster|saucepan|pan|stool|cupboard|worktop|counter|hob)\\b"},
+  {fr:"Décris ta salle de bains.", en:"Describe your bathroom.", cats:["room|building|home|house","furniture|household","position|direction","colour|color"], n:3, need:"\\b(bath|bathroom|bathtub|shower|toilet|washbasin|basin|towel|mirror|tap)\\b"},
+  {fr:"Où se trouve ta salle de bains ?", en:"Where is your bathroom?", cats:["position|direction","room|building|home|house"], n:2, need:"\\b(bath|bathroom|bathtub|shower|toilet|washbasin|basin|towel|mirror|tap)\\b"},
   {fr:"Comment est ton appartement ou ta maison ?", en:"What is your flat or house like?", cats:["room|building|home|house","describ|adjective","colour|color"], n:3},
-  {fr:"Qu'est-ce qu'il y a dans ton salon ?", en:"What's in your living room?", cats:["furniture|household","position|direction","colour|color"], n:3},
+  {fr:"Qu'est-ce qu'il y a dans ton salon ?", en:"What's in your living room?", cats:["furniture|household","position|direction","colour|color"], n:3, need:"\\b(living room|lounge|sofa|couch|armchair|tv|television|coffee table|cushion|rug|carpet|fireplace|bookcase|shelf|shelves|lamp)\\b"},
   {fr:"Raconte ta matinée.", en:"Tell me about your morning.", cats:["routine","time","verb"], n:4},
   {fr:"À quelle heure tu te lèves et tu te couches ?", en:"What time do you get up and go to bed?", cats:["routine","time"], n:2},
   {fr:"Qu'est-ce que tu fais le soir ?", en:"What do you do in the evening?", cats:["routine","verb","time"], n:3},
@@ -1020,7 +1022,7 @@ function promptCards(p){
 const usablePrompts = () => PROMPTS.filter(p=>promptCards(p).cards.length >= p.n);
 
 /* state */
-let C = {mode:"me", words:[], prompt:null, lastPrompt:-1};
+let C = {mode:"words", words:[], prompt:null, lastPrompt:-1, q:-1};
 function paintCreateSeg(){
   document.querySelectorAll("#cModeSeg button").forEach(b=>b.classList.toggle("on", b.dataset.m===(C.mode==="rewrite"?"journal":C.mode)));
   const n = (state.journal||[]).filter(j=>!j.checked).length;
@@ -1033,37 +1035,57 @@ function startCreate(){
   paintCreateSeg();
   if (C.mode==="journal") return renderJournal();
   if (C.mode==="rewrite") return startRewrite();
-  if (C.mode==="me") return newPrompt();
-  C.mode = "me"; return newPrompt();   // Challenge mode was retired — About me does the job
+  C.mode = "words"; return newChallenge();   // 🔒 3 words replaced About me
 }
 
 /* --- 1. word challenge --- */
 function pickChallenge(){
   const now = Date.now();
   const all = pool().filter(c=>!isConj(c)), seen = seenPool(all);
-  const p = seen.length >= 2 ? seen : all;
-  const score = c => (isLocked(c)?-2.5:0) + (c.due<=now?0:2) + (c.hard?-1.5:0) + c.box*0.4 + (c.sent?0.6*Math.min(c.sent,3):0) + Math.random()*1.6;
-  const sorted = p.slice().sort((a,b)=>score(a)-score(b));
-  const n = p.length>=12 ? 3 : 2;
-  const pick = [], used = new Set();
-  (C.force||[]).forEach(c=>{ if (!isConj(c) && pick.length<n){ pick.push(c); used.add(cardCore(c).core); } });
+  const p = seen.length >= 3 ? seen : all;
+  const n = Math.min(3, p.length);
+  // categories "go together" when one of the questions uses both (e.g. Rooms + Position)
+  const qs = c => PROMPTS.map((q,i)=>q.cats[0]!=="." && q.cats.some(rx=>new RegExp(rx,"i").test(catOf(c))) ? i : -1).filter(i=>i>=0);
+  const related = (a,b) => catOf(a)===catOf(b) ? 1 : qs(a).some(i=>qs(b).includes(i)) ? 0 : 5;
+  const pick = [], used = new Set(), prev = new Set((C.words||[]).map(c=>c.id));   // avoid repeating the last set
+  const fits = c => !pick.includes(c) && !used.has(cardCore(c).core)
+    && !(cardCore(c).isVerb && pick.some(x=>cardCore(x).isVerb) && p.length > 8);      // at most one verb
+  const add = c => { pick.push(c); used.add(cardCore(c).core); };
+  (C.force||[]).forEach(c=>{ if (!isConj(c) && pick.length<n && fits(c)) add(c); });
   C.force = null;
-  for (const c of sorted){
-    if (pick.length>=n) break;
-    const k = cardCore(c).core; if (used.has(k)) continue;
-    // at most one verb unless the pool is mostly verbs
-    if (cardCore(c).isVerb && pick.filter(x=>cardCore(x).isVerb).length>=1 && sorted.length>8) continue;
-    used.add(k); pick.push(c);
+  if (!pick.length){                                   // start with a 🔒 word, else a due word, else any
+    const fresh = c => !prev.has(c.id);
+    const first = shuffle(p.filter(c=>isLocked(c) && fresh(c)))[0] || shuffle(p.filter(isLocked))[0] || shuffle(p.filter(c=>c.due<=now))[0] || shuffle(p.slice())[0];
+    if (first) add(first);
+  }
+  while (pick.length < n){
+    const score = c => (isLocked(c) ? 0 : c.due<=now ? 8 : 12) + Math.min(...pick.map(x=>related(x,c))) + (prev.has(c.id) ? 6 : 0) + Math.random()*1.5;
+    const next = p.filter(fits).map(c=>[score(c), c]).sort((x,y)=>x[0]-y[0])[0];
+    if (!next) break; add(next[1]);
   }
   return pick;
+}
+/* an optional question, only when all the words suit it */
+function fitQuestions(cards){
+  const ok = PROMPTS.map((q,i)=>i).filter(i=>{
+    const q = PROMPTS[i];
+    if (q.cats[0]==="." || !cards.every(c=>q.cats.some(rx=>new RegExp(rx,"i").test(catOf(c))))) return false;
+    if (!q.need) return true;
+    const inRoom = c=>new RegExp(q.need,"i").test(c.en||"");
+    const otherRoom = c=>!inRoom(c) && PROMPTS.some(o=>o.need && o!==q && new RegExp(o.need,"i").test(c.en||""));
+    return cards.some(inRoom) && !cards.some(otherRoom)                                                  // room questions: nothing from another room…
+      && cards.filter(c=>/furniture|household/i.test(catOf(c))).every(inRoom);                          // …and the things must belong in that room
+  });
+  const specific = ok.filter(i=>PROMPTS[i].need);
+  return specific.length ? specific : ok;
 }
 /* drafts: a half-written sentence survives switching tabs, modes, or closing the app */
 let draftT = null;
 function snapDraft(){
   const inp = $("#cText"); if (!inp || inp.readOnly) return;
   state.cDraft = state.cDraft || {};
-  if (C.mode==="words" && C.words.length) state.cDraft.words = {ids: C.words.map(c=>c.id), text: inp.value};
-  if (C.mode==="me" && C.prompt) state.cDraft.me = {p: PROMPTS.indexOf(C.prompt), text: inp.value, must: (C.must||[]).map(c=>c.id)};
+  if (C.mode==="words" && C.words.length) state.cDraft.words = {ids: C.words.map(c=>c.id), text: inp.value, q: C.q};
+  if (C.mode==="me" && C.prompt) state.cDraft.me = {p: PROMPTS.indexOf(C.prompt), text: inp.value, must: (C.must||[]).map(c=>c.id), ideas: (C.ideas||[]).map(c=>c.id)};
 }
 function clearDraft(mode){ if (state.cDraft) delete state.cDraft[mode]; save(); }
 function restoreText(text, check){ if (text && $("#cText")){ $("#cText").value = text; check(); } }
@@ -1073,24 +1095,31 @@ function newChallenge(fresh){
   if (pool().filter(c=>!isConj(c)).length < 2){ el.innerHTML = `<div class="card center"><p>This needs at least 2 words that aren't conjugation cards.</p><p class="muted">Pick another category above.</p></div>`; return; }
   const d = !fresh && !C.force && state.cDraft && state.cDraft.words;
   const dw = d ? d.ids.map(id=>state.cards.find(c=>c.id===id)).filter(Boolean) : [];
-  C.words = (d && dw.length===d.ids.length) ? dw : pickChallenge();
+  const restoring = d && dw.length===d.ids.length;
+  C.words = restoring ? dw : pickChallenge();
+  const fq = fitQuestions(C.words);
+  C.q = restoring && d.q!=null && (d.q===-1 || fq.includes(d.q)) ? d.q : (fq.length ? fq[Math.floor(Math.random()*fq.length)] : -1);
+  const q = C.q>=0 ? PROMPTS[C.q] : null;
   const nl = lockedCards().length;
   el.innerHTML = `
    ${nl?`<div class="lockbar" style="margin:0 0 12px"><span>🔒 <b>${nl}</b> word${nl===1?"":"s"} waiting for a sentence to level up</span></div>`:""}
    <div class="card">
-     <div class="muted small">Write one sentence using <b>all</b> of these:</div>
+     <div class="muted small">Write 1 or 2 sentences using <b>all ${C.words.length}</b> of these:</div>
      <div class="reqs" id="reqs">${C.words.map(c=>`<button class="req" data-id="${c.id}"><b>${isLocked(c)?"🔒 ":""}${esc(c.fr)}</b><span>${esc(c.en)}</span></button>`).join("")}</div>
-     <textarea id="cText" class="cin" placeholder="Écris ta phrase ici…" autocapitalize="sentences" spellcheck="false"></textarea>
+     ${q ? `<div class="qopt"><div style="flex:1"><div class="muted small">💡 Optional idea</div><b>${esc(q.fr)}</b><div class="muted small">${esc(q.en)}</div></div><button class="jicon sm" id="qSay" aria-label="Hear the question">🔊</button></div>` : ""}
+     <textarea id="cText" class="cin" placeholder="Écris 1 ou 2 phrases…" autocapitalize="sentences" spellcheck="false"></textarea>
      <div class="accents" id="cAcc">${ACCENTS.map(a=>`<button type="button">${a}</button>`).join("")}</div>
      <div class="row"><button class="btn" id="cSkip">↻ New words</button><button class="btn primary" id="cDone" disabled>Save sentence</button></div>
      <div id="cFb"></div>
    </div>
    <p class="muted small center">Tip: tap the 🎤 on your keyboard to say it instead of typing. Tap a word to hear it or see its example.</p>`;
   wireCreateInput(()=>checkChallenge());
-  if (d && dw.length===d.ids.length) restoreText(d.text, checkChallenge);
+  if (restoring) restoreText(d.text, checkChallenge);
+  if (q) $("#qSay").onclick = ()=>say(q.fr);
+  snapDraft(); save();          // remember these words straight away, so closing the app doesn't change them
   $("#reqs").onclick = e=>{ const b = e.target.closest(".req"); if (!b) return; const c = state.cards.find(x=>x.id===b.dataset.id); if (c) showWordHelp(c); };
   $("#cSkip").onclick = ()=>{ clearDraft("words"); newChallenge(true); };
-  $("#cDone").onclick = ()=>saveSentence({kind:"words", prompt:"", required:C.words});
+  $("#cDone").onclick = ()=>saveSentence({kind:"words", prompt: q ? q.fr : "", required:C.words});
 }
 function checkChallenge(){
   const t = toksOf($("#cText").value);
@@ -1127,7 +1156,9 @@ function newPrompt(fresh){
   if (d && d.must) C.must = d.must.map(id=>state.cards.find(c=>c.id===id)).filter(Boolean);
   const {cards} = promptCards(p);
   const locked = lockedCards().filter(c=>!C.must.includes(c) && cards.includes(c));
-  const ideas = locked.slice(0,3).concat(shuffle(cards.filter(c=>!locked.includes(c) && !C.must.includes(c)))).slice(0,8);
+  const keep = d && d.ideas && (PROMPTS[d.p]===p || (d.p===-1 && p===GENERAL_PROMPT)) ? d.ideas.map(id=>state.cards.find(c=>c.id===id)).filter(c=>c && !C.must.includes(c)) : [];
+  const ideas = keep.length ? keep : locked.slice(0,3).concat(shuffle(cards.filter(c=>!locked.includes(c) && !C.must.includes(c)))).slice(0,8);
+  C.ideas = ideas;
   const nl = lockedCards().length;
   el.innerHTML = `
    ${nl && !C.must.length ? `<div class="lockbar" style="margin:0 0 12px"><span>🔒 <b>${nl}</b> word${nl===1?"":"s"} waiting for a sentence — 🔒 ideas below</span></div>` : ""}
@@ -1149,6 +1180,7 @@ function newPrompt(fresh){
   $("#pSay").onclick = ()=>say(p.fr);
   wireCreateInput(()=>checkPrompt());
   if (d && (PROMPTS[d.p]===p || (d.p===-1 && p===GENERAL_PROMPT))) restoreText(d.text, checkPrompt);
+  snapDraft(); save();          // remember this question + its words straight away, so closing the app doesn't change them
   $("#ideas").onclick = e=>{ const b = e.target.closest(".req"); if (!b) return; const c = state.cards.find(x=>x.id===b.dataset.id); if (c) showWordHelp(c); };
   if ($("#must")) $("#must").onclick = e=>{ const b = e.target.closest(".req"); if (!b) return; const c = state.cards.find(x=>x.id===b.dataset.id); if (c) showWordHelp(c); };
   $("#cSkip").onclick = ()=>{ clearDraft("me"); newPrompt(true); };
@@ -1449,7 +1481,7 @@ function jCard(j, qn){
     </div>`;
   }
   return `<div class="jent ${open?"open":""}" data-id="${j.id}">
-    <div class="jtop"><span class="muted small">${qn?"":time+" · "}${j.kind==="me"?"About me":j.kind==="speak"?"🎙️ Spoken":"Challenge"}</span>${jBadge(j)}</div>
+    <div class="jtop"><span class="muted small">${qn?"":time+" · "}${j.kind==="me"?"About me":j.kind==="speak"?"🎙️ Spoken":"🔒 3 words"}</span>${jBadge(j)}</div>
     <div class="jline"><div class="jsent">${text}</div>
       <div class="jbtns"><button class="jicon sm" data-j="say" aria-label="Play">🔊</button><button class="jicon sm" data-j="edit" aria-label="Edit">✏️</button></div></div>
     ${(j.wordsFr||[]).length?`<div class="jwords">${j.wordsFr.map(w=>`<span class="wchip">${qn?hl(w,qn):esc(w)}</span>`).join("")}</div>`:""}
