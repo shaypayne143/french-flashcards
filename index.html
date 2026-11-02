@@ -30,7 +30,9 @@ header{padding:14px 16px 8px;display:flex;align-items:center;justify-content:spa
 header h1{font-size:20px;margin:0}
 .pill{background:var(--surface2);color:var(--muted);border-radius:999px;padding:4px 10px;font-size:13px;white-space:nowrap}
 .catbar{padding:0 16px 12px;max-width:640px;margin:0 auto;width:100%;display:flex;align-items:center;gap:8px}
-.catbar select{flex:1}
+.catbar select{flex:1;min-width:0}
+.catbar{flex-wrap:wrap}
+#verbFilter{flex:1 1 100%;order:5}
 main{flex:1;padding:0 16px 96px;max-width:640px;width:100%;margin:0 auto}
 nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:5;
   display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
@@ -258,6 +260,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 <div class="catbar" id="catbar">
   <span class="muted small">Practising</span>
   <select id="catFilter" aria-label="Category to practise"></select>
+  <select id="verbFilter" aria-label="Which verb" hidden></select>
   <button class="hardbtn" id="hardBtn" aria-pressed="false">♡ Hard only</button>
 </div>
 
@@ -368,7 +371,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-10-24-3";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-02-1";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -447,9 +450,14 @@ function categories(){
 }
 function ensureCat(name){ name = cleanCat(name); if (!state.cats.includes(name)) state.cats.push(name); return name; }
 const inCat = cat => state.cards.filter(c=>catOf(c)===cat);
+/* all the "Conjugation – verb" categories sit under one "Conjugations" entry in the Practising menu */
+const CONJ_ALL = "__conj";
+const isConjCat = name => /^conjugation/i.test(name||"");
+const inPick = (c, cat) => !cat || (cat===CONJ_ALL ? isConjCat(catOf(c)) : catOf(c)===cat);
+const catLabel = cat => cat===CONJ_ALL ? "Conjugations" : isConjCat(cat) ? cat.replace(/^conjugation\s*[–-]\s*/i, "Conjugation: ") : cat;
 function pool(){
   const cat = state.settings.cat, h = state.settings.hardOnly;
-  return state.cards.filter(c=>(!cat || catOf(c)===cat) && (!h || c.hard));
+  return state.cards.filter(c=>inPick(c, cat) && (!h || c.hard));
 }
 function toggleHard(c){ c.hard = !c.hard; save(); toast(c.hard ? "❤️ Added to hard words" : "Removed from hard words"); return c.hard; }
 const heartBtn = (c, extra="") => `<button class="heart ${c.hard?"on":""} ${extra}" data-heart="${c.id}" aria-label="Mark as hard" aria-pressed="${c.hard}">${c.hard?"♥":"♡"}</button>`;
@@ -467,17 +475,30 @@ document.addEventListener("click", e=>{
 $("#hardBtn").onclick = ()=>{ state.settings.hardOnly = !state.settings.hardOnly; save(); renderers[curView](); };
 function refreshCatFilter(){
   const cats = categories();
-  if (state.settings.cat && !cats.includes(state.settings.cat)) state.settings.cat = "";
+  const verbOf = c => c.replace(/^conjugation\s*[–-]\s*/i,"");
+  const conjCats = cats.filter(isConjCat).sort((a,b)=>strip(verbOf(a).replace(/^(se |s')/,"")).localeCompare(strip(verbOf(b).replace(/^(se |s')/,"")))), plain = cats.filter(c=>!isConjCat(c));
+  if (state.settings.cat && !cats.includes(state.settings.cat) && !(state.settings.cat===CONJ_ALL && conjCats.length)) state.settings.cat = "";
+  const cur = state.settings.cat, inConj = cur===CONJ_ALL || isConjCat(cur);
+  const nConj = state.cards.filter(c=>isConjCat(catOf(c))).length;
   $("#catFilter").innerHTML = `<option value="">All words (${state.cards.length})</option>` +
-    cats.map(c=>`<option value="${esc(c)}">${esc(c)} (${inCat(c).length})</option>`).join("");
-  $("#catFilter").value = state.settings.cat;
-  const nh = state.cards.filter(c=>c.hard && (!state.settings.cat || catOf(c)===state.settings.cat)).length;
+    plain.map(c=>`<option value="${esc(c)}">${esc(c)} (${inCat(c).length})</option>`).join("") +
+    (conjCats.length ? `<option value="${CONJ_ALL}">🔤 Conjugations (${nConj})</option>` : "");
+  $("#catFilter").value = inConj ? CONJ_ALL : cur;
+  const vf = $("#verbFilter");                        // second menu: which verb (only when Conjugations is picked)
+  vf.hidden = !inConj;
+  if (inConj){
+    vf.innerHTML = `<option value="${CONJ_ALL}">Verb: all of them (${nConj})</option>` +
+      conjCats.map(c=>`<option value="${esc(c)}">Verb: ${esc(verbOf(c))} (${inCat(c).length})</option>`).join("");
+    vf.value = cur;
+  }
+  const nh = state.cards.filter(c=>c.hard && inPick(c, state.settings.cat)).length;
   const hb = $("#hardBtn"); hb.classList.toggle("on", !!state.settings.hardOnly);
   hb.textContent = (state.settings.hardOnly ? "♥" : "♡") + " Hard only (" + nh + ")";
   hb.setAttribute("aria-pressed", !!state.settings.hardOnly);
   $("#catList").innerHTML = cats.filter(c=>c!==UNCAT).map(c=>`<option value="${esc(c)}">`).join("");
 }
-$("#catFilter").onchange = e=>{ state.settings.cat = e.target.value; save(); renderers[curView](); };
+$("#catFilter").onchange = e=>{ state.settings.cat = e.target.value; save(); refreshCatFilter(); renderers[curView](); };
+$("#verbFilter").onchange = e=>{ state.settings.cat = e.target.value; save(); refreshCatFilter(); renderers[curView](); };
 
 /* ---------- spaced repetition ---------- */
 const LOCK_LVL = 3;
@@ -582,7 +603,7 @@ $("#nav").addEventListener("click", e=>{ const b = e.target.closest("button"); i
 
 function needCards(el, min){
   if (pool().length >= min) return false;
-  const cat = state.settings.cat;
+  const cat = state.settings.cat ? catLabel(state.settings.cat) : "";
   if (!state.cards.length){
     el.innerHTML = `<div class="card center"><h2>👋 Let's add your first words</h2>
       <p class="muted">Go to the 📚 Words tab and tap “＋ Add word”: type them in, paste from a photo, or import a CSV file.</p>
@@ -617,7 +638,7 @@ function nextStudy(){
     const when = isFinite(next) ? new Date(next).toLocaleString([], {weekday:"short", hour:"2-digit", minute:"2-digit"}) : "";
     const waiting = newWaiting(), lim = state.settings.newPerDay===0 ? 0 : (state.settings.newPerDay||15);
     el.innerHTML = `<div class="card center"><h2>🎉 All caught up</h2>
-      ${waiting && lim ? `<p>You've learned today's <b>${newLog().ids.length}</b> new word${newLog().ids.length===1?"":"s"}.<br><span class="muted">${waiting} more waiting${state.settings.cat?` in ${esc(state.settings.cat)}`:""}.</span></p>
+      ${waiting && lim ? `<p>You've learned today's <b>${newLog().ids.length}</b> new word${newLog().ids.length===1?"":"s"}.<br><span class="muted">${waiting} more waiting${state.settings.cat?` in ${esc(catLabel(state.settings.cat))}`:""}.</span></p>
         <div class="row" style="margin-bottom:10px"><button class="btn" id="more5">＋5 new words</button><button class="btn" id="more10">＋10 new words</button></div>` : ""}
       <p class="muted">Next review: ${esc(when)}</p>
       <button class="btn primary" id="practise">Practise anyway (10 cards)</button></div>`;
@@ -1880,7 +1901,7 @@ function newCategory(){
 }
 function groupAction(act, cat){
   if (!cat) return;
-  if (act==="practise"){ state.settings.cat = cat; state.settings.hardOnly = false; save(); go("study"); toast("Practising: " + cat); return; }
+  if (act==="practise"){ state.settings.cat = cat; state.settings.hardOnly = false; save(); go("study"); toast("Practising: " + catLabel(cat)); return; }
   if (act!=="menu") return;
   const n = inCat(cat).length;
   openModal(`<h2>${esc(cat)}</h2><p class="muted small" style="margin-top:-6px">${n} word${n===1?"":"s"}</p>
