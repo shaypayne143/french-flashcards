@@ -250,6 +250,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 @keyframes spkPulse{0%,100%{box-shadow:0 0 0 0 rgba(214,69,69,.5)}50%{box-shadow:0 0 0 12px rgba(214,69,69,0)}}
 .spk-live{color:var(--muted);font-size:13px;padding:0 16px}
 .qopt{display:flex;align-items:center;gap:8px;margin:12px 0 2px;padding:10px 12px;border-radius:12px;background:var(--surface2);line-height:1.35}
+.jwrite .cin{min-height:130px}
 </style>
 </head>
 <body>
@@ -371,7 +372,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-02-1";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-03-1";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -1396,8 +1397,11 @@ function saveSentence({kind, prompt, required}){
 function renderJournal(){
   const el = $("#createArea"), J = state.journal;
   const todo = J.filter(j=>!j.checked).length;
-  if (!J.length){
-    el.innerHTML = `<div class="card center"><h2>📓 Your journal is empty</h2><p class="muted">Every sentence you write in Word challenge or About me is saved here, day by day.</p></div>`; return;
+  const typing = document.activeElement && document.activeElement.id==="jFree" ? {s:document.activeElement.selectionStart, e:document.activeElement.selectionEnd} : null;
+  if (!J.length && !JV.writing){
+    el.innerHTML = `<div class="card center"><h2>📓 Your journal is empty</h2><p class="muted">Write anything you like, or use 🔒 3 words and 🎙️ Speak — every sentence is saved here, day by day.</p>
+      <button class="btn primary" id="jNew" style="margin-top:6px">✏️ Write in my journal</button></div>`;
+    $("#jNew").onclick = ()=>{ JV.writing = true; renderJournal(); setTimeout(()=>$("#jFree") && $("#jFree").focus(), 30); }; return;
   }
   const keepFocus = document.activeElement && document.activeElement.id==="jSearch";
   const q = JV.q.trim(), qn = q ? strip(norm(q)) : "";
@@ -1416,7 +1420,7 @@ function renderJournal(){
   } else {
     body = list.length ? list.map(j=>jCard(j)).join("")
       : `<div class="card center"><p style="margin:4px 0">${JV.day===dayKey(Date.now()) ? "Nothing written today yet." : "Nothing written on this day."}</p>
-         <button class="btn primary sm" id="jWrite" style="margin-top:6px">🎲 Write a sentence</button></div>`;
+         <div class="row" style="margin-top:6px;justify-content:center;gap:6px"><button class="btn sm" id="jWrite">🔒 3 words</button><button class="btn primary sm" id="jNew2">✏️ Write freely</button></div></div>`;
   }
   el.innerHTML = `
    <div class="jhead">
@@ -1424,6 +1428,13 @@ function renderJournal(){
      <button class="jicon" id="jExport" ${todo?"":"disabled"} aria-label="Export for corrections" title="Export for Claude to correct">📤${todo?`<span class="jcount">${todo}</span>`:""}</button>
      <button class="jicon" id="jImport" aria-label="Import corrections" title="Import corrections">📥</button>
    </div>
+   ${JV.writing ? `<div class="card jwrite">
+       <div class="row" style="align-items:center;margin-bottom:6px"><b style="flex:1">✏️ Write in my journal</b><button class="jicon sm" id="jFreeX" aria-label="Close">✕</button></div>
+       <div class="muted small" style="margin-bottom:8px">Anything you like: your day, a thought, practice sentences. No words or questions needed.</div>
+       <textarea id="jFree" class="cin" placeholder="Écris ce que tu veux…" autocapitalize="sentences" spellcheck="false">${esc((state.jDraft||""))}</textarea>
+       <div class="accents" id="jFreeAcc">${ACCENTS.map(a=>`<button type="button">${a}</button>`).join("")}</div>
+       <div class="row"><button class="btn" id="jFreeSay">🔊 Hear it</button><button class="btn primary" id="jFreeSave" ${(state.jDraft||"").trim()?"":"disabled"}>Save to journal</button></div>
+     </div>` : (q ? "" : `<button class="btn primary" id="jNew" style="width:100%;margin-bottom:12px">✏️ Write in my journal</button>`)}
    ${rwItems().length && !q ? (()=>{ const n = rwDue().length; return `<button class="rwbtn ${n?"":"quiet"}" id="jRewrite">🔁 Rewrite practice<span>${n ? n+" due" : "all done ✓"}</span></button>`; })() : ""}
    ${q ? `<div class="muted small" style="margin:0 2px 10px">${list.length} result${list.length===1?"":"s"} for “${esc(q)}”</div>` : `
    <div class="daynav">
@@ -1432,6 +1443,7 @@ function renderJournal(){
      <button class="jicon" id="jNext" ${next?"":"disabled"} aria-label="Next day">›</button>
    </div>`}
    ${body}`;
+  wireFreeWrite(typing);
   const s = $("#jSearch");
   s.oninput = ()=>{ JV.q = s.value; const pos = s.selectionStart; renderJournal(); const n = $("#jSearch"); n.focus(); try{ n.setSelectionRange(pos,pos); }catch(e){} };
   if (keepFocus) s.focus();
@@ -1443,6 +1455,7 @@ function renderJournal(){
     if (next) $("#jNext").onclick = ()=>{ JV.day = next; renderJournal(); };
     $("#jToday").onclick = ()=>{ JV.day = dayKey(Date.now()); renderJournal(); };
     if ($("#jWrite")) $("#jWrite").onclick = ()=>{ C.mode = "words"; startCreate(); };
+    if ($("#jNew2")) $("#jNew2").onclick = ()=>{ JV.writing = true; renderJournal(); setTimeout(()=>$("#jFree") && $("#jFree").focus(), 30); };
   }
   el.querySelectorAll(".jent").forEach(card=>card.onclick = e=>{
     const j = state.journal.find(x=>x.id===card.dataset.id); if (!j) return;
@@ -1458,7 +1471,33 @@ function renderJournal(){
     if (b.dataset.j==="edit") editJournal(j);
   });
 }
-const JV = {day:"", q:""};
+const JV = {day:"", q:"", writing:false};
+/* free writing: type anything into the journal, no activity needed (the draft survives closing the app) */
+function wireFreeWrite(typing){
+  if ($("#jNew")) $("#jNew").onclick = ()=>{ JV.writing = true; renderJournal(); setTimeout(()=>$("#jFree") && $("#jFree").focus(), 30); };
+  const inp = $("#jFree"); if (!inp) return;
+  if (typing){ inp.focus(); try{ inp.setSelectionRange(typing.s, typing.e); }catch(e){} }      // a re-draw (e.g. grammar check finishing) doesn't interrupt typing
+  let t = null;
+  inp.oninput = ()=>{ state.jDraft = inp.value; $("#jFreeSave").disabled = !inp.value.trim(); clearTimeout(t); t = setTimeout(save, 500); };
+  $("#jFreeAcc").onmousedown = e=>e.preventDefault();
+  $("#jFreeAcc").onclick = e=>{
+    const b = e.target.closest("button"); if (!b) return;
+    const a = inp.selectionStart ?? inp.value.length, z = inp.selectionEnd ?? a;
+    inp.value = inp.value.slice(0,a) + b.textContent + inp.value.slice(z); inp.setSelectionRange(a+1, a+1); inp.focus(); inp.oninput();
+  };
+  $("#jFreeSay").onclick = ()=>{ if (inp.value.trim()) say(inp.value.trim()); };
+  $("#jFreeX").onclick = ()=>{ JV.writing = false; save(); renderJournal(); };
+  $("#jFreeSave").onclick = ()=>{
+    const text = inp.value.trim(); if (!text) return;
+    const ids = [...new Set(wordsUsedIn(text).map(c=>c.id))];
+    state.journal.unshift({id:uid(), date:Date.now(), kind:"free", prompt:"", text, words:ids,
+      wordsFr: ids.map(id=>(state.cards.find(c=>c.id===id)||{}).fr).filter(Boolean),
+      corrected:"", notes:"", checked:false, lt: checkOn() ? {status:"pending"} : null});
+    state.jDraft = ""; JV.writing = false; JV.q = ""; JV.day = dayKey(Date.now());
+    save(); renderJournal(); paintCreateSeg(); toast("✓ Saved to your journal");
+    processPending();
+  };
+}
 const dayKey = t => { const d = new Date(t); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
 function dayLabel(k){
   const today = dayKey(Date.now()), yest = dayKey(Date.now()-DAY);
@@ -1502,7 +1541,7 @@ function jCard(j, qn){
     </div>`;
   }
   return `<div class="jent ${open?"open":""}" data-id="${j.id}">
-    <div class="jtop"><span class="muted small">${qn?"":time+" · "}${j.kind==="me"?"About me":j.kind==="speak"?"🎙️ Spoken":"🔒 3 words"}</span>${jBadge(j)}</div>
+    <div class="jtop"><span class="muted small">${qn?"":time+" · "}${j.kind==="me"?"About me":j.kind==="speak"?"🎙️ Spoken":j.kind==="free"?"✏️ Free writing":"🔒 3 words"}</span>${jBadge(j)}</div>
     <div class="jline"><div class="jsent">${text}</div>
       <div class="jbtns"><button class="jicon sm" data-j="say" aria-label="Play">🔊</button><button class="jicon sm" data-j="edit" aria-label="Edit">✏️</button></div></div>
     ${(j.wordsFr||[]).length?`<div class="jwords">${j.wordsFr.map(w=>`<span class="wchip">${qn?hl(w,qn):esc(w)}</span>`).join("")}</div>`:""}
@@ -1789,6 +1828,7 @@ const SORTS = {
   strong:(a,b)=>b.box-a.box || (b.right-b.wrong)-(a.right-a.wrong),
   hard:(a,b)=>(b.hard-a.hard) || a.box-b.box
 };
+const CAT_SORTS = [["mine","Sort: my order"],["best","Sort: most known first"],["least","Sort: least known first"],["az","Sort: A–Z"]];
 const SORT_LABELS = [["fr","French A–Z"],["en","English A–Z"],["new","Newest first"],["weak","Weakest first"],["strong","Best known first"],["hard","Hard words first"]];
 function liHtml(c, showCat){
   return `<li data-id="${c.id}" class="${selected.has(c.id)?"on":""}">
@@ -1850,21 +1890,31 @@ function renderWords(){
       ${selectMode ? "" : `<button class="btn" style="width:100%;margin-top:12px" id="addHere">＋ Add a word to ${esc(cat)}</button>`}
     </div>${selBarHtml()}`;
   } else {
-    const cats = categories();
-    body.innerHTML = `<div class="row" style="margin:12px 0 10px;align-items:center">
-        <span class="muted small" style="flex:1">${cats.length} categor${cats.length===1?"y":"ies"} · tap one to open it</span>
+    const cs = state.settings.catSort || "mine", stat = {};
+    const cats = categories().slice();
+    cats.forEach(c=>stat[c] = catStats(c));
+    if (cs==="best")  cats.sort((a,b)=>stat[b].pct-stat[a].pct || stat[b].n-stat[a].n);
+    if (cs==="least") cats.sort((a,b)=>stat[a].pct-stat[b].pct || stat[b].n-stat[a].n);
+    if (cs==="az")    cats.sort((a,b)=>strip(a).localeCompare(strip(b),"fr"));
+    if (cs!=="mine"){ const conj = cats.filter(isConjCat); cats.splice(0, cats.length, ...cats.filter(c=>!isConjCat(c)), ...conj); }   // conjugations stay together at the end
+    body.innerHTML = `<div class="row" style="margin:12px 0 10px;align-items:center;gap:8px">
+        <select id="catSortSel" aria-label="Sort categories" style="flex:1;min-width:0">${CAT_SORTS.map(([v,l])=>`<option value="${v}" ${cs===v?"selected":""}>${l}</option>`).join("")}</select>
         <button class="btn sm" id="newCatBtn">+ Category</button></div>
-      <div class="catgrid">${cats.map(cat=>{ const s = catStats(cat);
+      <div class="muted small" style="margin:-4px 2px 10px">${cats.length} categor${cats.length===1?"y":"ies"} · tap one to open it</div>
+      <div class="catgrid">${cats.map(cat=>{ const s = stat[cat];
         return `<button class="cattile" data-open="${esc(cat)}">
           <span class="nm">${esc(cat)}</span>
           <span class="muted small">${s.n} word${s.n===1?"":"s"}${s.hard?` · <span style="color:var(--bad)">♥ ${s.hard}</span>`:""}</span>
-          <span class="meter" title="${s.pct}% learned"><div style="width:${s.pct}%"></div></span></button>`; }).join("")}</div>
+          <span class="meter" title="${s.pct}% learned"><div style="width:${s.pct}%"></div></span>${cs==="best"||cs==="least"?`<span class="muted small">${s.pct}% known</span>`:""}</button>`; }).join("")}</div>
       ${cats.length ? "" : `<p class="muted center">No words yet — tap “＋ Add word”.</p>`}`;
   }
 }
 $("#search").oninput = ()=>{ selectMode = false; selected.clear(); renderWords(); };
 $("#addOpen").onclick = ()=>openAdd(openCat);
-$("#wordsBody").addEventListener("change", e=>{ if (e.target.id==="sortSel"){ state.settings.sort = e.target.value; save(); renderWords(); } });
+$("#wordsBody").addEventListener("change", e=>{
+  if (e.target.id==="sortSel"){ state.settings.sort = e.target.value; save(); renderWords(); }
+  if (e.target.id==="catSortSel"){ state.settings.catSort = e.target.value; save(); renderWords(); }
+});
 $("#wordsBody").addEventListener("click", e=>{
   const t = e.target;
   const tile = t.closest("[data-open]");
