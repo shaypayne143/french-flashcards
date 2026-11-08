@@ -340,7 +340,9 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 .lvup{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:var(--good)}
 .lvpill{background:color-mix(in srgb,var(--good) 25%,var(--surface));color:var(--text);padding:3px 10px;border-radius:99px;font-size:13px;font-weight:700}
 .cin.okb{border-color:var(--good)}.cin.nob{border-color:var(--bad)}
-.newb{font-size:10px;font-weight:700;color:#0f1220;background:#a9b9ff;border-radius:99px;padding:1px 6px;vertical-align:2px}
+.newb,.req .newb{font-size:10px;font-weight:800;letter-spacing:.04em;color:#fff;background:#3554d1;border-radius:99px;padding:2px 7px;vertical-align:2px}
+.selAdd{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;display:none;align-items:center;gap:6px;max-width:calc(100% - 32px);padding:12px 18px;border-radius:99px;border:0;background:#3554d1;color:#fff;font:inherit;font-size:15px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.35);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.selAdd.on{display:inline-flex}.selAdd.have{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
 .twist{display:flex;gap:10px;align-items:center;margin:10px 0 2px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,#7b5cf0 18%,var(--surface));border:1px solid color-mix(in srgb,#7b5cf0 55%,var(--surface))}
 .twist .tw-h{font-size:11px;font-weight:700;letter-spacing:.5px;color:#8f6ff5}.twist .tw-s{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
 .twist.done{background:color-mix(in srgb,var(--good) 18%,var(--surface));border-color:var(--good)}.twist.done .tw-s{color:var(--good)}
@@ -480,11 +482,12 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <input type="file" id="csvFile" accept=".csv,.tsv,.txt,text/csv,text/plain,text/tab-separated-values" hidden>
 <div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
 <div class="toast" id="toast"></div>
+<button class="selAdd" id="selAdd" type="button"></button>
 
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-09-5";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-09-8";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -617,7 +620,9 @@ $("#verbFilter").onchange = e=>{ state.settings.cat = e.target.value; save(); re
 const LOCK_LVL = 3;
 // 🔒 from level 3 up, every level needs a fresh sentence (written in Create) before it can go higher
 const isLocked = c => !!state.settings.lock && !/^conjugation/i.test(c.cat||"") && c.box >= LOCK_LVL && c.box < INTERVALS.length-1 && !c.sentOK;
-const lockedCards = () => pool().filter(isLocked);
+// "waiting for a sentence" = locked AND due — a word that just levelled up waits until its next level is due
+const needsSentence = c => isLocked(c) && c.due <= Date.now();
+const lockedCards = () => pool().filter(needsSentence);
 /* daily review log (for the Overview and the weekly summary) */
 function dayLog(){ state.daily = state.daily || {}; const k = dayKey(Date.now()); return state.daily[k] = state.daily[k] || {rev:0, ok:0, bad:0}; }
 /* skills: every check of à/de, gender, accents, verb endings… is logged so Weak spots can show them */
@@ -1158,7 +1163,10 @@ function startType(){
   if (needCards(el,1)) return;
   const usable = pool().filter(typeable);
   if (!usable.length){ el.innerHTML = `<div class="card center"><p>No words to type in this category.</p></div>`; return; }
-  const want = Math.min(10, usable.length), set = pickMatch(Math.min(20, pool().length)).filter(typeable).slice(0, want);
+  const want = Math.min(10, usable.length);
+  const carry = (state.typeCarry||[]).map(id=>usable.find(c=>c.id===id)).filter(Boolean).slice(0, want);   // words you missed last round come first
+  state.typeCarry = [];
+  const set = carry.concat(pickMatch(Math.min(20, pool().length)).filter(c=>typeable(c) && !carry.includes(c))).slice(0, want);
   shuffle(usable).forEach(c=>{ if (set.length < want && !set.includes(c)) set.push(c); });
   T.queue = set; T.total = T.queue.length; T.i = 0; T.right = 0; T.level = 0; T.retried = new Set();
   nextType();
@@ -1170,6 +1178,7 @@ function nextType(){
     el.innerHTML = `<div class="card center"><h2>${T.right===T.total?"Perfect! 🌟":"Done!"}</h2>
       <p style="font-size:28px;font-weight:650;margin:6px 0">${T.right} / ${T.total}</p>
       <p class="muted">${T.level ? `▲ ${T.level} word${T.level===1?"":"s"} levelled up` : "Keep going — correct answers level your words up"}</p>
+      ${(state.typeCarry||[]).length ? `<p class="muted small">↻ The ${state.typeCarry.length} word${state.typeCarry.length===1?"":"s"} you missed will come first next round.</p>` : ""}
       <div class="row"><button class="btn" id="tSwitch">⇄ Change game</button><button class="btn primary" id="tAgain">Play again</button></div></div>`;
     $("#tAgain").onclick = startType; $("#tSwitch").onclick = ()=>{ matchChosen = false; startMatch(); };
     paintMStats(); return;
@@ -1219,7 +1228,9 @@ function checkType(){
       if (r!=="locked" && c.box > b0) T.level++; }
   } else {
     grade(c, false);
-    if (!T.retried.has(c.id)){ T.retried.add(c.id); T.queue.push(c); T.total++; }   // you'll get it again before the end
+    state.typeCarry = state.typeCarry || [];
+    if (!state.typeCarry.includes(c.id)) state.typeCarry.push(c.id);   // one chance per round — it comes back next round
+    save();
   }
   inp.classList.add(ok ? "okb" : "nob");
   const msg = verdict==="right" ? "✓ Correct!" : verdict==="accents" ? (ok ? "Nearly — check the accents" : "Check the accents") : verdict==="article" ? "Check le / la" : "Not quite";
@@ -1666,15 +1677,17 @@ function pickChallenge(){
   const add = c => { pick.push(c); used.add(cardCore(c).core); };
   (C.force||[]).forEach(c=>{ if (!isConj(c) && pick.length<n && fits(c)) add(c); });
   C.force = null;
-  const recent = p.filter(c=>(c.added||0) >= now - 7*DAY && fits(c));      // always practise one word you added this week
-  if (!pick.length && recent.length) add(shuffle(recent.filter(isLocked))[0] || shuffle(recent)[0]);
+  const recentIds = new Set((state.journal||[]).filter(j=>j.date >= now - 12*3600e3).flatMap(j=>j.words||[]));
+  const justUsed = c => prev.has(c.id) || recentIds.has(c.id) || (c.sentAt||0) >= now - 12*3600e3;   // in the last round, or in any journal entry from the last 12 hours
+  const recent = p.filter(c=>(c.added||0) >= now - 7*DAY && fits(c) && !justUsed(c));      // practise one word you added this week (not one you just used)
+  if (!pick.length && recent.length) add(shuffle(recent.filter(needsSentence))[0] || shuffle(recent.filter(c=>c.due<=now))[0] || shuffle(recent)[0]);
   if (!pick.length){                                   // start with a 🔒 word, else a due word, else any
     const fresh = c => !prev.has(c.id);
-    const first = shuffle(p.filter(c=>isLocked(c) && fresh(c)))[0] || shuffle(p.filter(isLocked))[0] || shuffle(p.filter(c=>c.due<=now))[0] || shuffle(p.slice())[0];
+    const first = shuffle(p.filter(c=>needsSentence(c) && !justUsed(c)))[0] || shuffle(p.filter(c=>c.due<=now && !justUsed(c)))[0] || shuffle(p.filter(c=>!justUsed(c)))[0] || shuffle(p.filter(c=>c.due<=now))[0] || shuffle(p.slice())[0];
     if (first) add(first);
   }
   while (pick.length < n){
-    const score = c => (isLocked(c) ? 0 : c.due<=now ? 8 : 12) + Math.min(...pick.map(x=>related(x,c))) + (prev.has(c.id) ? 6 : 0) + Math.random()*1.5;
+    const score = c => (needsSentence(c) ? 0 : c.due<=now ? 8 : 12) + Math.min(...pick.map(x=>related(x,c))) + (prev.has(c.id) ? 6 : 0) + (justUsed(c) ? 10 : 0) + Math.random()*1.5;
     const next = p.filter(fits).map(c=>[score(c), c]).sort((x,y)=>x[0]-y[0])[0];
     if (!next) break; add(next[1]);
   }
@@ -2008,7 +2021,7 @@ function saveSentence({kind, prompt, required}){
   let leveled = 0; const unlocked = [];
   ids.forEach(id=>{
     const c = state.cards.find(x=>x.id===id); if (!c) return;
-    c.sent = (c.sent||0) + 1;
+    c.sent = (c.sent||0) + 1; c.sentAt = now;
     const wasLocked = ok && isLocked(c);
     if (ok) c.sentOK = true;
     if (ok && c.due <= now){ grade(c, true); leveled++; if (wasLocked) unlocked.push({fr:c.fr, up:c.box}); }
@@ -2781,6 +2794,41 @@ function addWord(fr,en,cat,pron,ex,exEn,exPron){
   if (state.cards.some(c=>norm(c.fr)===norm(fr))) return false;
   state.cards.push(mk([fr,en,pron||"",ex||"",exEn||"",exPron||""], ensureCat(cat))); return true;
 }
+/* highlight a word anywhere → "＋ Add … as a new word" */
+let selText = "";
+function currentSelection(){
+  const a = document.activeElement;
+  if (a && (a.tagName==="TEXTAREA" || (a.tagName==="INPUT" && /^(text|search)$/i.test(a.type)))){
+    if (a.closest("#modal")) return "";
+    let v = ""; try { v = a.value.slice(a.selectionStart, a.selectionEnd); } catch(e){}
+    if (v) return v;
+  }
+  const sel = window.getSelection(); if (!sel || sel.isCollapsed) return "";
+  const n = sel.anchorNode && (sel.anchorNode.nodeType===1 ? sel.anchorNode : sel.anchorNode.parentElement);
+  if (n && n.closest && n.closest("#modal,#selAdd")) return "";
+  return sel.toString();
+}
+function updateSelAdd(){
+  const b = $("#selAdd"); if (!b) return;
+  const t = currentSelection().replace(/\s+/g," ").replace(/^[\s.,;:!?«»"“”()…-]+|[\s.,;:!?«»"“”()…-]+$/g,"").trim();
+  if (!t || t.length > 40 || t.split(" ").length > 5 || $("#modalBg").classList.contains("on")){ b.classList.remove("on"); selText = ""; return; }
+  selText = t;
+  const have = state.cards.some(c=>norm(c.fr)===norm(t) || norm(cardCore(c).core||"")===norm(t));
+  b.classList.toggle("have", have);
+  b.textContent = have ? `✓ “${t}” is already in your words` : `＋ Add “${t}” as a new word`;
+  b.classList.add("on");
+}
+let selT = null;
+document.addEventListener("selectionchange", ()=>{ clearTimeout(selT); selT = setTimeout(updateSelAdd, 250); });
+document.addEventListener("pointerdown", e=>{ if (!e.target.closest("#selAdd")) setTimeout(updateSelAdd, 300); });
+$("#selAdd").addEventListener("pointerdown", e=>e.preventDefault());   // keep the highlight while tapping
+$("#selAdd").addEventListener("click", ()=>{
+  const t = selText; if (!t) return;
+  $("#selAdd").classList.remove("on");
+  if ($("#selAdd").classList.contains("have")){ toast("Already in your words"); return; }
+  try { window.getSelection().removeAllRanges(); } catch(e){}
+  openAdd(); const f = $("#aFr"); f.value = t; f.dispatchEvent(new Event("input", {bubbles:true})); $("#aEn").focus();
+});
 function openAdd(presetCat){
   let added = 0;
   const startCat = presetCat || state.settings.lastCat || "";
