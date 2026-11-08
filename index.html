@@ -13,27 +13,34 @@
 :root{
   --bg:#f5f6fa; --surface:#ffffff; --surface2:#eef0f7; --text:#1b1d29; --muted:#646a80;
   --accent:#2b4cc4; --accent-ink:#ffffff; --good:#1f9d55; --bad:#d64545; --warn:#c98a00;
-  --border:#dde0ea; --shadow:0 4px 16px rgba(20,25,60,.08);
+  --border:#dde0ea; --shadow:0 4px 16px rgba(20,25,60,.08); --strong:#2b4cc4;
 }
 @media (prefers-color-scheme: dark){
-  :root{
-    --bg:#11131b; --surface:#1b1e2a; --surface2:#252939; --text:#eceef6; --muted:#9aa0b8;
+  :root:not([data-theme="light"]){
+    --bg:#0f1220; --surface:#1a1e30; --surface2:#232842; --text:#eef0f8; --muted:#a3a9c2;
     --accent:#6f8cff; --accent-ink:#0d1020; --good:#3ccf7d; --bad:#ff6b6b; --warn:#f2b632;
-    --border:#2e3346; --shadow:0 4px 16px rgba(0,0,0,.35);
+    --border:#2c3250; --shadow:0 4px 16px rgba(0,0,0,.35); --strong:#3554d1;
   }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1220; --surface:#1a1e30; --surface2:#232842; --text:#eef0f8; --muted:#a3a9c2;
+  --accent:#6f8cff; --accent-ink:#0d1020; --good:#3ccf7d; --bad:#ff6b6b; --warn:#f2b632;
+  --border:#2c3250; --shadow:0 4px 16px rgba(0,0,0,.35); --strong:#3554d1;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%}
 body{background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   display:flex;flex-direction:column;min-height:100vh}
-header{padding:14px 16px 8px;display:flex;align-items:center;justify-content:space-between;gap:8px;max-width:640px;width:100%;margin:0 auto}
-header h1{font-size:20px;margin:0}
+header{padding:14px 16px 8px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;max-width:640px;width:100%;margin:0 auto}
+header h1{font-size:21px;margin:0;text-align:center;white-space:nowrap}
+.hright{justify-self:end;display:flex;gap:6px;align-items:center}
+.hbtn{justify-self:start;width:44px;height:44px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
 .pill{background:var(--surface2);color:var(--muted);border-radius:999px;padding:4px 10px;font-size:13px;white-space:nowrap}
 .catbar{padding:0 16px 12px;max-width:640px;margin:0 auto;width:100%;display:flex;align-items:center;gap:8px}
 .catbar select{flex:1;min-width:0}
 .catbar{flex-wrap:wrap}
 #verbFilter{flex:1 1 100%;order:5}
-main{flex:1;padding:0 16px 96px;max-width:640px;width:100%;margin:0 auto}
+main{flex:1;padding:0 16px 32px;max-width:640px;width:100%;margin:0 auto}
 nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:5;
   display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
 nav button{flex:1;min-width:0;background:none;border:0;color:var(--muted);font:inherit;font-size:11px;padding:6px 2px;
@@ -263,13 +270,84 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 .prepsteps{margin:10px 0 0;padding-left:22px;line-height:1.5}.prepsteps li{margin:3px 0}.prepsteps li.bad{color:var(--bad);font-weight:600}.prepsteps .why{font-weight:400}
 .prepfull{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--surface2);font-size:18px;font-weight:600}
 .preptab{border-collapse:collapse;width:100%;text-align:center}.preptab th,.preptab td{border:1px solid var(--border);padding:7px 4px}.preptab th{color:var(--muted);font-weight:600}
+/* ☰ menu */
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(300px,84vw);background:var(--surface);border-right:1px solid var(--border);z-index:30;
+  transform:translateX(-105%);transition:transform .22s ease;padding:16px 12px calc(16px + env(safe-area-inset-bottom));overflow-y:auto;
+  display:flex;flex-direction:column;gap:2px;box-shadow:12px 0 32px rgba(0,0,0,.3)}
+.drawer.open{transform:none}
+.drawer-bg{position:fixed;inset:0;background:rgba(4,6,14,.55);z-index:29}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;padding:0 4px 10px;font-size:18px}
+.drawer button[data-go]{display:flex;align-items:center;gap:12px;min-height:48px;padding:0 12px;border:0;border-radius:12px;background:none;color:var(--text);font:inherit;font-weight:600;text-align:left;cursor:pointer;flex:0 0 auto}
+.drawer button[data-go] .ic{width:24px;display:flex;align-items:center;justify-content:center;flex:0 0 24px}
+.drawer button[data-go].on{background:var(--strong);color:#fff}
+.dsep{height:1px;background:var(--border);margin:6px 4px;flex:0 0 auto}
+.dhead{margin:4px 12px 2px;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+#cModeSeg{display:none}
+/* overview */
+.ov-today{background:var(--strong);color:#fff;border-radius:20px;padding:18px;margin-bottom:14px;display:flex;flex-direction:column;gap:12px}
+.ov-today .big2{font-size:28px;font-weight:700;line-height:1.1}
+.ov-chips{display:flex;gap:8px;flex-wrap:wrap}.ov-chips span{background:rgba(255,255,255,.18);padding:5px 10px;border-radius:99px;font-size:13px}
+.ov-today .btn{background:#fff;color:#2b46b8;border:0;font-weight:700}
+.ov-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.ov-stat{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:12px}.ov-stat b{display:block;font-size:22px}.ov-stat span{font-size:12px;color:var(--muted)}
+.bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden}.bar>div{height:100%;border-radius:99px}
+.b-lo{background:#f08a4b}.b-mid{background:#e8b23c}.b-hi{background:var(--accent)}
+.wk{display:flex;flex-direction:column;gap:5px;padding:9px 0}
+button.wk{width:100%;background:none;border:0;border-bottom:1px solid var(--border);color:var(--text);font:inherit;text-align:left;cursor:pointer;padding:12px 0}
+.wk-top{display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:600}
+.secthead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.secthead h2{margin:0;font-size:17px}
+.linkbtn{background:none;border:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:6px;min-height:36px}
+.hrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border)}
+.hrow .w{flex:1;min-width:0}.hrow .w b{display:block;word-break:break-word}
+.chiprow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chipb{min-height:36px;padding:0 14px;border-radius:99px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-size:14px;cursor:pointer}
+.chipb.on{background:var(--strong);border-color:var(--strong);color:#fff;font-weight:600}
+.sesslabel{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:8px 12px;border-radius:12px;background:var(--surface2);font-size:14px;font-weight:600}
+.btn .sub{display:block;font-size:12px;font-weight:500;opacity:.85}
+.grade3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.grade3 .btn{min-height:60px;flex-direction:column;line-height:1.2}
+.btn.easy{background:color-mix(in srgb,var(--accent) 20%,var(--surface));border-color:var(--accent);color:var(--text)}
+.tally{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));text-align:center;margin-top:12px;padding:10px;border-radius:14px;background:var(--surface);border:1px solid var(--border)}
+.tally b{display:block;font-size:19px}.tally span{font-size:12px;color:var(--muted)}
+.flip{height:250px}
+.gamepick{display:flex;gap:14px;align-items:center;width:100%;padding:14px;margin-bottom:10px;border-radius:18px;background:var(--surface2);border:2px solid var(--border);color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.gamepick:hover{border-color:var(--accent)}.gamepick .gi{font-size:26px;width:48px;height:48px;flex:0 0 48px;border-radius:14px;background:var(--surface);display:flex;align-items:center;justify-content:center}
+.gamepick b{display:block;font-size:16px}.gamepick .muted{display:block;margin-top:2px}
+.lvup{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:var(--good)}
+.lvpill{background:color-mix(in srgb,var(--good) 25%,var(--surface));color:var(--text);padding:3px 10px;border-radius:99px;font-size:13px;font-weight:700}
+.cin.okb{border-color:var(--good)}.cin.nob{border-color:var(--bad)}
+.newb{font-size:10px;font-weight:700;color:#0f1220;background:#a9b9ff;border-radius:99px;padding:1px 6px;vertical-align:2px}
+.twist{display:flex;gap:10px;align-items:center;margin:10px 0 2px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,#7b5cf0 18%,var(--surface));border:1px solid color-mix(in srgb,#7b5cf0 55%,var(--surface))}
+.twist .tw-h{font-size:11px;font-weight:700;letter-spacing:.5px;color:#8f6ff5}.twist .tw-s{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
+.twist.done{background:color-mix(in srgb,var(--good) 18%,var(--surface));border-color:var(--good)}.twist.done .tw-s{color:var(--good)}
+.simwarn{margin:8px 0 10px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--warn) 18%,var(--surface));font-size:13px;line-height:1.45}
+.btn.primary{background:var(--strong);border-color:var(--strong);color:#fff}
+.tool.big1{background:var(--strong);color:#fff}
 </style>
 </head>
 <body>
 <header>
-  <h1>🇫🇷 Flashcards</h1>
-  <span style="display:flex;gap:6px;align-items:center"><span class="pill" id="netPill" hidden>✈️ Offline</span><span class="pill" id="duePill">0 due</span></span>
+  <button class="hbtn" id="menuBtn" aria-label="Open menu" aria-expanded="false"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg></button>
+  <h1 id="pageTitle">Flashcards</h1>
+  <span class="hright"><span class="pill" id="netPill" hidden>✈️ Offline</span><span class="pill" id="duePill">0 due</span></span>
 </header>
+<div class="drawer-bg" id="drawerBg" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Main menu">
+  <div class="drawer-head"><b>Menu</b><button class="hbtn" id="drawerX" aria-label="Close menu">✕</button></div>
+  <button data-go="overview"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"></path><path d="M5 10v10h14V10"></path></svg></span>Overview</button>
+  <button data-go="study"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="14" height="16" rx="2"></rect><path d="M8 3h11a1 1 0 0 1 1 1v14"></path></svg></span>Study</button>
+  <button data-go="match"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg></span>Match</button>
+  <button data-go="speak"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0"></path><line x1="12" y1="18" x2="12" y2="21"></line></svg></span>Speak</button>
+  <div class="dsep"></div>
+  <button data-go="journal"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg></span>Journal</button>
+  <div class="dsep"></div>
+  <div class="dhead">Create</div>
+  <button data-go="writing"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg></span>Writing</button>
+  <button data-go="prep"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h4a2 2 0 1 1 4 0h4v4a2 2 0 1 1 0 4v4H4z"></path></svg></span>à / de articles</button>
+  <div class="dsep"></div>
+  <button data-go="words"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"></path><path d="M4 21V5"></path></svg></span>Words</button>
+  <button data-go="settings"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"></path></svg></span>Settings</button>
+</aside>
 <div class="catbar" id="catbar">
   <span class="muted small">Practising</span>
   <select id="catFilter" aria-label="Category to practise"></select>
@@ -278,18 +356,22 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 </div>
 
 <main>
+  <!-- OVERVIEW (home) -->
+  <section class="view on" id="v-overview"><div id="ovArea"></div></section>
+  <section class="view" id="v-hard"><div id="hardArea"></div></section>
+  <section class="view" id="v-weak"><div id="weakArea"></div></section>
+
   <!-- STUDY -->
-  <section class="view on" id="v-study">
+  <section class="view" id="v-study">
     <div id="studyArea"></div>
   </section>
 
   <!-- MATCH -->
   <section class="view" id="v-match">
-    <div class="card">
-      <h2>Match the word to its meaning</h2>
-      <div class="muted small" id="matchInfo">Tap a French word, then its English meaning.</div>
-    </div>
+    <div class="row" style="align-items:center;margin-bottom:8px"><div class="muted small" id="matchInfo" style="flex:1"></div><button class="linkbtn" id="mChange">⇄ Change game</button></div>
+    <div class="ov-stats" id="mStats"></div>
     <div class="match" id="matchGrid"></div>
+    <div id="typeArea"></div>
     <div id="matchEnd"></div>
   </section>
 
@@ -326,8 +408,13 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
           <option value="5">5</option><option value="10">10</option><option value="15">15 (recommended)</option><option value="20">20</option>
           <option value="30">30</option><option value="50">50</option><option value="0">No limit</option></select>
         <div class="muted small" style="margin-top:4px">Words you haven't studied yet are introduced a few at a time, in your category order (Words → ⋯ → Move up/down).</div></div>
+      <div class="field"><label>Theme</label>
+        <select id="themeSel" style="width:100%"><option value="auto">Auto (match my phone)</option><option value="dark">Dark</option><option value="light">Light</option></select></div>
+      <div class="field"><label>Add a word to ♥ Hard words automatically after</label>
+        <select id="hardAfterSel" style="width:100%"><option value="2">2 misses</option><option value="3">3 misses (recommended)</option><option value="4">4 misses</option><option value="5">5 misses</option><option value="0">Never (I'll tap ♥ myself)</option></select>
+        <div class="muted small" style="margin-top:4px">It's taken off again once you know the word well (level 4).</div></div>
       <label class="chk"><input type="checkbox" id="ltChk"> 🔎 Check my sentences online (free, LanguageTool). Sentences are sent to LanguageTool to be checked; offline ones wait until you have signal.</label>
-      <label class="chk"><input type="checkbox" id="lockChk"> 🔒 Sentence lock: from level 3, a word needs a new sentence (✍️ Create) for each level up</label>
+      <label class="chk"><input type="checkbox" id="lockChk"> 🔒 Sentence lock: from level 3, a word needs a new sentence (✍️ Writing) for each level up</label>
       <div class="field" style="margin-top:12px"><label>French voice</label>
         <div class="row"><select id="voiceSel" style="flex:3"></select><button class="btn sm" id="voiceTest">▶ Test</button></div>
       </div>
@@ -368,14 +455,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
   </section>
 </main>
 
-<nav id="nav">
-  <button data-v="study" class="on"><span class="ic">🃏</span>Study</button>
-  <button data-v="match"><span class="ic">🧩</span>Match</button>
-  <button data-v="speak"><span class="ic">🎙️</span>Speak</button>
-  <button data-v="create"><span class="ic">✍️</span>Create</button>
-  <button data-v="words"><span class="ic">📚</span>Words</button>
-  <button data-v="settings"><span class="ic">⚙️</span>Settings</button>
-</nav>
+
 <datalist id="catList"></datalist>
 <input type="file" id="csvFile" accept=".csv,.tsv,.txt,text/csv,text/plain,text/tab-separated-values" hidden>
 <div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
@@ -384,7 +464,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-08-2";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-09-2";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -518,19 +598,56 @@ const LOCK_LVL = 3;
 // 🔒 from level 3 up, every level needs a fresh sentence (written in Create) before it can go higher
 const isLocked = c => !!state.settings.lock && !/^conjugation/i.test(c.cat||"") && c.box >= LOCK_LVL && c.box < INTERVALS.length-1 && !c.sentOK;
 const lockedCards = () => pool().filter(isLocked);
+/* daily review log (for the Overview and the weekly summary) */
+function dayLog(){ state.daily = state.daily || {}; const k = dayKey(Date.now()); return state.daily[k] = state.daily[k] || {rev:0, ok:0, bad:0}; }
+/* skills: every check of à/de, gender, accents, verb endings… is logged so Weak spots can show them */
+const SKILLS = {ade:"à / de (au, du, de la…)", gender:"Gender (le / la)", accents:"Accents", verbs:"Verb endings", agree:"Agreement (-e, -s, -ent)"};
+function logSkill(k, ok){ state.skills = state.skills || {}; const a = state.skills[k] = state.skills[k] || []; a.push([Date.now(), ok?1:0]); if (a.length>400) a.splice(0, a.length-400); }
+function skillStat(k, days){
+  const since = Date.now() - (days||30)*DAY, a = ((state.skills||{})[k]||[]).filter(x=>x[0]>=since);
+  return {n:a.length, pct: a.length ? Math.round(a.reduce((s,x)=>s+x[1],0)/a.length*100) : null};
+}
+/* ♥ hard words: added automatically after N misses, taken off again once the word is known (level 4) */
+const hardAfter = () => state.settings.hardAfter ?? 3;
+function registerMiss(card){
+  card.misses = (card.misses||0) + 1;
+  const n = hardAfter();
+  if (n && !card.hard && card.misses >= n){ card.hard = true; card.autoHard = true; toast(`♥ “${card.fr}” added to Hard words (missed ${card.misses} times)`); }
+}
 function grade(card, ok){
   if (isNew(card)){ const L = newLog(); if (!L.ids.includes(card.id)) L.ids.push(card.id); }
+  const dl = dayLog(); dl.rev++; ok ? dl.ok++ : dl.bad++;
+  if (/^conjugation/i.test(card.cat||"")) logSkill("verbs", ok);
   if (ok && isLocked(card)){
     card.right++; card.due = Date.now() + INTERVALS[card.box]*DAY; save();
-    toast(`🔒 Write a sentence with “${card.fr}” in ✍️ Create to reach level ${card.box+1}`);
+    toast(`🔒 Write a sentence with “${card.fr}” in ✍️ Writing to reach level ${card.box+1}`);
     return "locked";
   }
   if (ok){
     if (card.box >= LOCK_LVL) card.sentOK = false;   // used up — the next level needs a new sentence
     card.box = Math.min(card.box+1, INTERVALS.length-1); card.right++; card.due = Date.now() + INTERVALS[card.box]*DAY;
+    if (card.autoHard && card.box >= 4){ card.hard = false; card.autoHard = false; card.misses = 0; toast(`🎉 “${card.fr}” taken off Hard words — you know it now`); }
   }
-  else { card.box = 1; card.wrong++; card.due = Date.now() + 10*60*1000; } // see again in 10 min
+  else { card.box = 1; card.wrong++; card.due = Date.now() + 10*60*1000; registerMiss(card); } // see again in 10 min
   save();
+}
+/* Easy: two levels up (still stops at a 🔒 lock) */
+function gradeEasy(card){
+  const r = grade(card, true); if (r==="locked") return r;
+  if (!isLocked(card) && card.box < INTERVALS.length-1){
+    if (card.box >= LOCK_LVL) card.sentOK = false;
+    card.box++; card.due = Date.now() + INTERVALS[card.box]*DAY; save();
+  }
+}
+const fmtDays = d => d===1 ? "1 day" : d + " days";
+function nextLabels(c){
+  const max = INTERVALS.length-1;
+  if (isLocked(c)) return {got:"🔒 sentence", easy:"🔒 sentence"};
+  let b = Math.min(c.box+1, max);
+  const got = fmtDays(INTERVALS[b]);
+  const lockAt = state.settings.lock && !/^conjugation/i.test(c.cat||"") && b >= LOCK_LVL && b < max;
+  const b2 = lockAt ? b : Math.min(b+1, max);
+  return {got, easy: fmtDays(INTERVALS[b2])};
 }
 /* new words per day: unstudied cards only enter study a few at a time */
 const today = () => { const d = new Date(); return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate(); };
@@ -591,15 +708,38 @@ function say(text, slow, onend){
 }
 
 /* ---------- navigation ---------- */
-let curView = "study";
-const renderers = {study:renderStudy, match:startMatch, speak:startSpeak, create:startCreate, words:renderWords, settings:renderSettings};
+let curView = "overview";
+const renderers = {overview:renderOverview, hard:renderHard, weak:renderWeak, study:renderStudy, match:startMatch, speak:startSpeak, create:startCreate, words:renderWords, settings:renderSettings};
+const NAV = {overview:["overview"], study:["study"], match:["match"], speak:["speak"], journal:["create","journal"], writing:["create","words"], prep:["create","prep"], words:["words"], settings:["settings"], hard:["hard"], weak:["weak"]};
+const TITLES = {overview:"Flashcards", study:"Study", match:"Match", speak:"Speak", journal:"Journal", writing:"Writing", prep:"à / de articles", words:"Words", settings:"Settings", hard:"Hard words", weak:"Weak spots"};
+function navKey(){
+  if (curView==="create") return (C.mode==="journal" || C.mode==="rewrite") ? "journal" : C.mode==="prep" ? "prep" : "writing";
+  return curView;
+}
+function paintNav(){
+  const k = navKey();
+  $("#pageTitle").textContent = TITLES[k] || "Flashcards";
+  document.querySelectorAll("#drawer [data-go]").forEach(b=>{ const on = b.dataset.go===k; b.classList.toggle("on", on); if (on) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
+}
+function goKey(k){
+  const [v, m] = NAV[k] || ["overview"];
+  closeDrawer();
+  if (k==="match" && !canResume("match")) matchChosen = false;      // opening Match → choose a game (unless one is in progress)
+  if (m){ if (curView==="create" && C.mode==="words") { snapDraft(); save(); } if (C.mode!==m || m==="journal") live.create = null; C.mode = m; }
+  go(v);
+}
+function openDrawer(){ $("#drawer").classList.add("open"); $("#drawerBg").hidden = false; $("#menuBtn").setAttribute("aria-expanded","true"); paintNav(); }
+function closeDrawer(){ $("#drawer").classList.remove("open"); $("#drawerBg").hidden = true; $("#menuBtn").setAttribute("aria-expanded","false"); }
+$("#menuBtn").onclick = openDrawer; $("#drawerX").onclick = closeDrawer; $("#drawerBg").onclick = closeDrawer;
+$("#drawer").addEventListener("click", e=>{ const b = e.target.closest("[data-go]"); if (b) goKey(b.dataset.go); });
 function go(v){
   curView = v;
-  document.querySelectorAll("#nav button").forEach(x=>x.classList.toggle("on", x.dataset.v===v));
   document.querySelectorAll(".view").forEach(el=>el.classList.toggle("on", el.id==="v-"+v));
-  $("#catbar").style.display = (v==="words" || v==="settings" || v==="speak" || (v==="create" && (C.mode==="journal" || C.mode==="rewrite"))) ? "none" : "";
+  $("#catbar").style.display = (["words","settings","speak","overview","hard","weak"].includes(v) || (v==="create" && (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep"))) ? "none" : "";
+  paintNav();
   if (canResume(v)){ if (v==="create") paintCreateSeg(); return; }   // pick up where you left off
   renderers[v]();
+  paintNav();
   window.scrollTo(0,0);
 }
 /* games remember where you were when you switch tabs (until you change category / Hard only) */
@@ -608,20 +748,20 @@ const live = {};
 function canResume(v){
   if (live[v] !== fkey()) return false;
   if (v==="study") return !!studyCard && !!$("#flip");
-  if (v==="match") return mLeft > 0 && !!document.querySelector("#matchGrid .tile");
+  if (v==="match") return matchChosen && (state.settings.matchMode==="type" ? (!!T.cur && !!$("#tIn")) : (mLeft > 0 && !!document.querySelector("#matchGrid .tile")));
   if (v==="create") return (C.mode==="rewrite" && !!RW.cur && !!$("#rwIn")) || (C.mode!=="journal" && C.mode!=="rewrite" && !!$("#cText"));
   return false;
 }
-$("#nav").addEventListener("click", e=>{ const b = e.target.closest("button"); if (b) go(b.dataset.v); });
+
 
 function needCards(el, min){
   if (pool().length >= min) return false;
   const cat = state.settings.cat ? catLabel(state.settings.cat) : "";
   if (!state.cards.length){
     el.innerHTML = `<div class="card center"><h2>👋 Let's add your first words</h2>
-      <p class="muted">Go to the 📚 Words tab and tap “＋ Add word”: type them in, paste from a photo, or import a CSV file.</p>
+      <p class="muted">Open ☰ → 📚 Words and tap “＋ Add word”: type them in, paste from a photo, or import a CSV file.</p>
       <button class="btn primary" id="goWords">Go to Words</button></div>`;
-    $("#goWords").onclick = ()=>go("words");
+    $("#goWords").onclick = ()=>goKey("words");
     return true;
   }
   if (state.settings.hardOnly){
@@ -636,9 +776,17 @@ function needCards(el, min){
 
 /* ---------- STUDY ---------- */
 let studyQueue = [], studyCard = null;
+let customQueue = null, sessLabel = "", sess = {again:0, got:0, easy:0};
+function startCustom(cards, label){
+  if (!cards.length){ toast("Nothing to practise here yet"); return; }
+  customQueue = shuffle(cards.slice()); sessLabel = label; live.study = null; goKey("study");
+}
 function renderStudy(){
   live.study = fkey();
   const el = $("#studyArea");
+  sess = {again:0, got:0, easy:0};
+  if (customQueue){ studyQueue = customQueue; customQueue = null; nextStudy(); return; }
+  sessLabel = "";
   if (needCards(el,1)) return;
   studyQueue = shuffle(dueCards());
   nextStudy();
@@ -646,6 +794,13 @@ function renderStudy(){
 function nextStudy(){
   const el = $("#studyArea");
   studyCard = studyQueue.shift() || null;
+  if (!studyCard && sessLabel){
+    el.innerHTML = `<div class="card center"><h2>🎉 Session done</h2><p class="muted">${esc(sessLabel)}</p>${tallyHtml()}
+      <div class="row" style="margin-top:12px"><button class="btn" id="sHome">🏠 Overview</button><button class="btn primary" id="sNormal">Study due cards</button></div></div>`;
+    sessLabel = "";
+    $("#sHome").onclick = ()=>goKey("overview"); $("#sNormal").onclick = ()=>{ live.study = null; renderStudy(); };
+    return;
+  }
   if (!studyCard){
     const next = pool().reduce((m,c)=>Math.min(m,c.due), Infinity);
     const when = isFinite(next) ? new Date(next).toLocaleString([], {weekday:"short", hour:"2-digit", minute:"2-digit"}) : "";
@@ -666,6 +821,7 @@ function showStudyCard(){
   const c = studyCard; if (!c) return;
   const el = $("#studyArea");
   el.innerHTML = `
+   ${sessLabel ? `<div class="sesslabel"><span style="flex:1">${esc(sessLabel)}</span><button class="linkbtn" id="endSess">End</button></div>` : ""}
    <div class="flip" id="flip">
      <div class="flip-inner">
        <div class="face">${isNew(c)?'<span class="newtag">NEW</span>':""}
@@ -684,28 +840,197 @@ function showStudyCard(){
      <button class="tool" id="sSlow" aria-label="Play slowly">🐢</button>
      ${c.ex?`<button class="tool" id="sEx" aria-label="Play example" hidden>💬</button>`:""}
    </div>
-   <div class="row">
-     <button class="btn bad" id="again" disabled>Again</button>
-     <button class="btn good" id="gotit" disabled>Got it</button>
+   <div class="grade3">
+     <button class="btn bad" id="again" disabled>Again<span class="sub">10 min</span></button>
+     <button class="btn good" id="gotit" disabled>Got it<span class="sub">${esc(nextLabels(c).got)}</span></button>
+     <button class="btn easy" id="easy" disabled>Easy<span class="sub">${esc(nextLabels(c).easy)}</span></button>
    </div>
    ${isLocked(c)?`<div class="lockbar"><span>🔒 Level ${c.box} — use it in a sentence to level up</span><button class="btn sm" id="lockGo">✍️ Write one</button></div>`:""}
-   <p class="muted small center" style="margin-top:12px">${studyQueue.length} left in this session · level ${c.box}/${INTERVALS.length-1}</p>`;
+   ${tallyHtml()}
+   <p class="muted small center" style="margin-top:10px">${studyQueue.length} left in this session · level ${c.box}/${INTERVALS.length-1}${c.misses?` · missed ${c.misses}×`:""}</p>`;
   const flip = $("#flip");
   flip.onclick = ()=>{
-    flip.classList.toggle("flipped"); $("#again").disabled = $("#gotit").disabled = false;
+    flip.classList.toggle("flipped"); $("#again").disabled = $("#gotit").disabled = $("#easy").disabled = false;
     if ($("#sEx")) $("#sEx").hidden = !flip.classList.contains("flipped");
   };
   $("#sSay").onclick = ()=>say(c.fr);
   $("#sSlow").onclick = ()=>say(c.fr, true);
   if ($("#sEx")) $("#sEx").onclick = ()=>say(c.ex);
-  $("#again").onclick = ()=>{ grade(c,false); studyQueue.push(c); nextStudy(); };
-  $("#gotit").onclick = ()=>{ grade(c,true); nextStudy(); };
+  $("#again").onclick = ()=>{ grade(c,false); sess.again++; studyQueue.push(c); nextStudy(); };
+  $("#gotit").onclick = ()=>{ grade(c,true); sess.got++; nextStudy(); };
+  $("#easy").onclick = ()=>{ gradeEasy(c); sess.easy++; nextStudy(); };
+  if ($("#endSess")) $("#endSess").onclick = ()=>{ sessLabel = ""; live.study = null; renderStudy(); };
   if ($("#lockGo")) $("#lockGo").onclick = ()=>writeWith([c]);
 }
 function writeWith(cards){ C.mode = "words"; C.force = cards; live.create = null; go("create"); }
+const tallyHtml = () => `<div class="tally"><div><b style="color:var(--bad)">${sess.again}</b><span>again</span></div><div><b style="color:var(--good)">${sess.got}</b><span>got it</span></div><div><b style="color:var(--accent)">${sess.easy}</b><span>easy</span></div></div>`;
+
+
+/* ---------- OVERVIEW (home page), HARD WORDS, WEAK SPOTS ---------- */
+const pctClass = p => p < 40 ? "b-lo" : p < 60 ? "b-mid" : "b-hi";
+const pctColor = p => p < 40 ? "#e0752d" : p < 60 ? "#c98a00" : "var(--accent)";
+function catScores(){                      // your categories (conjugations grouped as one), weakest first
+  const out = categories().filter(c=>!isConjCat(c) && c!==UNCAT).map(c=>{ const s = catStats(c); return {cat:c, label:c, ...s}; }).filter(x=>x.n);
+  const conj = state.cards.filter(c=>isConjCat(catOf(c)));
+  if (conj.length){
+    const pct = Math.round(conj.reduce((s,c)=>s+c.box,0)/(conj.length*(INTERVALS.length-1))*100);
+    out.push({cat:CONJ_ALL, label:"Conjugations", n:conj.length, pct, hard:conj.filter(c=>c.hard).length, due:conj.filter(c=>c.due<=Date.now()).length});
+  }
+  return out.sort((a,b)=>a.pct-b.pct || b.n-a.n);
+}
+const hardList = () => state.cards.filter(c=>c.hard).sort((a,b)=>(b.misses||0)-(a.misses||0) || (b.wrong||0)-(a.wrong||0));
+const missText = c => (c.misses||c.wrong) ? `missed ${c.misses||c.wrong}×` : "marked by you";
+function practiseCat(cat){ state.settings.cat = cat; state.settings.hardOnly = false; save(); refreshCatFilter(); live.study = null; goKey("study"); toast("Practising: " + catLabel(cat)); }
+function weakSessionCards(){
+  const weakest = catScores().filter(x=>x.pct<100).slice(0,3).map(x=>x.cat);
+  const inWeak = c => weakest.some(w=>w===CONJ_ALL ? isConjCat(catOf(c)) : catOf(c)===w);
+  const cards = state.cards.filter(c=>!isNew(c) && (c.hard || (inWeak(c) && c.box<=3)));
+  return cards.sort((a,b)=>(b.hard-a.hard) || a.box-b.box).slice(0,20);
+}
+function renderOverview(){
+  const el = $("#ovArea");
+  if (!state.cards.length){ needCards(el,1); return; }
+  const due = dueCards(), nNew = due.filter(isNew).length, nRev = due.length - nNew, nLock = lockedCards().length;
+  const all = state.cards, learned = all.length ? Math.round(all.reduce((s,c)=>s+c.box,0)/(all.length*(INTERVALS.length-1))*100) : 0;
+  const weekAgo = Date.now() - 7*DAY, sentWeek = (state.journal||[]).filter(j=>j.date>=weekAgo).length;
+  const weak = catScores().slice(0,4), hard = hardList();
+  el.innerHTML = `
+    <section class="ov-today">
+      <div><div style="font-size:13px;opacity:.9">Today${state.settings.cat?` · ${esc(catLabel(state.settings.cat))}`:""}</div>
+        <div class="big2">${due.length ? `${due.length} card${due.length===1?"":"s"} to review` : "All caught up 🎉"}</div></div>
+      <div class="ov-chips"><span>${nRev} review${nRev===1?"":"s"}</span><span>${nNew} new</span>${nLock?`<span>🔒 ${nLock} locked</span>`:""}</div>
+      <button class="btn" id="ovStudy">${due.length ? "Start studying" : "Practise anyway"}</button>
+    </section>
+    <section class="ov-stats">
+      <div class="ov-stat"><b>${all.length}</b><span>words</span></div>
+      <div class="ov-stat"><b>${learned}%</b><span>learned</span></div>
+      <div class="ov-stat"><b>${sentWeek}</b><span>sentences this week</span></div>
+    </section>
+    <section class="card">
+      <div class="secthead"><h2>Weak spots</h2><button class="linkbtn" id="ovWeak">See details</button></div>
+      <p class="muted small" style="margin:0 0 4px">Your categories · weakest first</p>
+      ${weak.map(w=>`<div class="wk"><div class="wk-top"><span>${esc(w.label)}</span><span style="color:${pctColor(w.pct)}">${w.pct}%</span></div><div class="bar"><div class="${pctClass(w.pct)}" style="width:${Math.max(w.pct,2)}%"></div></div></div>`).join("")}
+      <button class="btn primary" id="ovWeakGo" style="width:100%;margin-top:8px">🎯 Practise my weak spots</button>
+    </section>
+    <section class="card">
+      <h2 style="margin:0;font-size:17px">Hard words <span style="color:var(--bad)">♥ ${hard.length}</span></h2>
+      <p class="muted small" style="margin:2px 0 6px">${hardAfter() ? `Added automatically when you get a word wrong ${hardAfter()} times.` : "Tap ♡ on a card to add it here."}</p>
+      ${hard.length ? hard.slice(0,3).map(c=>`<div class="hrow"><div class="w"><b>${esc(c.fr)}</b><span class="muted small">${esc(c.en)} · ${missText(c)}</span></div>${typeTag(c)}</div>`).join("")
+        : `<p class="muted small">No hard words right now 👍</p>`}
+      ${hard.length ? `<div class="row" style="margin-top:10px"><button class="btn" id="ovHardAll">See all ${hard.length}</button><button class="btn primary" id="ovHardGo">Practise</button></div>` : ""}
+    </section>`;
+  $("#ovStudy").onclick = ()=>{ live.study = null; goKey("study"); };
+  $("#ovWeak").onclick = ()=>goKey("weak");
+  $("#ovWeakGo").onclick = ()=>startCustom(weakSessionCards(), "🎯 Weak spots session");
+  if ($("#ovHardAll")){ $("#ovHardAll").onclick = ()=>goKey("hard"); $("#ovHardGo").onclick = ()=>startCustom(hard, "♥ Hard words"); }
+}
+let hardFilter = "all";
+function renderHard(){
+  const el = $("#hardArea"), all = hardList();
+  const groups = {all:"All", noun:"Nouns", verb:"Verbs", adj:"Adjectives", other:"Other"};
+  const grp = c => { const t = wordType(c); return t==="vform" ? "verb" : ["noun","verb","adj"].includes(t) ? t : "other"; };
+  const count = g => g==="all" ? all.length : all.filter(c=>grp(c)===g).length;
+  if (hardFilter!=="all" && !count(hardFilter)) hardFilter = "all";
+  const list = hardFilter==="all" ? all : all.filter(c=>grp(c)===hardFilter);
+  el.innerHTML = `
+    <button class="linkbtn" id="hBack">← Overview</button>
+    <p class="muted small center" style="margin:0 0 10px">${hardAfter()?`Words you got wrong ${hardAfter()} times, plus any you marked ♥.`:"Words you marked ♥."} They leave this list once you know them well.</p>
+    ${all.length ? `<div class="chiprow">${Object.entries(groups).filter(([g])=>count(g)).map(([g,l])=>`<button class="chipb ${hardFilter===g?"on":""}" data-hf="${g}">${l} ${count(g)}</button>`).join("")}</div>
+    <div class="card" style="padding:4px 16px">${list.map(c=>`<div class="hrow" data-id="${c.id}" style="border-top:0;border-bottom:1px solid var(--border)">
+        <button class="icon-btn" data-h="say" aria-label="Play">🔊</button>
+        <div class="w"><b>${esc(c.fr)}</b><span class="muted small">${esc(c.en)} · ${esc(catOf(c))}</span></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${typeTag(c)}<span class="small" style="color:var(--bad)">${missText(c)}</span></div>
+        <button class="icon-btn" data-h="unhard" aria-label="Remove from hard words" style="color:var(--bad)">♥</button></div>`).join("")}</div>
+    <button class="btn primary" id="hGo" style="width:100%">Practise ${list.length===all.length?"all ":""}${list.length}</button>`
+    : `<div class="card center"><p>No hard words right now 👍</p></div>`}`;
+  $("#hBack").onclick = ()=>goKey("overview");
+  el.querySelectorAll("[data-hf]").forEach(b=>b.onclick = ()=>{ hardFilter = b.dataset.hf; renderHard(); });
+  el.querySelectorAll(".hrow[data-id]").forEach(r=>r.onclick = e=>{
+    const b = e.target.closest("[data-h]"); if (!b) return; const c = state.cards.find(x=>x.id===r.dataset.id); if (!c) return;
+    if (b.dataset.h==="say") say(c.fr);
+    if (b.dataset.h==="unhard"){ c.hard = false; c.autoHard = false; c.misses = 0; save(); renderHard(); toast(`Removed “${c.fr}” from hard words`); }
+  });
+  if ($("#hGo")) $("#hGo").onclick = ()=>startCustom(list, "♥ Hard words");
+}
+let weakSort = "weak";
+function renderWeak(){
+  const el = $("#weakArea");
+  let cats = catScores();
+  if (weakSort==="mist") cats = cats.slice().sort((a,b)=>b.hard-a.hard || a.pct-b.pct);
+  const top = catScores()[0];
+  const skills = Object.entries(SKILLS).map(([k,name])=>({k, name, ...skillStat(k, 30)}));
+  const shown = skills.filter(s=>s.n>=5).sort((a,b)=>a.pct-b.pct), waiting = skills.filter(s=>s.n<5);
+  el.innerHTML = `
+    <button class="linkbtn" id="wBack">← Overview</button>
+    ${top ? `<section class="ov-today" style="margin-top:4px">
+      <div><div style="font-size:13px;opacity:.9">Weakest right now</div><div style="font-size:24px;font-weight:700;line-height:1.15">${esc(top.label)}</div></div>
+      <div style="font-size:14px;opacity:.9">${top.pct}% known · ${top.n} words${top.hard?` · ♥ ${top.hard} hard`:""}${top.due?` · ${top.due} due`:""}</div>
+      <button class="btn" id="wTop">Practise this category</button></section>` : ""}
+    <div class="chiprow"><button class="chipb ${weakSort==="weak"?"on":""}" data-ws="weak">Weakest first</button><button class="chipb ${weakSort==="mist"?"on":""}" data-ws="mist">Most hard words</button></div>
+    <section class="card" style="padding:4px 16px">
+      ${cats.map(w=>`<button class="wk" data-cat="${esc(w.cat)}"><div class="wk-top"><span>${esc(w.label)}</span><span style="color:${pctColor(w.pct)}">${w.pct}%</span></div>
+        <div class="bar"><div class="${pctClass(w.pct)}" style="width:${Math.max(w.pct,2)}%"></div></div>
+        <span class="muted small">${w.n} words${w.hard?` · ♥ ${w.hard} hard`:""}${w.due?` · ${w.due} due`:""}</span></button>`).join("")}
+    </section>
+    <p class="muted small center" style="margin-top:-6px">Tap a category to practise it.</p>
+    <section class="card">
+      <div class="secthead"><h2>Skills</h2><span class="muted small">last 30 days</span></div>
+      <p class="muted small" style="margin:2px 0 4px">From 🔗 à / de practice, Match → Type it, conjugation cards and Claude's journal corrections.</p>
+      ${shown.map(s=>`<div class="wk"><div class="wk-top"><span>${esc(s.name)}</span><span style="color:${pctColor(s.pct)}">${s.pct}%</span></div>
+        <div class="bar"><div class="${pctClass(s.pct)}" style="width:${Math.max(s.pct,2)}%"></div></div>
+        <div class="row" style="align-items:center"><span class="muted small" style="flex:1">${s.n} checks</span><button class="linkbtn" data-sk="${s.k}">Practise →</button></div></div>`).join("")}
+      ${waiting.length ? `<p class="muted small" style="margin:8px 0 0">Not enough practice yet to score: ${waiting.map(s=>esc(s.name.replace(/ \(.*\)/,""))).join(", ")}.</p>` : ""}
+    </section>
+    <section class="card">
+      <h2 style="margin:0 0 4px;font-size:17px">📤 My week for Claude</h2>
+      <p class="muted small" style="margin:0 0 10px">Saves a short summary of your week: weakest categories, skills, hard words and journal mistakes. Send it to Claude for practice made just for you.</p>
+      <button class="btn primary" id="wSummary" style="width:100%">Save my weekly summary</button>
+    </section>`;
+  $("#wBack").onclick = ()=>goKey("overview");
+  if ($("#wTop")) $("#wTop").onclick = ()=>practiseCat(top.cat);
+  el.querySelectorAll("[data-ws]").forEach(b=>b.onclick = ()=>{ weakSort = b.dataset.ws; renderWeak(); });
+  el.querySelectorAll("[data-cat]").forEach(b=>b.onclick = ()=>practiseCat(b.dataset.cat));
+  el.querySelectorAll("[data-sk]").forEach(b=>b.onclick = ()=>practiseSkill(b.dataset.sk));
+  $("#wSummary").onclick = exportWeekly;
+}
+function practiseSkill(k){
+  const low = c => !isNew(c) && c.box <= 3;
+  if (k==="ade"){ goKey("prep"); return; }
+  if (k==="gender") return startCustom(state.cards.filter(c=>low(c) && /^(le|la)\s/i.test(c.fr)).slice(0,20), "Gender: le or la?");
+  if (k==="accents") return startCustom(state.cards.filter(c=>low(c) && /[àâçéèêëîïôûùüœ]/i.test(c.fr)).slice(0,20), "Accents");
+  if (k==="verbs") return startCustom(state.cards.filter(c=>isConjCat(catOf(c)) && (c.box<=3)).slice(0,20), "Verb endings");
+  return startCustom(weakSessionCards(), "🎯 Weak spots session");
+}
+function exportWeekly(){
+  const now = Date.now(), weekAgo = now - 7*DAY, fmt = t => new Date(t).toLocaleDateString([], {day:"numeric", month:"short"});
+  const days = Object.entries(state.daily||{}).filter(([k])=>{ const [y,m,d] = k.split("-").map(Number); return new Date(y,m-1,d).getTime() >= weekAgo - DAY; });
+  const rev = days.reduce((s,[,v])=>s+v.rev,0), bad = days.reduce((s,[,v])=>s+v.bad,0);
+  const J = (state.journal||[]).filter(j=>j.date>=weekAgo);
+  const lines = [];
+  lines.push(`MY FRENCH WEEK — ${fmt(weekAgo)} to ${fmt(now)}`, "");
+  lines.push(`Cards reviewed: ${rev} (${bad} answered "Again") · Sentences written: ${J.length} · Words in my list: ${state.cards.length}`, "");
+  lines.push("WEAKEST CATEGORIES"); catScores().slice(0,5).forEach(w=>lines.push(`- ${w.label}: ${w.pct}% known (${w.n} words${w.hard?`, ${w.hard} hard`:""})`)); lines.push("");
+  lines.push("SKILLS (last 7 days)");
+  Object.entries(SKILLS).forEach(([k,name])=>{ const s = skillStat(k, 7); lines.push(`- ${name}: ${s.n ? s.pct+"% right ("+s.n+" checks)" : "not practised"}`); }); lines.push("");
+  const hard = hardList(); lines.push(`HARD WORDS (${hard.length})`); hard.slice(0,25).forEach(c=>lines.push(`- ${c.fr} = ${c.en} (${missText(c)})`)); lines.push("");
+  const fixes = J.filter(j=>j.checked && j.corrected && norm(j.corrected)!==norm(j.text)).slice(0,12);
+  const lt = J.filter(j=>!j.checked && j.lt && j.lt.status==="done" && j.lt.matches.length).slice(0,12);
+  if (fixes.length || lt.length){
+    lines.push("MY SENTENCES WITH MISTAKES");
+    fixes.forEach(j=>lines.push(`- I wrote: ${j.text}\n  Correct: ${j.corrected}${j.notes?`\n  Notes: ${j.notes}`:""}`));
+    lt.forEach(j=>lines.push(`- I wrote: ${j.text}\n  Checker: ${j.lt.matches.map(m=>m.msg).join(" | ")}`));
+    lines.push("");
+  }
+  lines.push("Claude: please give me targeted practice for my weakest areas above, at A1–A2 level, one exercise at a time.");
+  const blob = new Blob([lines.join("\n")], {type:"text/plain"});
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = "french-week-" + new Date().toISOString().slice(0,10) + ".txt";
+  document.body.appendChild(a); a.click(); a.remove();
+  toast("📤 Weekly summary saved to your Downloads — send it to Claude");
+}
 
 /* ---------- MATCH ---------- */
-let mSel = null, mLeft = 0, mMistakes = 0, mStart = 0;
+let mSel = null, mLeft = 0, mMistakes = 0, mStart = 0, mBad = new Set(), mLevel = 0, matchChosen = false;
 let recentMatch = [];
 function pickMatch(n){
   // weighted shuffle: weaker, ♥ hard and due words come up more, but every word you've met gets a turn
@@ -721,12 +1046,38 @@ function pickMatch(n){
   recentMatch = recentMatch.concat(out.map(c=>c.id)).slice(-Math.max(10, Math.floor(src.length/2)));
   return out;
 }
+function chooseMatchGame(){
+  const cat = state.settings.cat ? catLabel(state.settings.cat) : "All words";
+  openModal(`<h2 style="margin:0 0 4px;text-align:center">Choose a game</h2>
+    <p class="muted small center" style="margin:0 0 12px">Both games level up the words you get right.</p>
+    <button class="gamepick" data-g="tap"><span class="gi">🧩</span><span><b>Tap to match</b><span class="muted small">Tap a French word, then its English meaning. Quick and relaxed.</span></span></button>
+    <button class="gamepick" data-g="type"><span class="gi">⌨️</span><span><b>Type it</b><span class="muted small">See the English, type the French. Harder — spelling and accents count.</span></span></button>
+    <p class="muted small center" style="margin:10px 0 4px">Words from: <b>${esc(cat)}</b> (change it with “Practising”)</p>
+    <button class="btn" id="gpCancel" style="width:100%;margin-top:6px">Cancel</button>`);
+  document.querySelectorAll(".gamepick").forEach(b=>b.onclick = ()=>{ state.settings.matchMode = b.dataset.g; matchChosen = true; save(); closeModal(); startMatch(); });
+  $("#gpCancel").onclick = ()=>{ closeModal(); if (!matchChosen) goKey("overview"); };
+}
+$("#mChange").onclick = ()=>{ matchChosen = false; startMatch(); };
+function paintMStats(){
+  const t = state.settings.matchMode==="type";
+  $("#mStats").innerHTML = t
+    ? `<div class="ov-stat"><b>${Math.min(T.i+ (T.cur?1:0), T.total)} / ${T.total}</b><span>words</span></div><div class="ov-stat"><b>${T.right}</b><span>correct</span></div><div class="ov-stat"><b style="color:var(--good)">▲ ${T.level}</b><span>levelled up</span></div>`
+    : `<div class="ov-stat"><b>${mTotal - mLeft} / ${mTotal}</b><span>pairs</span></div><div class="ov-stat"><b>${mMistakes}</b><span>mistakes</span></div><div class="ov-stat"><b style="color:var(--good)">▲ ${mLevel}</b><span>levelled up</span></div>`;
+}
+let mTotal = 0;
 function startMatch(){
   live.match = fkey();
   const grid = $("#matchGrid"); $("#matchEnd").innerHTML = "";
+  if (!matchChosen){ grid.innerHTML = ""; $("#mStats").innerHTML = ""; $("#matchInfo").textContent = "";
+    $("#typeArea").innerHTML = `<div class="card center"><h2>🧩 Match</h2><p class="muted">Two games: tap pairs, or type the French.</p><button class="btn primary" id="mPick">Choose a game</button></div>`;
+    $("#mPick").onclick = chooseMatchGame; chooseMatchGame(); return; }
+  if (state.settings.matchMode==="type") return startType();
+  $("#typeArea").innerHTML = ""; grid.hidden = false;
+  $("#matchInfo").textContent = "🧩 Tap a French word, then its English meaning.";
   if (needCards(grid,3)) return;
   const set = pickMatch(Math.min(5, pool().length));
-  mLeft = set.length; mMistakes = 0; mSel = null; mStart = Date.now();
+  mLeft = set.length; mTotal = set.length; mMistakes = 0; mSel = null; mStart = Date.now(); mBad = new Set(); mLevel = 0;
+  paintMStats();
   const L = shuffle(set), R = shuffle(set);
   grid.innerHTML = "";
   for (let i=0;i<set.length;i++){
@@ -742,20 +1093,117 @@ $("#matchGrid").addEventListener("click", e=>{
   const a = mSel, b = t; mSel = null; a.classList.remove("sel");
   if (a.dataset.id === b.dataset.id){
     a.classList.add("done"); b.classList.add("done"); mLeft--;
+    const c = state.cards.find(x=>x.id===a.dataset.id);
+    if (c && !mBad.has(c.id) && c.due <= Date.now()){            // matched first time, and due → it counts as a review
+      const b0 = c.box, r = grade(c, true);
+      if (r!=="locked" && c.box > b0){ mLevel++; a.insertAdjacentHTML("beforeend", `<span class="lvup">▲${c.box}</span>`); }
+    }
+    paintMStats();
     if (mLeft===0){
       const secs = Math.round((Date.now()-mStart)/1000);
       $("#matchEnd").innerHTML = `<div class="card center" style="margin-top:14px"><h2>${mMistakes===0?"Perfect! 🌟":"Done!"}</h2>
-        <p class="muted">${secs}s · ${mMistakes} mistake${mMistakes===1?"":"s"}</p>
-        <button class="btn primary" id="mAgain">Play again</button></div>`;
-      $("#mAgain").onclick = startMatch;
+        <p class="muted">${secs}s · ${mMistakes} mistake${mMistakes===1?"":"s"}${mLevel?` · ▲ ${mLevel} word${mLevel===1?"":"s"} levelled up`:""}</p>
+        <div class="row"><button class="btn" id="mSwitch">⇄ Change game</button><button class="btn primary" id="mAgain">Play again</button></div></div>`;
+      $("#mAgain").onclick = startMatch; $("#mSwitch").onclick = ()=>{ matchChosen = false; startMatch(); };
     }
   } else {
     mMistakes++;
-    [a,b].forEach(x=>{ x.classList.add("wrong"); setTimeout(()=>x.classList.remove("wrong"),400); });
+    [a,b].forEach(x=>{ x.classList.add("wrong"); setTimeout(()=>x.classList.remove("wrong"),400); mBad.add(x.dataset.id); });
     const c = state.cards.find(c=>c.id===(a.dataset.side==="fr"?a.dataset.id:b.dataset.id));
-    if (c){ c.wrong++; save(); }
+    if (c){ c.wrong++; registerMiss(c); save(); }
+    paintMStats();
   }
 });
+
+
+/* --- Match → ⌨️ Type it: see the English, type the French --- */
+const T = {queue:[], cur:null, i:0, total:0, right:0, level:0, hint:0, answered:false, retried:new Set()};
+const cleanAns = x => norm(String(x).replace(/\(.*?\)/g,"")).replace(/\s*'\s*/g,"'");
+const dropArt = x => x.replace(/^(le|la|les|un|une|l')\s*/,"");
+const typeable = c => !/[…]/.test(c.fr) && !/\//.test(c.fr.replace(/^(ils\/elles|il\/elle)\s/i,""));
+function typeAnswers(c){                               // "il/elle va" → also accept "il va" / "elle va"
+  const base = cleanAns(c.fr), m = base.match(/^(ils\/elles|il\/elle)\s+(.+)$/);
+  return m ? [base, (m[1].startsWith("ils")?"ils ":"il ")+m[2], (m[1].startsWith("ils")?"elles ":"elle ")+m[2]] : [base];
+}
+function startType(){
+  live.match = fkey();
+  const el = $("#typeArea"); $("#matchGrid").innerHTML = ""; $("#matchGrid").hidden = true; $("#matchEnd").innerHTML = "";
+  $("#matchInfo").textContent = "⌨️ Type the French for each English word.";
+  if (needCards(el,1)) return;
+  const usable = pool().filter(typeable);
+  if (!usable.length){ el.innerHTML = `<div class="card center"><p>No words to type in this category.</p></div>`; return; }
+  const want = Math.min(10, usable.length), set = pickMatch(Math.min(20, pool().length)).filter(typeable).slice(0, want);
+  shuffle(usable).forEach(c=>{ if (set.length < want && !set.includes(c)) set.push(c); });
+  T.queue = set; T.total = T.queue.length; T.i = 0; T.right = 0; T.level = 0; T.retried = new Set();
+  nextType();
+}
+function nextType(){
+  const el = $("#typeArea");
+  T.cur = T.queue.shift() || null; T.hint = 0; T.answered = false;
+  if (!T.cur){
+    el.innerHTML = `<div class="card center"><h2>${T.right===T.total?"Perfect! 🌟":"Done!"}</h2>
+      <p style="font-size:28px;font-weight:650;margin:6px 0">${T.right} / ${T.total}</p>
+      <p class="muted">${T.level ? `▲ ${T.level} word${T.level===1?"":"s"} levelled up` : "Keep going — correct answers level your words up"}</p>
+      <div class="row"><button class="btn" id="tSwitch">⇄ Change game</button><button class="btn primary" id="tAgain">Play again</button></div></div>`;
+    $("#tAgain").onclick = startType; $("#tSwitch").onclick = ()=>{ matchChosen = false; startMatch(); };
+    paintMStats(); return;
+  }
+  const c = T.cur;
+  el.innerHTML = `
+    <div class="card center" style="padding:20px 16px">
+      <div class="muted small">Type this in French</div>
+      <div style="font-size:28px;font-weight:700;margin:4px 0 6px;word-break:break-word">${esc(c.en)}</div>
+      ${typeTag(c)} <span class="muted small">· ${esc(catOf(c))}</span>
+    </div>
+    <input type="text" id="tIn" class="cin" style="min-height:0;height:56px;text-align:center;font-size:21px;font-weight:600" placeholder="en français…" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="accents" id="tAcc">${ACCENTS.map(a=>`<button type="button">${a}</button>`).join("")}</div>
+    <div id="tFb"></div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="tHint">💡 Hint</button><button class="btn primary" id="tGo" style="flex:2">Check</button></div>`;
+  const inp = $("#tIn");
+  $("#tAcc").onmousedown = e=>e.preventDefault();
+  $("#tAcc").onclick = e=>{ const b = e.target.closest("button"); if (!b || T.answered) return;
+    const a = inp.selectionStart ?? inp.value.length, z = inp.selectionEnd ?? a;
+    inp.value = inp.value.slice(0,a) + b.textContent + inp.value.slice(z); inp.setSelectionRange(a+1,a+1); inp.focus(); };
+  $("#tHint").onclick = ()=>{ if (T.answered) return; T.hint++; const ans = c.fr.replace(/\(.*?\)/g,"").trim();
+    const n = Math.min(ans.length, T.hint*2 + (/^(le|la|les) |^l'/i.test(ans) ? ans.indexOf(" ")+1 || 2 : 0));
+    $("#tFb").innerHTML = `<div class="muted small center" style="margin-top:8px">💡 ${esc(ans.slice(0,n))}${n<ans.length?"…":""} <span>(a hint means no level-up this time)</span></div>`; inp.focus(); };
+  $("#tGo").onclick = ()=> T.answered ? (T.i++, nextType()) : checkType();
+  inp.onkeydown = e=>{ if (e.key==="Enter"){ e.preventDefault(); $("#tGo").click(); } };
+  paintMStats();
+  setTimeout(()=>inp.focus(), 50);
+}
+function checkType(){
+  const c = T.cur, inp = $("#tIn"); if (!inp.value.trim()) return;
+  T.answered = true; inp.readOnly = true;
+  const A = cleanAns(inp.value), alts = typeAnswers(c), E = alts.find(x=>strip(x)===strip(A)) || alts[0];
+  const hasAcc = /[àâçéèêëîïôûùüœ]/i.test(E), noun = /^(le|la)\s/.test(E);
+  let verdict;
+  if (A===E) verdict = "right";
+  else if (strip(A)===strip(E)) verdict = "accents";
+  else if (dropArt(strip(A))===dropArt(strip(E)) && A.split(/\s|'/)[0]!==E.split(/\s|'/)[0]) verdict = "article";
+  else verdict = "wrong";
+  if (hasAcc && (verdict==="right" || verdict==="accents")) logSkill("accents", verdict==="right");
+  if (noun && (verdict==="right" || verdict==="article")) logSkill("gender", verdict==="right");
+  const ok = verdict==="right" || (verdict==="accents" && state.settings.lenient);
+  let lvl = "";
+  if (ok){
+    T.right++;
+    if (!T.hint){ const b0 = c.box, r = grade(c, true);
+      lvl = r==="locked" ? `<span class="lvpill">🔒 needs a sentence in ✍️ Writing</span>` : c.box > b0 ? `<span class="lvpill">▲ level ${b0} → ${c.box}</span>` : "";
+      if (r!=="locked" && c.box > b0) T.level++; }
+  } else {
+    grade(c, false);
+    if (!T.retried.has(c.id)){ T.retried.add(c.id); T.queue.push(c); T.total++; }   // you'll get it again before the end
+  }
+  inp.classList.add(ok ? "okb" : "nob");
+  const msg = verdict==="right" ? "✓ Correct!" : verdict==="accents" ? (ok ? "Nearly — check the accents" : "Check the accents") : verdict==="article" ? "Check le / la" : "Not quite";
+  $("#tFb").innerHTML = `<div class="fb ${ok?(verdict==="right"?"ok":"near"):"no"}" style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="flex:1">${msg}</span>${lvl}</div>
+    ${verdict!=="right" ? `<div class="card" style="margin:8px 0 0;box-shadow:none;padding:10px 12px"><span class="muted small">Answer:</span> <b style="font-size:18px">${esc(c.fr)}</b>${c.pron?` <span class="muted small">· ${esc(c.pron)}</span>`:""}</div>` : ""}`;
+  say(c.fr);
+  $("#tGo").textContent = T.queue.length ? "Next word →" : "See my score";
+  $("#tHint").disabled = true;
+  paintMStats();
+}
 
 /* ---------- WRITE ---------- */
 const ACCENTS = ["é","è","ê","ë","à","â","ç","î","ï","ô","û","ù","ü","œ","æ","'"];
@@ -950,7 +1398,7 @@ function spSave(){
     lt: SP.lt && SP.ltFor===text ? SP.lt : (checkOn() ? {status:"pending"} : null)};
   state.journal.unshift(entry);
   spStop(); fr.value = ""; spChanged(); d.en = ""; d.enFor = ""; paintEn(""); save();
-  $("#spMsg").innerHTML = `<div class="fb ok">✓ Added to your journal (Create → 📓 Journal)</div>`;
+  $("#spMsg").innerHTML = `<div class="fb ok">✓ Added to your journal (☰ → 📓 Journal)</div>`;
   if (entry.lt && entry.lt.status==="pending") processPending();
 }
 
@@ -1062,6 +1510,7 @@ function paintCreateSeg(){
   const n = (state.journal||[]).filter(j=>!j.checked).length;
   const jb = document.querySelector('#cModeSeg [data-m="journal"]'); if (jb) jb.textContent = "📓 Journal";
   $("#catbar").style.display = (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep") ? "none" : "";
+  if (curView==="create") paintNav();
 }
 $("#cModeSeg").onclick = e=>{ const b = e.target.closest("button"); if (!b) return; if (C.mode==="words") snapDraft(); save(); C.mode = b.dataset.m; startCreate(); };
 function startCreate(){
@@ -1157,6 +1606,7 @@ function answerPrep(a){
   let gotPrep = null, gotArt = null;                       // which of the two steps went wrong?
   Object.entries(PREP_JOIN).forEach(([p, m])=>Object.entries(m).forEach(([art, v])=>{ if (v===a){ gotPrep = p; gotArt = art; } }));
   const bad1 = !ok && gotPrep!==q.prep, bad2 = !ok && gotArt!==q.art;
+  logSkill("ade", !bad1); if (q.art!=="l'") logSkill("gender", !bad2); save();
   document.querySelectorAll(".prepo").forEach(b=>{ b.disabled = true; if (b.dataset.a===right) b.classList.add("ok"); else if (b.dataset.a===a) b.classList.add("no"); });
   const full = `${q.pre} ${prepJoin(right, q.noun)}.`;
   const nounWithArt = q.art==="l'" ? "l'"+q.noun : q.art+" "+q.noun;
@@ -1189,6 +1639,8 @@ function pickChallenge(){
   const add = c => { pick.push(c); used.add(cardCore(c).core); };
   (C.force||[]).forEach(c=>{ if (!isConj(c) && pick.length<n && fits(c)) add(c); });
   C.force = null;
+  const recent = p.filter(c=>(c.added||0) >= now - 7*DAY && fits(c));      // always practise one word you added this week
+  if (!pick.length && recent.length) add(shuffle(recent.filter(isLocked))[0] || shuffle(recent)[0]);
   if (!pick.length){                                   // start with a 🔒 word, else a due word, else any
     const fresh = c => !prev.has(c.id);
     const first = shuffle(p.filter(c=>isLocked(c) && fresh(c)))[0] || shuffle(p.filter(isLocked))[0] || shuffle(p.filter(c=>c.due<=now))[0] || shuffle(p.slice())[0];
@@ -1220,11 +1672,45 @@ let draftT = null;
 function snapDraft(){
   const inp = $("#cText"); if (!inp || inp.readOnly) return;
   state.cDraft = state.cDraft || {};
-  if (C.mode==="words" && C.words.length) state.cDraft.words = {ids: C.words.map(c=>c.id), text: inp.value, q: C.q};
+  if (C.mode==="words" && C.words.length) state.cDraft.words = {ids: C.words.map(c=>c.id), text: inp.value, q: C.q, tw: C.twist};
   if (C.mode==="me" && C.prompt) state.cDraft.me = {p: PROMPTS.indexOf(C.prompt), text: inp.value, must: (C.must||[]).map(c=>c.id), ideas: (C.ideas||[]).map(c=>c.id)};
 }
 function clearDraft(mode){ if (state.cDraft) delete state.cDraft[mode]; save(); }
 function restoreText(text, check){ if (text && $("#cText")){ $("#cText").value = text; check(); } }
+
+/* ✍️ Writing twists: one grammar challenge per round, detected automatically */
+const TWISTS = [
+  {k:"neg",   label:"Make it negative", hint:"ne … pas / ne … jamais", test:t=>/\b(ne|n')\s*\S+.*\b(pas|jamais|rien|plus|personne)\b|\bn'\S+\s+(pas|jamais|rien|plus)\b/.test(t)},
+  {k:"why",   label:"Say why", hint:"use parce que", test:t=>/\bparce qu/.test(t)},
+  {k:"freq",  label:"Say how often", hint:"souvent, parfois, tous les jours, une fois par…", test:t=>/\b(souvent|parfois|quelquefois|toujours|jamais|rarement|tous les|toutes les|une fois|deux fois|trois fois|chaque)\b/.test(t)},
+  {k:"past",  label:"Talk about the past", hint:"j'ai mangé, je suis allé(e)…", test:t=>/(^|\s)(j'ai|tu as|il a|elle a|on a|nous avons|vous avez|ils ont|elles ont|je suis|tu es|il est|elle est|on est|nous sommes|vous êtes|ils sont|elles sont)\s+(pas\s+|jamais\s+)?\S*(é|ée|és|ées|i|ie|is|it|u|ue|us|ert|aint|ait)(?=\s|$)/.test(" "+t)},
+  {k:"ade",   label:"Use à / de", hint:"au, à la, aux, du, de la, des…", test:t=>/(^|\s)(au|aux|du|à la|de la|à l'|de l')(\s|')/.test(" "+t+" ")},
+  {k:"on",    label:"Write it with on", hint:"on = we / people (il form)", test:t=>/(^|\s)on\s/.test(" "+t+" ")},
+  {k:"ask",   label:"Make it a question", hint:"end with ? — try pourquoi, quand, où…", test:(t,raw)=>/\?\s*$/.test(raw.trim())},
+  {k:"but",   label:"Join two ideas", hint:"use mais or et aussi", test:t=>/\b(mais|et aussi|aussi)\b/.test(t)}
+];
+function pickTwist(not){
+  const use = state.twistUse || {};
+  const list = TWISTS.filter(x=>x.k!==not).map(x=>({x, w: Math.pow(Math.random(), 1/(1/(1+(use[x.k]||0))))})).sort((a,b)=>b.w-a.w);
+  return list[0].x.k;
+}
+const twistOf = k => TWISTS.find(x=>x.k===k) || TWISTS[0];
+const twistDone = () => { const inp = $("#cText"); if (!inp || !C.twist) return false; return twistOf(C.twist).test(norm(inp.value).replace(/['’]/g,"'")+" ", inp.value); };
+/* "you've written this before": compare content words with your journal */
+const SIM_STOP = new Set("les des une est sont mon mes ton tes son ses dans sur sous avec pour pas que qui très aussi elle ils elles nous vous leur leurs cette ces mais".split(" "));
+const simToks = t => new Set(strip(norm(t)).replace(/'/g," ").split(" ").filter(w=>w.length>=3 && !SIM_STOP.has(w)));
+function similarPast(text){
+  const a = simToks(text); if (a.size < 3) return null;
+  let best = null;
+  (state.journal||[]).forEach(j=>{
+    [j.text, j.corrected].filter(Boolean).forEach(x=>{
+      const b = simToks(x); let inter = 0; a.forEach(w=>{ if (b.has(w)) inter++; });
+      const score = inter / (a.size + b.size - inter);
+      if (inter >= 2 && score >= 0.55 && (!best || score > best.score)) best = {score, j, x};
+    });
+  });
+  return best;
+}
 function newChallenge(fresh){
   const el = $("#createArea");
   if (needCards(el,2)) return;
@@ -1236,16 +1722,20 @@ function newChallenge(fresh){
   const fq = fitQuestions(C.words);
   C.q = restoring && d.q!=null && (d.q===-1 || fq.includes(d.q)) ? d.q : (fq.length ? fq[Math.floor(Math.random()*fq.length)] : -1);
   const q = C.q>=0 ? PROMPTS[C.q] : null;
+  C.twist = restoring && d.tw && TWISTS.some(x=>x.k===d.tw) ? d.tw : pickTwist();
+  const tw = twistOf(C.twist);
   const nl = lockedCards().length;
   el.innerHTML = `
    ${nl?`<div class="lockbar" style="margin:0 0 12px"><span>🔒 <b>${nl}</b> word${nl===1?"":"s"} waiting for a sentence to level up</span></div>`:""}
    <div class="card">
      <div class="muted small">Write 1 or 2 sentences using <b>all ${C.words.length}</b> of these:</div>
-     <div class="reqs" id="reqs">${C.words.map(c=>`<button class="req" data-id="${c.id}"><b>${isLocked(c)?"🔒 ":""}${esc(c.fr)}</b><span>${esc(c.en)}</span></button>`).join("")}</div>
+     <div class="reqs" id="reqs">${C.words.map(c=>`<button class="req" data-id="${c.id}"><b>${isLocked(c)?"🔒 ":""}${esc(c.fr)}${(c.added||0) >= Date.now()-7*DAY ? ` <span class="newb">NEW</span>` : ""}</b><span>${esc(c.en)}</span></button>`).join("")}</div>
+     <div class="twist" id="twist"><div style="flex:1"><div class="tw-h">TWIST</div><b>${esc(tw.label)}</b><div class="muted small">${esc(tw.hint)}</div></div><span class="tw-s" id="twState">not yet</span></div>
      ${q ? `<div class="qopt"><div style="flex:1"><div class="muted small">💡 Optional idea</div><b>${esc(q.fr)}</b><div class="muted small">${esc(q.en)}</div></div><button class="jicon sm" id="qSay" aria-label="Hear the question">🔊</button></div>` : ""}
      <textarea id="cText" class="cin" placeholder="Écris 1 ou 2 phrases…" autocapitalize="sentences" spellcheck="false"></textarea>
      <div class="accents" id="cAcc">${ACCENTS.map(a=>`<button type="button">${a}</button>`).join("")}</div>
-     <div class="row"><button class="btn" id="cSkip">↻ New words</button><button class="btn primary" id="cDone" disabled>Save sentence</button></div>
+     <div id="simBox"></div>
+     <div class="row"><button class="btn" id="cSkip">↻ Words</button><button class="btn" id="cTwist">↻ Twist</button><button class="btn primary" id="cDone" disabled style="flex:1.4">Save sentence</button></div>
      <div id="cFb"></div>
    </div>
    <p class="muted small center">Tip: tap the 🎤 on your keyboard to say it instead of typing. Tap a word to hear it or see its example.</p>`;
@@ -1255,6 +1745,8 @@ function newChallenge(fresh){
   snapDraft(); save();          // remember these words straight away, so closing the app doesn't change them
   $("#reqs").onclick = e=>{ const b = e.target.closest(".req"); if (!b) return; const c = state.cards.find(x=>x.id===b.dataset.id); if (c) showWordHelp(c); };
   $("#cSkip").onclick = ()=>{ clearDraft("words"); newChallenge(true); };
+  $("#cTwist").onclick = ()=>{ C.twist = pickTwist(C.twist); const t = twistOf(C.twist);
+    $("#twist").querySelector("b").textContent = t.label; $("#twist").querySelector(".muted").textContent = t.hint; checkChallenge(); snapDraft(); save(); };
   $("#cDone").onclick = ()=>saveSentence({kind:"words", prompt: q ? q.fr : "", required:C.words});
 }
 function checkChallenge(){
@@ -1265,7 +1757,14 @@ function checkChallenge(){
     const b = document.querySelector(`.req[data-id="${c.id}"]`); if (b) b.classList.toggle("ok", ok);
   });
   $("#cDone").disabled = !$("#cText").value.trim();
-  $("#cDone").textContent = all ? "✓ Save sentence" : "Save sentence";
+  const tw = twistDone();
+  if ($("#twist")){ $("#twist").classList.toggle("done", tw); $("#twState").textContent = tw ? "✓ done" : "not yet"; }
+  clearTimeout(C.simT); C.simT = setTimeout(()=>{
+    const box = $("#simBox"), inp = $("#cText"); if (!box || !inp || inp.readOnly) return;
+    const m = similarPast(inp.value);
+    box.innerHTML = m ? `<div class="simwarn">You wrote something similar on <b>${esc(dayLabel(dayKey(m.j.date)))}</b>: <i>« ${esc(m.x)} »</i><br>Try a different angle — add a new detail, a reason, or say it another way.</div>` : "";
+  }, 400);
+  $("#cDone").textContent = all ? (tw ? "✓ Save sentence" : "Save (no twist)") : "Save sentence";
   $("#cDone").classList.toggle("good", all); $("#cDone").classList.toggle("primary", !all);
   return all;
 }
@@ -1488,11 +1987,13 @@ function saveSentence({kind, prompt, required}){
     if (ok && c.due <= now){ grade(c, true); leveled++; if (wasLocked) unlocked.push({fr:c.fr, up:c.box}); }
     else if (wasLocked) unlocked.push({fr:c.fr, up:0});
   });
+  const twOk = kind==="words" && twistDone();
+  if (twOk){ state.twistUse = state.twistUse || {}; state.twistUse[C.twist] = (state.twistUse[C.twist]||0) + 1; }
   const entry = {id:uid(), date:now, kind, prompt, text, words: ids, wordsFr: ids.map(id=>(state.cards.find(c=>c.id===id)||{}).fr).filter(Boolean),
-    corrected:"", notes:"", checked:false, lt: checkOn() ? {status:"pending"} : null};
+    corrected:"", notes:"", checked:false, lt: checkOn() ? {status:"pending"} : null, twist: twOk ? C.twist : undefined};
   state.journal.unshift(entry);
   save(); paintCreateSeg();
-  $("#cFb").innerHTML = `<div class="fb ok">✓ Saved to your journal${leveled?` · ${leveled} due word${leveled===1?"":"s"} reviewed`:""}</div>
+  $("#cFb").innerHTML = `<div class="fb ok">✓ Saved to your journal${twOk?` · 🌀 twist done`:""}${leveled?` · ${leveled} due word${leveled===1?"":"s"} reviewed`:""}</div>
     ${unlocked.length?`<div class="fb ok" style="margin-top:6px">🔓 ${unlocked.map(u=>u.up?`${esc(u.fr)} → level ${u.up}`:`${esc(u.fr)} unlocked (levels up at its next review)`).join(" · ")}</div>`:""}
     <div id="cLt"></div>
     <div class="row" style="margin-top:10px"><button class="btn" id="cHear">🔊 Hear it</button><button class="btn primary" id="cNext">Next →</button></div>`;
@@ -1501,7 +2002,7 @@ function saveSentence({kind, prompt, required}){
     if (navigator.onLine===false){ paint(); }
     else { entry.lt = {status:"checking"}; paint(); checkEntry(entry).then(paint, ()=>{ paint(); }); }
   }
-  $("#cText").readOnly = true; $("#cDone").disabled = true; $("#cSkip").disabled = true;
+  $("#cText").readOnly = true; $("#cDone").disabled = true; $("#cSkip").disabled = true; if ($("#cTwist")) $("#cTwist").disabled = true; if ($("#simBox")) $("#simBox").innerHTML = "";
   $("#cHear").onclick = ()=>say(text);
   if (state.cDraft) delete state.cDraft[draftMode]; save();
   $("#cNext").onclick = ()=> kind==="words" ? newChallenge(true) : newPrompt(true);
@@ -1513,7 +2014,7 @@ function renderJournal(){
   const todo = J.filter(j=>!j.checked).length;
   const typing = document.activeElement && document.activeElement.id==="jFree" ? {s:document.activeElement.selectionStart, e:document.activeElement.selectionEnd} : null;
   if (!J.length && !JV.writing){
-    el.innerHTML = `<div class="card center"><h2>📓 Your journal is empty</h2><p class="muted">Write anything you like, or use 🔒 3 words and 🎙️ Speak — every sentence is saved here, day by day.</p>
+    el.innerHTML = `<div class="card center"><h2>📓 Your journal is empty</h2><p class="muted">Write anything you like, or use ✍️ Writing and 🎙️ Speak — every sentence is saved here, day by day.</p>
       <button class="btn primary" id="jNew" style="margin-top:6px">✏️ Write in my journal</button></div>`;
     $("#jNew").onclick = ()=>{ JV.writing = true; renderJournal(); setTimeout(()=>$("#jFree") && $("#jFree").focus(), 30); }; return;
   }
@@ -1534,7 +2035,7 @@ function renderJournal(){
   } else {
     body = list.length ? list.map(j=>jCard(j)).join("")
       : `<div class="card center"><p style="margin:4px 0">${JV.day===dayKey(Date.now()) ? "Nothing written today yet." : "Nothing written on this day."}</p>
-         <div class="row" style="margin-top:6px;justify-content:center;gap:6px"><button class="btn sm" id="jWrite">🔒 3 words</button><button class="btn primary sm" id="jNew2">✏️ Write freely</button></div></div>`;
+         <div class="row" style="margin-top:6px;justify-content:center;gap:6px"><button class="btn sm" id="jWrite">✍️ Writing</button><button class="btn primary sm" id="jNew2">✏️ Write freely</button></div></div>`;
   }
   el.innerHTML = `
    <div class="jhead">
@@ -1655,7 +2156,7 @@ function jCard(j, qn){
     </div>`;
   }
   return `<div class="jent ${open?"open":""}" data-id="${j.id}">
-    <div class="jtop"><span class="muted small">${qn?"":time+" · "}${j.kind==="me"?"About me":j.kind==="speak"?"🎙️ Spoken":j.kind==="free"?"✏️ Free writing":"🔒 3 words"}</span>${jBadge(j)}</div>
+    <div class="jtop"><span class="muted small">${qn?"":time+" · "}${j.kind==="me"?"About me":j.kind==="speak"?"🎙️ Spoken":j.kind==="free"?"✏️ Free writing":"✍️ Writing"}</span>${jBadge(j)}</div>
     <div class="jline"><div class="jsent">${text}</div>
       <div class="jbtns"><button class="jicon sm" data-j="say" aria-label="Play">🔊</button><button class="jicon sm" data-j="edit" aria-label="Edit">✏️</button></div></div>
     ${(j.wordsFr||[]).length?`<div class="jwords">${j.wordsFr.map(w=>`<span class="wchip">${qn?hl(w,qn):esc(w)}</span>`).join("")}</div>`:""}
@@ -1716,7 +2217,8 @@ $("#jFile").onchange = e=>{
       let j = iId>=0 ? state.journal.find(x=>x.id===(row[iId]||"").trim()) : null;
       if (!j && iMine>=0) j = state.journal.find(x=>norm(x.text)===norm(row[iMine]||""));
       if (!j) return;
-      j.corrected = cor; j.notes = iNotes>=0 ? (row[iNotes]||"").trim() : j.notes; if (iEn>=0 && (row[iEn]||"").trim()) j.en = row[iEn].trim(); j.checked = true; n++;
+      const was = j.checked; j.corrected = cor; j.notes = iNotes>=0 ? (row[iNotes]||"").trim() : j.notes; if (iEn>=0 && (row[iEn]||"").trim()) j.en = row[iEn].trim(); j.checked = true; n++;
+      if (!was) skillsFromCorrection(j);
     });
     save(); renderJournal(); paintCreateSeg();
     toast(n ? `✓ ${n} correction${n===1?"":"s"} added` : "No matching sentences found in that file");
@@ -1724,6 +2226,15 @@ $("#jFile").onchange = e=>{
   r.readAsText(f, "utf-8");
 };
 
+/* Claude's correction notes → skills (accents, gender, verb endings, agreement, à/de) */
+function skillsFromCorrection(j){
+  const nt = strip(norm(j.notes||"")), changed = norm(j.corrected)!==norm(j.text);
+  if (!changed){ ["accents","agree"].forEach(k=>logSkill(k, true)); return; }
+  const hit = {accents:/accent/, gender:/masculine|feminine|gender|\ble\b.*\bla\b|\bla\b.*\ble\b/, verbs:/conjugat|ending|verb form|form of|\bje form|il form/, agree:/agree|plural|singular|\+ ?e\b|\+ ?s\b/, ade:/\bau\b|\baux\b|\bdu\b|de la|a \+ le|de \+ le|partitive/};
+  let any = false;
+  Object.entries(hit).forEach(([k,rx])=>{ if (rx.test(nt)){ logSkill(k, false); any = true; } });
+  if (!any) ["accents","agree"].forEach(k=>logSkill(k, true));
+}
 /* ---------- ONLINE: free grammar check (LanguageTool) ---------- */
 const LT_URL = "https://api.languagetool.org/v2/check";
 const LT_SKIP = /WHITESPACE|ESPACE|TYPO|APOS_TYP|DASH|GUILLEMET|QUOTE|ELLIPSIS/i;   // French typography rules = noise for learners
@@ -2643,6 +3154,8 @@ function renderSettings(){
   $("#appVer").textContent = "App version " + APP_VERSION.replace(/^ff-/,"");
   $("#lenient").checked = !!state.settings.lenient;
   $("#lockChk").checked = !!state.settings.lock;
+  $("#themeSel").value = state.settings.theme || "auto";
+  $("#hardAfterSel").value = String(hardAfter());
   paintBackupInfo();
   $("#newPerDaySel").value = String(state.settings.newPerDay ?? 15);
   $("#ltChk").checked = checkOn();
@@ -2657,6 +3170,10 @@ $("#newPerDaySel").onchange = e=>{ state.settings.newPerDay = parseInt(e.target.
 $("#ltChk").onchange = e=>{ state.settings.ltCheck = e.target.checked; save(); if (e.target.checked){ toast("🔎 Online checking on"); processPending(); } else toast("Online checking off"); };
 $("#lockChk").onchange = e=>{ state.settings.lock = e.target.checked; save(); toast(e.target.checked ? "🔒 Sentence lock on" : "Sentence lock off — words level up normally"); };
 $("#lenient").onchange = e=>{ state.settings.lenient = e.target.checked; save(); };
+function applyTheme(){ const t = state.settings.theme || "auto"; if (t==="auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.content = getComputedStyle(document.body).getPropertyValue("--bg").trim() || "#2b4cc4"; }
+$("#themeSel").onchange = e=>{ state.settings.theme = e.target.value; save(); applyTheme(); };
+$("#hardAfterSel").onchange = e=>{ state.settings.hardAfter = parseInt(e.target.value,10); save(); toast(state.settings.hardAfter ? `♥ Auto-added after ${state.settings.hardAfter} misses` : "Hard words: only when you tap ♥"); };
 function exportBackup(){
   state.settings.lastBackup = Date.now(); state.settings.backupSnooze = 0; save();
   const blob = new Blob([JSON.stringify(state,null,1)], {type:"application/json"});
@@ -2766,7 +3283,8 @@ window.addEventListener("appinstalled", ()=>{ installEvt = null; const b = $("#i
 
 refreshCatFilter();
 updateDue();
-renderStudy();
+applyTheme();
+go("overview");
 })();
 </script>
 </body>
