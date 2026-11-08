@@ -484,7 +484,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-09-4";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-09-5";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -920,7 +920,7 @@ function renderOverview(){
   const due = dueCards(), nNew = due.filter(isNew).length, nRev = due.length - nNew, nLock = lockedCards().length;
   const all = state.cards, learned = all.length ? Math.round(all.reduce((s,c)=>s+c.box,0)/(all.length*(INTERVALS.length-1))*100) : 0;
   const weekAgo = Date.now() - 7*DAY, sentWeek = (state.journal||[]).filter(j=>j.date>=weekAgo).length;
-  const weak = catScores().slice(0,4), hard = hardList();
+  const weak = catScores().filter(x=>x.pct>0).slice(0,4), hard = hardList();
   el.innerHTML = `
     <section class="ov-today">
       <div><div style="font-size:13px;opacity:.9">Today${state.settings.cat?` · ${esc(catLabel(state.settings.cat))}`:""}</div>
@@ -936,6 +936,7 @@ function renderOverview(){
     <section class="card">
       <div class="secthead"><h2>Weak spots</h2><button class="linkbtn" id="ovWeak">See details</button></div>
       <p class="muted small" style="margin:0 0 4px">Your categories · weakest first</p>
+      ${weak.length ? "" : `<p class="muted small" style="margin:8px 0">Study a few cards and your weakest categories will show here.</p>`}
       ${weak.map(w=>`<div class="wk"><div class="wk-top"><span>${esc(w.label)}</span><span style="color:${pctColor(w.pct)}">${w.pct}%</span></div><div class="bar"><div class="${pctClass(w.pct)}" style="width:${Math.max(w.pct,2)}%"></div></div></div>`).join("")}
       <button class="btn primary" id="ovWeakGo" style="width:100%;margin-top:8px">🎯 Practise my weak spots</button>
     </section>
@@ -980,23 +981,25 @@ function renderHard(){
 let weakSort = "weak";
 function renderWeak(){
   const el = $("#weakArea");
-  let cats = catScores();
+  const started = catScores().filter(x=>x.pct>0), notStarted = catScores().length - started.length;   // 0% = not started yet → hidden
+  let cats = started;
   if (weakSort==="mist") cats = cats.slice().sort((a,b)=>b.hard-a.hard || a.pct-b.pct);
-  const top = catScores()[0];
+  const top = started[0];
   const skills = Object.entries(SKILLS).map(([k,name])=>({k, name, ...skillStat(k, 30)}));
   const shown = skills.filter(s=>s.n>=5).sort((a,b)=>a.pct-b.pct), waiting = skills.filter(s=>s.n<5);
   el.innerHTML = `
     ${top ? `<section class="ov-today" style="margin-top:4px">
       <div><div style="font-size:13px;opacity:.9">Weakest right now</div><div style="font-size:24px;font-weight:700;line-height:1.15">${esc(top.label)}</div></div>
-      <div style="font-size:14px;opacity:.9">${top.pct}% known · ${top.n} words${top.hard?` · ♥ ${top.hard} hard`:""}${top.due?` · ${top.due} due`:""}</div>
+      <div style="font-size:14px;opacity:.9">${top.pct}% known · ${top.n} word${top.n===1?"":"s"}${top.hard?` · ♥ ${top.hard} hard`:""}${top.due?` · ${top.due} due`:""}</div>
       <button class="btn" id="wTop">Practise this category</button></section>` : ""}
     <div class="chiprow"><button class="chipb ${weakSort==="weak"?"on":""}" data-ws="weak">Weakest first</button><button class="chipb ${weakSort==="mist"?"on":""}" data-ws="mist">Most hard words</button></div>
     <section class="card" style="padding:4px 16px">
       ${cats.map(w=>`<button class="wk" data-cat="${esc(w.cat)}"><div class="wk-top"><span>${esc(w.label)}</span><span style="color:${pctColor(w.pct)}">${w.pct}%</span></div>
         <div class="bar"><div class="${pctClass(w.pct)}" style="width:${Math.max(w.pct,2)}%"></div></div>
-        <span class="muted small">${w.n} words${w.hard?` · ♥ ${w.hard} hard`:""}${w.due?` · ${w.due} due`:""}</span></button>`).join("")}
+        <span class="muted small">${w.n} word${w.n===1?"":"s"}${w.hard?` · ♥ ${w.hard} hard`:""}${w.due?` · ${w.due} due`:""}</span></button>`).join("")}
+      ${cats.length ? "" : `<p class="muted small" style="margin:12px 0">Study a few cards and your categories will show here.</p>`}
     </section>
-    <p class="muted small center" style="margin-top:-6px">Tap a category to practise it.</p>
+    <p class="muted small center" style="margin-top:-6px">Tap a category to practise it.${notStarted ? ` ${notStarted} categor${notStarted===1?"y":"ies"} not started yet ${notStarted===1?"is":"are"} hidden.` : ""}</p>
     <section class="card">
       <div class="secthead"><h2>Skills</h2><span class="muted small">last 30 days</span></div>
       <p class="muted small" style="margin:2px 0 4px">From 🔗 à / de practice, Match → Type it, conjugation cards and Claude's journal corrections.</p>
