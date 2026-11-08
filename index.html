@@ -251,6 +251,18 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 .spk-live{color:var(--muted);font-size:13px;padding:0 16px}
 .qopt{display:flex;align-items:center;gap:8px;margin:12px 0 2px;padding:10px 12px;border-radius:12px;background:var(--surface2);line-height:1.35}
 .jwrite .cin{min-height:130px}
+.wtype{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:99px;vertical-align:1px;border:1px solid transparent}
+.t-noun{background:rgba(59,130,246,.15);color:#3b82f6}.t-verb{background:rgba(34,160,90,.15);color:#22a05a}.t-vform{background:rgba(34,160,90,.08);color:#22a05a;border-color:rgba(34,160,90,.35)}
+.t-adj{background:rgba(234,130,20,.15);color:#e0821a}.t-adv{background:rgba(150,90,220,.15);color:#9a5ce0}.t-prep{background:rgba(20,160,170,.15);color:#139aa5}
+.t-phrase,.t-other{background:var(--surface2);color:var(--muted)}
+.prepq{font-size:22px;font-weight:650;line-height:1.4}.prepq .gap{color:var(--accent);letter-spacing:2px}
+.prepopts{margin-top:14px;display:grid;gap:8px}.preprow{display:flex;gap:6px;align-items:center}
+.preprow .lab{width:26px;font-weight:700;color:var(--muted);text-align:center}
+.prepo{flex:1;min-height:46px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-size:16px;font-weight:600;cursor:pointer}
+.prepo.ok{background:color-mix(in srgb,var(--good) 25%,var(--surface));border-color:var(--good)}.prepo.no{background:color-mix(in srgb,var(--bad) 22%,var(--surface));border-color:var(--bad)}
+.prepsteps{margin:10px 0 0;padding-left:22px;line-height:1.5}.prepsteps li{margin:3px 0}.prepsteps li.bad{color:var(--bad);font-weight:600}.prepsteps .why{font-weight:400}
+.prepfull{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--surface2);font-size:18px;font-weight:600}
+.preptab{border-collapse:collapse;width:100%;text-align:center}.preptab th,.preptab td{border:1px solid var(--border);padding:7px 4px}.preptab th{color:var(--muted);font-weight:600}
 </style>
 </head>
 <body>
@@ -283,7 +295,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 
   <!-- CREATE -->
   <section class="view" id="v-create">
-    <div class="seg" id="cModeSeg"><button data-m="words">🔒 3 words</button><button data-m="journal">📓 Journal</button></div>
+    <div class="seg" id="cModeSeg"><button data-m="words">🔒 3 words</button><button data-m="prep">🧩 à / de</button><button data-m="journal">📓 Journal</button></div>
     <div id="createArea"></div>
     <input type="file" id="jFile" accept=".csv,text/csv,text/plain" hidden>
   </section>
@@ -372,7 +384,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-03-1";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-08-2";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -657,7 +669,7 @@ function showStudyCard(){
    <div class="flip" id="flip">
      <div class="flip-inner">
        <div class="face">${isNew(c)?'<span class="newtag">NEW</span>':""}
-         <div class="big">${esc(c.fr)}</div><div class="muted small" style="margin-top:14px">Tap the card to flip</div>
+         <div class="big">${esc(c.fr)}</div><div style="margin-top:8px">${typeTag(c)}</div><div class="muted small" style="margin-top:10px">Tap the card to flip</div>
          <span class="ctag">${esc(catOf(c))}</span></div>
        <div class="face back">
          ${c.pron ? `<div class="pron">${esc(c.pron)}</div>` : `<div class="pron none">No “sounds like” yet — add it with ✏️ in Words</div>`}
@@ -1049,15 +1061,117 @@ function paintCreateSeg(){
   document.querySelectorAll("#cModeSeg button").forEach(b=>b.classList.toggle("on", b.dataset.m===(C.mode==="rewrite"?"journal":C.mode)));
   const n = (state.journal||[]).filter(j=>!j.checked).length;
   const jb = document.querySelector('#cModeSeg [data-m="journal"]'); if (jb) jb.textContent = "📓 Journal";
-  $("#catbar").style.display = (C.mode==="journal" || C.mode==="rewrite") ? "none" : "";
+  $("#catbar").style.display = (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep") ? "none" : "";
 }
-$("#cModeSeg").onclick = e=>{ const b = e.target.closest("button"); if (!b) return; snapDraft(); save(); C.mode = b.dataset.m; startCreate(); };
+$("#cModeSeg").onclick = e=>{ const b = e.target.closest("button"); if (!b) return; if (C.mode==="words") snapDraft(); save(); C.mode = b.dataset.m; startCreate(); };
 function startCreate(){
   live.create = fkey();
   paintCreateSeg();
   if (C.mode==="journal") return renderJournal();
   if (C.mode==="rewrite") return startRewrite();
+  if (C.mode==="prep") return startPrep();
   C.mode = "words"; return newChallenge();   // 🔒 3 words replaced About me
+}
+
+
+/* ---------- 🧩 à / de: au, à la, aux, du, de la, des … with the reasoning shown ---------- */
+const PREP_BANK = {
+  game:  {verb:"Je joue", en:"I play", why:"<i>jouer</i> + a game or sport → <b>à</b>", prep:"à", items:[["le","tennis","tennis"],["le","football","football"],["le","rugby","rugby"],["le","golf","golf"],["le","basket","basketball"],["le","sudoku","sudoku"],["le","ping-pong","table tennis"],["le","badminton","badminton"],["la","console","on the console"],["le","handball","handball"],["le","volleyball","volleyball"],["le","frisbee","frisbee"],["le","loto","bingo"],["le","babyfoot","table football"],["les","échecs","chess"],["les","cartes","cards"],["les","jeux vidéo","video games"],["les","jeux de société","board games"]]},
+  instr: {verb:"Elle joue", en:"She plays", why:"<i>jouer</i> + an instrument → <b>de</b>", prep:"de", items:[["le","piano","the piano"],["le","violon","the violin"],["le","saxophone","the saxophone"],["la","guitare","the guitar"],["la","flûte","the flute"],["la","batterie","the drums"],["les","percussions","percussion"]]},
+  act:   {verb:"Je fais", en:"I do", why:"<i>faire</i> + an activity → <b>de</b>", prep:"de", items:[["le","yoga","yoga"],["le","judo","judo"],["le","surf","surfing"],["le","sport","sport"],["le","jardinage","gardening"],["le","bricolage","DIY"],["la","danse","dance"],["la","natation","swimming"],["la","voile","sailing"],["la","peinture","painting"],["la","photographie","photography"],["l'","équitation","horse riding"],["l'","escrime","fencing"],
+    ["le","tennis","tennis"],["le","football","football"],["le","rugby","rugby"],["le","golf","golf"],["le","handball","handball"],["le","volleyball","volleyball"],["le","basket","basketball"],["le","ping-pong","table tennis"],["le","badminton","badminton"],["le","tricot","knitting"],
+    ["la","couture","sewing"],["la","gymnastique","gymnastics"],["la","pétanque","pétanque (boules)"],["l'","aquarelle","watercolour painting"]]},
+  place: {verb:"Je vais", en:"I'm going to", why:"<i>aller</i> + a place → <b>à</b>", prep:"à", items:[["le","cinéma","the cinema"],["le","restaurant","a restaurant"],["le","parc","the park"],["le","marché","the market"],["le","travail","work"],["la","plage","the beach"],["la","gare","the station"],["la","piscine","the swimming pool"],["la","montagne","the mountains"],["la","mer","the seaside"],["l'","école","school"],["l'","hôpital","hospital"],["l'","aéroport","the airport"],["les","toilettes","the toilets"],["les","magasins","the shops"]]},
+};
+const PREP_POS = [["à côté","next to"],["près","near"],["en face","opposite"]];
+const PREP_JOIN = {"à":{"le":"au","la":"à la","l'":"à l'","les":"aux"}, "de":{"le":"du","la":"de la","l'":"de l'","les":"des"}};
+const PREP_ART = {"le":"is masculine → <b>le</b>","la":"is feminine → <b>la</b>","l'":"starts with a vowel sound → <b>l'</b>","les":"is plural → <b>les</b>"};
+const prepJoin = (ans, noun) => ans.endsWith("'") ? ans + noun : ans + " " + noun;
+let PR = {q:[], i:0, right:0, done:false};
+function prepFromCards(){                       // your own room / furniture / place nouns, for "à côté de …"
+  return state.cards.filter(c=>/room|building|furniture|household|place/i.test(catOf(c)) && wordType(c)==="noun").map(c=>{
+    const m = c.fr.trim().match(/^(le|la|les)\s+(.+)$|^(l')\s*(.+)$/i); if (!m) return null;
+    return [ (m[1]||m[3]).toLowerCase(), (m[2]||m[4]).trim(), (c.en||"").replace(/\(.*?\)/g,"").trim() ];
+  }).filter(Boolean);
+}
+function buildPrepQs(){
+  const qs = [], mine = prepFromCards();
+  const kinds = ["game","instr","act","place","game","instr","act","place"].concat(mine.length>=3 ? ["pos","pos"] : ["place","act"]);
+  shuffle(kinds).forEach(k=>{
+    if (k==="pos"){
+      const [art, noun, en] = mine[Math.floor(Math.random()*mine.length)], [p, pe] = PREP_POS[Math.floor(Math.random()*PREP_POS.length)];
+      qs.push({pre:`Le chat est ${p}`, noun, art, prep:"de", en:`The cat is ${pe} ${en}.`, why:`<i>${p} de</i> always ends in <b>de</b>`, nounEn:en});
+    } else {
+      const b = PREP_BANK[k], used = new Set(qs.map(q=>q.noun));
+      const pick = shuffle(b.items.filter(it=>!used.has(it[1])))[0] || b.items[0];
+      qs.push({pre:b.verb, noun:pick[1], art:pick[0], prep:b.prep, en:`${b.en} ${pick[2]}.`, why:b.why, nounEn:pick[2]});
+    }
+  });
+  return qs;
+}
+function startPrep(){ PR = {q:buildPrepQs(), i:0, right:0}; renderPrep(); }
+function prepRuleHtml(){
+  return `<div class="card" style="margin-top:10px">
+    <b>Two questions, then join them</b>
+    <ol class="small" style="margin:6px 0 10px;padding-left:20px;line-height:1.5">
+      <li><b>à or de?</b> The verb decides: <i>jouer</i> + game → à · <i>jouer</i> + instrument → de · <i>faire</i> → de · <i>aller</i> → à · <i>à côté / près / en face</i> → de</li>
+      <li><b>le, la, l' or les?</b> The noun decides (masculine, feminine, vowel, plural)</li>
+      <li><b>Join them:</b></li></ol>
+    <table class="preptab"><tr><th></th><th>+ le</th><th>+ la</th><th>+ l'</th><th>+ les</th></tr>
+      <tr><th>à</th><td><b>au</b></td><td>à la</td><td>à l'</td><td><b>aux</b></td></tr>
+      <tr><th>de</th><td><b>du</b></td><td>de la</td><td>de l'</td><td><b>des</b></td></tr></table>
+    <div class="muted small" style="margin-top:6px">Only <b>le</b> and <b>les</b> join up into one word. <b>la</b> and <b>l'</b> stay as they are.</div></div>`;
+}
+function renderPrep(){
+  const el = $("#createArea");
+  if (PR.i >= PR.q.length){
+    el.innerHTML = `<div class="card center"><h2>🧩 Done!</h2><p style="font-size:28px;font-weight:650;margin:6px 0">${PR.right} / ${PR.q.length}</p>
+      <p class="muted">${PR.right===PR.q.length ? "Perfect — you've got it!" : PR.right>=7 ? "Nearly there — keep practising." : "Have another go — use 📋 The rule if you get stuck."}</p>
+      <button class="btn primary" id="prepAgain">🔁 10 more</button></div>${prepRuleHtml()}`;
+    $("#prepAgain").onclick = startPrep; return;
+  }
+  const q = PR.q[PR.i];
+  const btn = a => `<button class="prepo" data-a="${a}">${a}</button>`;
+  el.innerHTML = `
+    <div class="muted small center" style="margin-bottom:6px">🧩 Fill the gap · ${PR.i+1} of ${PR.q.length} · ✓ ${PR.right}</div>
+    <div class="progress"><div style="width:${PR.i/PR.q.length*100}%"></div></div>
+    <div class="card">
+      <div class="prepq">${esc(q.pre)} <span class="gap">___</span> ${esc(q.noun)}.</div>
+      <div class="muted small" style="margin-top:4px">${esc(q.en)}</div>
+      <div id="prepHintBox" style="margin-top:8px"><button class="btn sm" id="prepHint">💡 Hint: is it le, la or les?</button></div>
+      <div class="prepopts">
+        <div class="preprow"><span class="lab">à</span>${["au","à la","à l'","aux"].map(btn).join("")}</div>
+        <div class="preprow"><span class="lab">de</span>${["du","de la","de l'","des"].map(btn).join("")}</div>
+      </div>
+      <div id="prepFb"></div>
+    </div>
+    <button class="btn" id="prepRuleBtn" style="width:100%">📋 The rule</button><div id="prepRule" hidden>${prepRuleHtml()}</div>`;
+  $("#prepHint").onclick = ()=>{ $("#prepHintBox").innerHTML = `<div class="small">💡 <b>${esc(q.art==="l'" ? "l'"+q.noun : q.art+" "+q.noun)}</b> = ${esc(q.nounEn)}</div>`; };
+  $("#prepRuleBtn").onclick = ()=>{ const r = $("#prepRule"); r.hidden = !r.hidden; };
+  el.querySelectorAll(".prepo").forEach(b=>b.onclick = ()=>answerPrep(b.dataset.a));
+}
+function answerPrep(a){
+  const q = PR.q[PR.i]; if (q.answered) return; q.answered = true;
+  const right = PREP_JOIN[q.prep][q.art], ok = a===right;
+  if (ok) PR.right++;
+  let gotPrep = null, gotArt = null;                       // which of the two steps went wrong?
+  Object.entries(PREP_JOIN).forEach(([p, m])=>Object.entries(m).forEach(([art, v])=>{ if (v===a){ gotPrep = p; gotArt = art; } }));
+  const bad1 = !ok && gotPrep!==q.prep, bad2 = !ok && gotArt!==q.art;
+  document.querySelectorAll(".prepo").forEach(b=>{ b.disabled = true; if (b.dataset.a===right) b.classList.add("ok"); else if (b.dataset.a===a) b.classList.add("no"); });
+  const full = `${q.pre} ${prepJoin(right, q.noun)}.`;
+  const nounWithArt = q.art==="l'" ? "l'"+q.noun : q.art+" "+q.noun;
+  $("#prepFb").innerHTML = `
+    <div class="fb ${ok?"ok":"no"}" style="margin-top:12px">${ok ? "✅ Right!" : `Not quite — it's <b>${esc(right)}</b>`}</div>
+    <ol class="prepsteps">
+      <li class="${bad1?"bad":""}">${q.why}${bad1?` <span class="why">(you chose <b>${gotPrep}</b>)</span>`:""}</li>
+      <li class="${bad2?"bad":""}"><i>${esc(nounWithArt)}</i> ${PREP_ART[q.art]}${bad2?` <span class="why">(you chose <b>${gotArt}</b>)</span>`:""}</li>
+      <li>${q.prep} + ${q.art} = <b>${esc(right)}</b>${q.art==="la"||q.art==="l'" ? " (no change)" : ""}</li>
+    </ol>
+    <div class="prepfull"><span style="flex:1">${esc(full)}</span><button class="jicon sm" id="prepSay" aria-label="Hear it">🔊</button></div>
+    <button class="btn primary" id="prepNext" style="width:100%;margin-top:10px">${PR.i+1<PR.q.length ? "Next →" : "See my score"}</button>`;
+  $("#prepSay").onclick = ()=>say(full);
+  $("#prepNext").onclick = ()=>{ PR.i++; renderPrep(); };
+  say(full);
 }
 
 /* --- 1. word challenge --- */
@@ -1830,12 +1944,38 @@ const SORTS = {
 };
 const CAT_SORTS = [["mine","Sort: my order"],["best","Sort: most known first"],["least","Sort: least known first"],["az","Sort: A–Z"]];
 const SORT_LABELS = [["fr","French A–Z"],["en","English A–Z"],["new","Newest first"],["weak","Weakest first"],["strong","Best known first"],["hard","Hard words first"]];
+/* ---------- word type: noun / verb / adjective … (worked out automatically, can be changed in ✏️ Edit) ---------- */
+const TYPE_INFO = {noun:"noun", verb:"verb", vform:"verb form", adj:"adjective", adv:"adverb", prep:"preposition", phrase:"phrase", other:"word"};
+function autoType(c){
+  const fr = norm(c.fr||""), en = norm(c.en||"").replace(/\(.*?\)/g,"").trim(), cat = catOf(c);
+  if (isConjCat(cat)) return "vform";
+  if (/^(le|la|les)\s|^l'/.test(fr) || (/^(un|une|des)\s/.test(fr) && /^(a|an|the|some)\s/.test(en))) return "noun";
+  if (/^to\s/.test(en)) return "verb";
+  if (/describ|colou?r|adjecti/i.test(cat)) return "adj";
+  if (/position|direction|preposition/i.test(cat)) return "prep";
+  const multi = /\s/.test(fr.replace(/^(se |s')/,""));
+  if (/how often|frequen|adverb/i.test(cat)) return multi ? "phrase" : "adv";
+  return multi ? "phrase" : "other";
+}
+const wordType = c => (c.type && TYPE_INFO[c.type]) ? c.type : autoType(c);
+const typeTag = c => { const t = wordType(c); return `<span class="wtype t-${t}">${TYPE_INFO[t]}</span>`; };
+function normType(v){
+  v = strip(norm(v||"")); if (!v) return "";
+  if (/verb form|conjug/.test(v)) return "vform";
+  if (/^(n|noun|nom)$|noun/.test(v)) return "noun";
+  if (/^(v|verb|verbe)$|^verb/.test(v)) return "verb";
+  if (/adj/.test(v)) return "adj";
+  if (/adv/.test(v)) return "adv";
+  if (/prep/.test(v)) return "prep";
+  if (/phrase|expression/.test(v)) return "phrase";
+  return "other";
+}
 function liHtml(c, showCat){
   return `<li data-id="${c.id}" class="${selected.has(c.id)?"on":""}">
-    ${selectMode ? `<input type="checkbox" tabindex="-1" ${selected.has(c.id)?"checked":""}>` : `<button class="icon-btn" data-act="say" aria-label="Play">🔊</button>`}
-    <div class="w"><b>${esc(c.fr)}</b><span class="muted small">${c.pron?`<span class="pr">${esc(c.pron)}</span> · `:""}${esc(c.en)}${c.ex?" · 💬":""}${showCat?" · "+esc(catOf(c)):""}</span></div>
+    ${selectMode ? `<input type="checkbox" tabindex="-1" ${selected.has(c.id)?"checked":""}>` : `<button class="icon-btn" data-act="edit" aria-label="Edit">✏️</button>`}
+    <div class="w"><b>${esc(c.fr)}</b><span class="muted small">${typeTag(c)} ${c.pron?`<span class="pr">${esc(c.pron)}</span> · `:""}${esc(c.en)}${c.ex?" · 💬":""}${showCat?" · "+esc(catOf(c)):""}</span></div>
     <span class="lvl l${c.box}">${isLocked(c)?"🔒 ":""}lvl ${c.box}</span>
-    ${selectMode ? (c.hard?'<span class="heart on">♥</span>':"") : heartBtn(c)+`<button class="icon-btn" data-act="edit" aria-label="Edit">✏️</button>`}</li>`;
+    ${selectMode ? (c.hard?'<span class="heart on">♥</span>':"") : heartBtn(c)+`<button class="icon-btn" data-act="say" aria-label="Play">🔊</button>`}</li>`;
 }
 function catStats(cat){
   const all = inCat(cat);
@@ -2015,6 +2155,9 @@ function openEdit(c){
     <div class="field" style="margin-top:10px"><label>French</label><input type="text" id="eFr" value="${esc(c.fr)}" autocomplete="off" autocapitalize="off"></div>
     <div class="field"><label>English</label><input type="text" id="eEn" value="${esc(c.en)}" autocomplete="off"></div>
     <div class="field"><label>Sounds like</label><input type="text" id="ePron" value="${esc(c.pron||"")}" placeholder="e.g. boh(n)-ZHOOR" autocomplete="off" autocapitalize="off"></div>
+    <div class="field"><label>Type</label><select id="eType">
+      <option value="">Automatic (${TYPE_INFO[autoType(c)]})</option>
+      ${Object.entries(TYPE_INFO).map(([k,l])=>`<option value="${k}" ${c.type===k?"selected":""}>${l}</option>`).join("")}</select></div>
     <div class="field"><label>Category</label>${catPicker("eCat", catOf(c))}
       <div class="chips" id="eSugg"></div></div>
     <details ${c.ex?"open":""} style="margin-bottom:10px"><summary class="small" style="cursor:pointer">💬 Example sentence</summary>
@@ -2046,6 +2189,7 @@ function openEdit(c){
     c.fr = fr; c.en = en; c.pron = $("#ePron").value.trim();
     c.ex = $("#eEx").value.trim(); c.exEn = $("#eExEn").value.trim(); c.exPron = $("#eExPron").value.trim();
     c.hard = $("#eHard").checked; c.cat = ensureCat($("#eCat").value);
+    if ($("#eType").value) c.type = $("#eType").value; else delete c.type;
     save(); closeModal(); renderWords(); toast("Saved");
   };
 }
@@ -2277,7 +2421,7 @@ function parseCSV(text){
   }
   return rows;
 }
-const FIELD_NAMES = {fr:"French", en:"English", pron:"Sounds like", cat:"Category", ex:"Example (French)", exEn:"Example (English)", exPron:"Example sounds like", hard:"Hard (yes/no)", skip:"— ignore —"};
+const FIELD_NAMES = {fr:"French", en:"English", pron:"Sounds like", cat:"Category", ex:"Example (French)", exEn:"Example (English)", exPron:"Example sounds like", hard:"Hard (yes/no)", type:"Type (noun, verb…)", skip:"— ignore —"};
 function guessField(h){
   h = strip(norm(h));
   if (/^(fr|french|francais|front|word|mot|term|terme)$/.test(h) || /french|francais/.test(h) && !/example|exemple|sentence|phrase/.test(h)) return "fr";
@@ -2289,6 +2433,7 @@ function guessField(h){
   if (/(example|exemple|sentence|phrase)/.test(h) && /english|anglais|translat|\ben\b/.test(h)) return "exEn";
   if (/example|exemple|sentence|phrase/.test(h)) return "ex";
   if (/hard|difficult|star|fav|like/.test(h)) return "hard";
+  if (/^(type|word type|part of speech|pos|nature)$/.test(h)) return "type";
   return null;
 }
 function readCSVFile(file){
@@ -2366,7 +2511,7 @@ function openReview(rows, defCat, source){
     const card = state.cards.find(c=>norm(c.fr)===norm(fr));
     let cat = card && catOf(card)!==UNCAT ? catOf(card) : ((r.cat||"").trim() || defCat), sugg = false;
     if (!cat){ const s = suggestCats(fr, en)[0]; if (s){ cat = s.name; sugg = true; } }
-    const row = classifyRow({fr, en, pron:r.pron||"", ex:r.ex||"", exEn:r.exEn||"", exPron:r.exPron||"", hard:!!r.hard, cat, sugg, fileDup});
+    const row = classifyRow({fr, en, pron:r.pron||"", ex:r.ex||"", exEn:r.exEn||"", exPron:r.exPron||"", hard:!!r.hard, type:normType(r.type), cat, sugg, fileDup});
     row.on = !fileDup && !!fr && (!row.dup || row.changes.length>0);
     return row;
   });
@@ -2415,12 +2560,13 @@ function openReview(rows, defCat, source){
       if (r.cardId){
         const c = state.cards.find(x=>x.id===r.cardId); if (!c){ skipped++; return; }
         UPD_FIELDS.forEach(([k])=>{ const v = (r[k]||"").trim(); if (v) c[k] = v; });   // levels, due dates, ♥ and sentences stay as they are
+        if (r.type) c.type = r.type;
         if (r.catTouched && r.cat) c.cat = ensureCat(r.cat);
         else if (catOf(c)===UNCAT && r.cat) c.cat = ensureCat(r.cat);
         u++; return;
       }
       if (!r.fr.trim() || !r.en.trim()){ skipped++; return; }
-      if (addWord(r.fr, r.en, r.cat, r.pron, r.ex, r.exEn, r.exPron)){ n++; if (r.hard) state.cards[state.cards.length-1].hard = true; }
+      if (addWord(r.fr, r.en, r.cat, r.pron, r.ex, r.exEn, r.exPron)){ n++; const nc = state.cards[state.cards.length-1]; if (r.hard) nc.hard = true; if (r.type) nc.type = r.type; }
       else skipped++;
     });
     save(); closeModal(); if (curView==="words") renderWords();
