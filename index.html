@@ -487,7 +487,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-09-8";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-09-9";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -657,6 +657,14 @@ function grade(card, ok){
   save();
 }
 /* Easy: two levels up (still stops at a 🔒 lock) */
+/* Match & Writing: a due word levels up as normal; a word that ISN'T due can level up once a day */
+const bonusUsed = c => c.due > Date.now() && c.lvlDay === dayKey(Date.now());
+function practiceGrade(c){
+  if (bonusUsed(c)) return "capped";
+  const early = c.due > Date.now(), r = grade(c, true);
+  if (early && r !== "locked") c.lvlDay = dayKey(Date.now());
+  return r;
+}
 function gradeEasy(card){
   const r = grade(card, true); if (r==="locked") return r;
   if (!isLocked(card) && card.box < INTERVALS.length-1){
@@ -1125,8 +1133,8 @@ $("#matchGrid").addEventListener("click", e=>{
   if (a.dataset.id === b.dataset.id){
     a.classList.add("done"); b.classList.add("done"); mLeft--;
     const c = state.cards.find(x=>x.id===a.dataset.id);
-    if (c && !mBad.has(c.id) && c.due <= Date.now()){            // matched first time, and due → it counts as a review
-      const b0 = c.box, r = grade(c, true);
+    if (c && !mBad.has(c.id)){            // matched first time → levels up (a word that isn't due: once a day)
+      const b0 = c.box, r = practiceGrade(c);
       if (r!=="locked" && c.box > b0){ mLevel++; a.insertAdjacentHTML("beforeend", `<span class="lvup">▲${c.box}</span>`); }
     }
     paintMStats();
@@ -1168,7 +1176,7 @@ function startType(){
   state.typeCarry = [];
   const set = carry.concat(pickMatch(Math.min(20, pool().length)).filter(c=>typeable(c) && !carry.includes(c))).slice(0, want);
   shuffle(usable).forEach(c=>{ if (set.length < want && !set.includes(c)) set.push(c); });
-  T.queue = set; T.total = T.queue.length; T.i = 0; T.right = 0; T.level = 0; T.retried = new Set();
+  T.queue = set; T.total = T.queue.length; T.i = 0; T.right = 0; T.level = 0; T.capped = 0; T.retried = new Set();
   nextType();
 }
 function nextType(){
@@ -1177,7 +1185,8 @@ function nextType(){
   if (!T.cur){
     el.innerHTML = `<div class="card center"><h2>${T.right===T.total?"Perfect! 🌟":"Done!"}</h2>
       <p style="font-size:28px;font-weight:650;margin:6px 0">${T.right} / ${T.total}</p>
-      <p class="muted">${T.level ? `▲ ${T.level} word${T.level===1?"":"s"} levelled up` : "Keep going — correct answers level your words up"}</p>
+      <p class="muted">${T.level ? `▲ ${T.level} word${T.level===1?"":"s"} levelled up` : T.capped ? "No level-ups — these words already went up today" : "Keep going — correct answers level your words up"}</p>
+      ${T.capped && T.level ? `<p class="muted small">${T.capped} already went up today, so they stayed put.</p>` : ""}
       ${(state.typeCarry||[]).length ? `<p class="muted small">↻ The ${state.typeCarry.length} word${state.typeCarry.length===1?"":"s"} you missed will come first next round.</p>` : ""}
       <div class="row"><button class="btn" id="tSwitch">⇄ Change game</button><button class="btn primary" id="tAgain">Play again</button></div></div>`;
     $("#tAgain").onclick = startType; $("#tSwitch").onclick = ()=>{ matchChosen = false; startMatch(); };
@@ -1223,8 +1232,9 @@ function checkType(){
   let lvl = "";
   if (ok){
     T.right++;
-    if (!T.hint){ const b0 = c.box, r = grade(c, true);
-      lvl = r==="locked" ? `<span class="lvpill">🔒 needs a sentence in ✍️ Writing</span>` : c.box > b0 ? `<span class="lvpill">▲ level ${b0} → ${c.box}</span>` : "";
+    if (!T.hint){ const b0 = c.box, r = practiceGrade(c);
+      lvl = r==="locked" ? `<span class="lvpill">🔒 needs a sentence in ✍️ Writing</span>` : r==="capped" ? `<span class="lvpill" style="background:var(--surface2)">Already levelled up today</span>` : c.box > b0 ? `<span class="lvpill">▲ level ${b0} → ${c.box}</span>` : "";
+      if (r==="capped") T.capped++;
       if (r!=="locked" && c.box > b0) T.level++; }
   } else {
     grade(c, false);
@@ -2024,7 +2034,8 @@ function saveSentence({kind, prompt, required}){
     c.sent = (c.sent||0) + 1; c.sentAt = now;
     const wasLocked = ok && isLocked(c);
     if (ok) c.sentOK = true;
-    if (ok && c.due <= now){ grade(c, true); leveled++; if (wasLocked) unlocked.push({fr:c.fr, up:c.box}); }
+    const b0 = c.box;
+    if (ok && !bonusUsed(c)){ practiceGrade(c); if (c.box > b0){ leveled++; if (wasLocked) unlocked.push({fr:c.fr, up:c.box}); } else if (wasLocked) unlocked.push({fr:c.fr, up:0}); }
     else if (wasLocked) unlocked.push({fr:c.fr, up:0});
   });
   const twOk = kind==="words" && twistDone();
@@ -2033,7 +2044,7 @@ function saveSentence({kind, prompt, required}){
     corrected:"", notes:"", checked:false, lt: checkOn() ? {status:"pending"} : null, twist: twOk ? C.twist : undefined};
   state.journal.unshift(entry);
   save(); paintCreateSeg();
-  $("#cFb").innerHTML = `<div class="fb ok">✓ Saved to your journal${twOk?` · 🌀 twist done`:""}${leveled?` · ${leveled} due word${leveled===1?"":"s"} reviewed`:""}</div>
+  $("#cFb").innerHTML = `<div class="fb ok">✓ Saved to your journal${twOk?` · 🌀 twist done`:""}${leveled?` · ▲ ${leveled} word${leveled===1?"":"s"} levelled up`:""}</div>
     ${unlocked.length?`<div class="fb ok" style="margin-top:6px">🔓 ${unlocked.map(u=>u.up?`${esc(u.fr)} → level ${u.up}`:`${esc(u.fr)} unlocked (levels up at its next review)`).join(" · ")}</div>`:""}
     <div id="cLt"></div>
     <div class="row" style="margin-top:10px"><button class="btn" id="cHear">🔊 Hear it</button><button class="btn primary" id="cNext">Next →</button></div>`;
