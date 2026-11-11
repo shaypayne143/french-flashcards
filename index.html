@@ -383,6 +383,16 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 .af-status{font-size:13px;font-weight:600;background:#1f2d55;color:#c4d2ff;border-radius:12px;padding:8px 12px;margin:-2px 0 10px}
 :root[data-theme="light"] .af-status{background:#e6ecff;color:#22389a}
 .af-check{font-size:12px;font-weight:700;color:#f5c25a;background:#3a2f12;border-radius:99px;padding:4px 10px;white-space:nowrap}
+.gym-hero{background:#3554d1;border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:6px;color:#fff;margin-bottom:4px}
+.gym-start{margin-top:8px;background:#fff!important;color:#2b46b8!important;border:0!important;font-weight:700}
+.gym-row{display:block;width:100%;text-align:left;font:inherit;color:var(--text);background:none;border:0;border-bottom:1px solid var(--border);padding:12px 0;cursor:pointer}
+.gym-row:last-child{border-bottom:0}.gym-row .bar{margin-top:8px}
+.gym-row.locked{display:flex;align-items:center;gap:10px;color:var(--muted);cursor:default}.gym-row.locked b{color:var(--muted)}
+.gym-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.gym-lock{font-size:16px;opacity:.8}.gym-hwnote{color:#c9b6ff;font-weight:600;margin-top:6px}
+:root[data-theme="light"] .gym-hwnote{color:#5a43a8}
+.preprow.qz-col{flex-direction:column;display:flex}.preprow.qz-col .prepo{text-align:left;width:100%}
+.qz-sent{font-size:20px}
 .mistlink{display:flex;align-items:center;gap:12px;width:100%;font:inherit;color:var(--text);cursor:pointer}
 .mrow{padding:10px 0;border-bottom:1px solid var(--border)}.mrow:last-child{border-bottom:0}
 .mrow .q{font-weight:600}.mrow .you{color:var(--bad)}.mrow .ans{color:var(--good)}
@@ -414,6 +424,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
   <div class="dsep"></div>
   <div class="dhead">Create</div>
   <button data-go="writing"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg></span>Writing</button>
+  <button data-go="gym"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" y1="8" x2="6" y2="16"></line><line x1="18" y1="8" x2="18" y2="16"></line><line x1="3" y1="10" x2="3" y2="14"></line><line x1="21" y1="10" x2="21" y2="14"></line><line x1="6" y1="12" x2="18" y2="12"></line></svg></span>Grammar gym</button>
   <div class="dsep"></div>
   <button data-go="words"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"></path><path d="M4 21V5"></path></svg></span>Words</button>
   <button data-go="settings"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"></path></svg></span>Settings</button>
@@ -432,6 +443,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
   <section class="view" id="v-weak"><div id="weakArea"></div></section>
   <section class="view" id="v-mistakes"><div id="mistArea"></div></section>
   <section class="view" id="v-homework"><div id="hwArea"></div></section>
+  <section class="view" id="v-gym"><div id="gymArea"></div></section>
 
   <!-- STUDY -->
   <section class="view" id="v-study">
@@ -533,7 +545,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-11-1";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-11-2";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -681,7 +693,7 @@ function skillStat(k, days){
 /* ♥ hard words: added automatically after N misses, taken off again once the word is known (level 4) */
 const hardAfter = () => state.settings.hardAfter ?? 3;
 /* ---------- 📝 mistake log: what you were asked, what you answered, the right answer ---------- */
-const MIST_SRC = {type:"Type it", write:"Write from memory", match:"Tap to match", study:"Study", ade:"Grammar gym — à / de", tout:"Grammar gym — tout / tous", hw:"Homework"};
+const MIST_SRC = {type:"Type it", write:"Write from memory", match:"Tap to match", study:"Study", ade:"Grammar gym — à / de", tout:"Grammar gym — tout / tous", hw:"Homework", gym:"Grammar gym"};
 function logMistake(m){
   state.mistakes = state.mistakes || [];
   state.mistakes.push(Object.assign({at: Date.now()}, m));
@@ -716,7 +728,7 @@ function mistakesText(list){
     items.forEach(m=>{
       const line = src==="study" ? `- didn't remember: ${m.right} = ${m.q}`
         : src==="match" ? `- matched "${m.q}" with "${m.you}" (it means "${m.right}")`
-        : `- ${m.q} → I ${/^(ade|tout|hw)$/.test(src) ? "chose / typed" : "typed"} "${m.you}" · answer "${m.right}"${m.kind && m.kind!=="wrong" ? ` (${m.kind})` : ""}`;
+        : `- ${m.q} → I ${/^(ade|tout|hw|gym)$/.test(src) ? "chose / typed" : "typed"} "${m.you}" · answer "${m.right}"${m.kind && m.kind!=="wrong" ? ` (${m.kind})` : ""}`;
       seen.set(line, (seen.get(line)||0) + 1);
     });
     seen.forEach((n, line)=>out.push(line + (n>1 ? ` (×${n})` : "")));
@@ -853,7 +865,7 @@ function hwExample(w){
   if (w.words) return w.words.slice(0,3).map(x=>{ const c = state.cards.find(c=>norm(c.fr)===x.key); return `<b>${esc(c ? c.fr : x.last.word || x.last.right)}</b> ×${x.n}`; }).join(" · ");
   const m = w.list[w.list.length-1];
   if (!m) return "";
-  const ex = m.src==="tout" || m.src==="ade" || m.src==="hw" ? (m.q||"").replace(/\s*\(.*\)\s*$/,"").replace("___", `<s>${esc(m.you)}</s> <b class="okc">${esc(m.right)}</b>`) : `<s>${esc(m.you)}</s> → <b class="okc">${esc(m.right)}</b>`;
+  const ex = m.src==="tout" || m.src==="ade" || m.src==="hw" || m.src==="gym" ? (m.q||"").replace(/\s*\(.*\)\s*$/,"").replace("___", `<s>${esc(m.you)}</s> <b class="okc">${esc(m.right)}</b>`) : `<s>${esc(m.you)}</s> → <b class="okc">${esc(m.right)}</b>`;
   return `${esc(HW_INFO[w.pat].short)}: ${ex.includes("<") ? ex : esc(ex)}`;
 }
 
@@ -876,7 +888,7 @@ function qAde(pat, n){
     const why = pat==="ade-prep"
       ? {q:`Why ${q.prep}?`, options:shuffle([q.why.replace(/<[^>]+>/g,""), ...shuffle(Object.values(PREP_BANK).map(b=>b.why.replace(/<[^>]+>/g,"")).filter(w=>w!==q.why.replace(/<[^>]+>/g,""))).slice(0,2)]), answerText:q.why.replace(/<[^>]+>/g,"")}
       : {q:`Why ${right}?`, options:shuffle(Object.entries(PREP_ART).map(([a,t])=>`${q.noun} ${t.replace(/<[^>]+>/g,"")}`)), answerText:`${q.noun} ${PREP_ART[q.art].replace(/<[^>]+>/g,"")}`};
-    return {pat, kind:"choice", prompt:`${q.pre} ___ ${q.noun}.`, en:q.en, options:opts, answer:right, why, explain:`${q.why} · <i>${esc(q.art==="l'"?"l'"+q.noun:q.art+" "+q.noun)}</i> ${PREP_ART[q.art]} · ${q.prep} + ${q.art} = <b>${esc(right)}</b>`, say:full};
+    return {pat, prep:q.prep, art:q.art, kind:"choice", prompt:`${q.pre} ___ ${q.noun}.`, en:q.en, options:opts, answer:right, why, explain:`${q.why} · <i>${esc(q.art==="l'"?"l'"+q.noun:q.art+" "+q.noun)}</i> ${PREP_ART[q.art]} · ${q.prep} + ${q.art} = <b>${esc(right)}</b>`, say:full};
   });
 }
 const GENDER_TIPS = [[/(tion|sion|té|ure|ette|ance|ence|ée|ie|ude)$/, "f", "Words ending in -tion, -té, -ure, -ette, -ance/-ence are usually feminine."],
@@ -912,6 +924,7 @@ function questionsFor(w, n){
   if (p==="gender") return qGender(p, n);
   if (p==="accents") return qAccents(p, n);
   if (p==="words") return qWords(w, n);
+  if (p.startsWith("gym-")) return gymQuestions(p.slice(4), n);
   return [];
 }
 function buildWorksheet(){
@@ -956,7 +969,7 @@ function yourMistakesHtml(w){
   const list = (w.list||[]).slice(-4).reverse();
   if (!list.length) return "";
   return `<section class="hw-yours"><div class="hw-kicker" style="color:var(--warn)">YOUR MISTAKES</div>
-    ${list.map(m=>`<div>${m.src==="tout"||m.src==="ade"||m.src==="hw" ? esc((m.q||"").replace(/\s*\(.*\)\s*$/,"")).replace("___", `<s>${esc(m.you)}</s> <b class="okc">${esc(m.right)}</b>`) : `${esc(m.q)}: <s>${esc(m.you||"—")}</s> <b class="okc">${esc(m.right)}</b>`}</div>`).join("")}</section>`;
+    ${list.map(m=>`<div>${m.src==="tout"||m.src==="ade"||m.src==="hw"||m.src==="gym" ? esc((m.q||"").replace(/\s*\(.*\)\s*$/,"")).replace("___", `<s>${esc(m.you)}</s> <b class="okc">${esc(m.right)}</b>`) : `${esc(m.q)}: <s>${esc(m.you||"—")}</s> <b class="okc">${esc(m.right)}</b>`}</div>`).join("")}</section>`;
 }
 function lessonBody(w){
   const p = w.pat;
@@ -979,6 +992,7 @@ function lessonBody(w){
         <p class="small">Set phrases never change: <i>tout de suite, à tout à l'heure, pas du tout, c'est tout</i>.</p></section>`;
   }
   if (p.startsWith("ade")) return `<section class="card">${prepRuleHtml()}</section>`;
+  if (p.startsWith("gym-")) return gymRuleHtml(gymTopic(p.slice(4)));
   if (p==="gender") return `<section class="card"><b>le or la?</b><p class="small">There's no rule for every word, so always learn a noun <b>with</b> its article (la chaise, not chaise). These endings help:</p>
       <ul class="hw-ol"><li><b>Usually feminine:</b> -tion, -sion, -té, -ure, -ette, -ance, -ence, -ée</li><li><b>Usually masculine:</b> -age, -ment, -eau, -isme, -oir</li></ul>
       <p class="small muted">Why it matters: le / la changes au/à la, du/de la, and the endings of adjectives.</p></section>`;
@@ -1016,44 +1030,33 @@ function hwLog(pat, ok){
   if (r.status==="active" && hwDaysDone(pat) >= HW_DAYS){ r.status = "fixed"; r.since = Date.now(); r.checkAt = Date.now() + HW_CHECK; r.checkRes = []; HWV.fixed = (HWV.fixed||[]).concat(pat);
     if (pat.startsWith("custom:")){ const c = (state.hwCustom||[]).find(x=>"custom:"+x.id===pat); if (c) c.done = true; } }
 }
-function renderHwPractice(el){
-  const P = HWV;
-  if (P.i >= P.qs.length){
-    const fixed = [...new Set(P.fixed||[])];
-    el.innerHTML = `<section class="card center"><h2>${P.right===P.qs.length ? "Perfect! 🌟" : "Homework done ✓"}</h2>
-      <p style="font-size:28px;font-weight:700;margin:4px 0">${P.right} / ${P.qs.length}</p>
-      ${fixed.length ? `<p class="okc"><b>Fixed: ${fixed.map(p=>esc(hwTitle(p))).join(", ")}</b> — it'll come back once next week to check.</p>` : `<p class="muted small">Get ${HW_DAY_RIGHT}+ right on ${HW_DAYS} different days to fix a weak spot.</p>`}
-      <button class="btn primary" id="hwDone" style="width:100%">Back to My homework</button></section>`;
-    $("#hwDone").onclick = ()=>{ HWV = {view:"list"}; renderHomework(); };
-    return;
-  }
-  const q = P.qs[P.i], info = HW_INFO[q.pat] || {};
+/* ---------- one quiz screen shared by Homework and the Grammar gym ---------- */
+function renderPractice(el, P, O){
+  if (P.i >= P.qs.length){ el.innerHTML = O.endHtml(P); O.wireEnd(P); return; }
+  const q = P.qs[P.i];
   const parts = q.prompt.split("___");
-  el.innerHTML = `<div class="row" style="align-items:center;margin-bottom:6px"><button class="linkbtn" id="hwQuit">✕ Stop</button><span style="flex:1"></span><span class="muted small">${P.i+1} / ${P.qs.length}</span></div>
+  el.innerHTML = `<div class="row" style="align-items:center;margin-bottom:6px"><button class="linkbtn" id="qzQuit">✕ Stop</button><span style="flex:1"></span><span class="muted small">${P.i+1} / ${P.qs.length}</span></div>
     <div class="progress"><div style="width:${P.i/P.qs.length*100}%"></div></div>
-    <div class="hw-kicker" style="margin:10px 0 6px">${q.checkup ? "CHECK-UP · " : ""}${esc((q.pat.startsWith("custom:") ? hwTitle(q.pat) : info.short || hwTitle(q.pat)).toUpperCase())}</div>
+    <div class="hw-kicker" style="margin:10px 0 6px">${esc(O.kicker(q).toUpperCase())}</div>
     <section class="card">
-      <div class="prepq${q.big?" hw-bigq":""}">${parts.length>1 ? `${esc(parts[0])}<span class="gap">___</span>${esc(parts[1])}` : esc(q.prompt)}</div>
+      <div class="prepq${q.big?" hw-bigq":""}${q.sentences?" qz-sent":""}">${parts.length>1 ? `${esc(parts[0])}<span class="gap">___</span>${esc(parts[1])}` : esc(q.prompt)}</div>
       ${q.en ? `<div class="muted small" style="margin-top:4px">${esc(q.en)}</div>` : ""}
       ${q.kind==="type" ? `<input type="text" id="hwIn" class="hw-in" autocomplete="off" autocapitalize="off" placeholder="Type the French…">${accentBar("hwIn")}<button class="btn primary" id="hwCheck" style="width:100%;margin-top:8px">Check</button>`
-        : `<div class="prepopts"><div class="preprow">${q.options.map(o=>`<button class="prepo" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`}
+        : `<div class="prepopts"><div class="preprow${q.sentences?" qz-col":""}">${q.options.map(o=>`<button class="prepo" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`}
       <div id="hwFb"></div>
     </section>`;
-  $("#hwQuit").onclick = ()=>{ if (confirm("Stop this homework? Your answers so far still count.")){ HWV = {view:"list"}; renderHomework(); } };
+  $("#qzQuit").onclick = ()=>{ if (confirm("Stop here? Your answers so far still count.")) O.quit(); };
   if (q.kind==="type"){
     const inp = $("#hwIn"); wireAccentBar("hwIn"); setTimeout(()=>inp.focus(), 50);
     const check = ()=>{ if (!inp.value.trim() || q.answered) return; const a = inp.value.trim(), alts = q.answer.split("/").map(s=>norm(s.trim()));
-      const ok = alts.includes(norm(a)); hwAnswer(q, a, ok, !ok && alts.some(x=>strip(x)===strip(norm(a)))); inp.readOnly = true; };
+      const ok = alts.includes(norm(a)); quizAnswer(el, P, O, q, a, ok, !ok && alts.some(x=>strip(x)===strip(norm(a)))); inp.readOnly = true; };
     $("#hwCheck").onclick = check; inp.onkeydown = e=>{ if (e.key==="Enter") check(); };
-  } else el.querySelectorAll(".prepo").forEach(b=>b.onclick = ()=>hwAnswer(q, b.dataset.a, b.dataset.a===q.answer));
+  } else el.querySelectorAll(".prepo").forEach(b=>b.onclick = ()=>quizAnswer(el, P, O, q, b.dataset.a, b.dataset.a===q.answer));
 }
-function hwAnswer(q, a, ok, nearAccent){
-  if (q.answered) return; q.answered = true; const P = HWV;
+function quizAnswer(el, P, O, q, a, ok, nearAccent){
+  if (q.answered) return; q.answered = true;
   if (ok) P.right++;
-  hwLog(q.pat, ok);
-  if (q.pat.startsWith("tout")) logSkill("tout", ok); else if (q.pat.startsWith("ade")) logSkill("ade", ok); else if (q.pat==="gender") logSkill("gender", ok); else if (q.pat==="accents") logSkill("accents", ok);
-  if (!ok) logMistake({src:"hw", q:q.prompt + (q.en ? ` (${q.en})` : ""), you:a, right:q.answer, pat: q.pat.startsWith("tout-") && TOUT_GN[a] ? toutPattern(a, q.answer) : q.pat==="words" ? "word:"+norm(q.answer) : q.pat, word:q.answer, kind: nearAccent ? "accents only" : "wrong"});
-  if (q.card){ const c = state.cards.find(c=>c.id===q.card); if (c && !ok) { c.wrong++; registerMiss(c); } }
+  O.onAnswer(q, a, ok, nearAccent);
   save();
   document.querySelectorAll(".prepo").forEach(b=>{ b.disabled = true; if (b.dataset.a===q.answer) b.classList.add("ok"); else if (b.dataset.a===a) b.classList.add("no"); });
   const full = q.say || "";
@@ -1062,17 +1065,312 @@ function hwAnswer(q, a, ok, nearAccent){
       ${q.why.options.map((o,i)=>`<button class="hw-whyo" data-w="${i}">${esc(o)}</button>`).join("")}</div>` : ""}
     ${!ok || !q.why ? `${q.explain ? `<div class="small" style="margin-top:10px">${q.explain}</div>` : ""}` : ""}
     ${full ? `<div class="prepfull"><span style="flex:1">${esc(full)}</span><button class="jicon sm" id="hwSay" aria-label="Hear it">🔊</button></div>` : ""}
+    ${O.after ? O.after(P, q, ok) : ""}
     <button class="btn primary" id="hwNext" style="width:100%;margin-top:10px" ${q.why && ok ? "hidden" : ""}>${P.i+1<P.qs.length ? "Next →" : "See my score"}</button>`;
   if ($("#hwSay")) $("#hwSay").onclick = ()=>say(full);
   document.querySelectorAll(".hw-whyo").forEach(b=>b.onclick = ()=>{
     const pickedText = q.why.options[+b.dataset.w], good = q.why.answerText ? pickedText===q.why.answerText : +b.dataset.w===q.why.answer;
     document.querySelectorAll(".hw-whyo").forEach(x=>{ x.disabled = true; const t = q.why.options[+x.dataset.w]; if (q.why.answerText ? t===q.why.answerText : +x.dataset.w===q.why.answer) x.classList.add("ok"); else if (x===b) x.classList.add("no"); });
-    b.insertAdjacentHTML("afterend", `<div class="small" style="margin-top:6px">${good ? "✓ That's the reason." : "Not quite — the green one is the reason."}${q.explain ? ` ${q.explain}` : ""}</div>`);
+    b.parentElement.insertAdjacentHTML("beforeend", `<div class="small" style="margin-top:2px">${good ? "✓ That's the reason." : "Not quite — the green one is the reason."}${q.explain ? ` ${q.explain}` : ""}</div>`);
     $("#hwNext").hidden = false;
   });
-  $("#hwNext").onclick = ()=>{ P.i++; renderHomework(); window.scrollTo(0,0); };
+  $("#hwNext").onclick = ()=>{ P.i++; O.rerender(); window.scrollTo(0,0); };
   if (full) say(full);
 }
+const HW_QUIZ = {
+  kicker: q => (q.checkup ? "Check-up · " : "") + (q.pat.startsWith("custom:") || q.pat.startsWith("gym-") ? hwTitle(q.pat) : (HW_INFO[q.pat]||{}).short || hwTitle(q.pat)),
+  quit: ()=>{ HWV = {view:"list"}; renderHomework(); },
+  rerender: ()=>renderHomework(),
+  onAnswer: (q, a, ok, nearAccent)=>{
+    hwLog(q.pat, ok);
+    const t = gymTopicOfPat(q.pat); if (t) gymLog(t, ok);
+    if (q.pat==="accents") logSkill("accents", ok);
+    if (!ok) logMistake({src:"hw", q:q.prompt + (q.en ? ` (${q.en})` : ""), you:a, right:q.answer, pat: patOfAnswer(q, a), word:q.answer, kind: nearAccent ? "accents only" : "wrong"});
+    if (q.card){ const c = state.cards.find(c=>c.id===q.card); if (c && !ok){ c.wrong++; registerMiss(c); } }
+  },
+  endHtml: P => { const fixed = [...new Set(P.fixed||[])];
+    return `<section class="card center"><h2>${P.right===P.qs.length ? "Perfect! 🌟" : "Homework done ✓"}</h2>
+      <p style="font-size:28px;font-weight:700;margin:4px 0">${P.right} / ${P.qs.length}</p>
+      ${fixed.length ? `<p class="okc"><b>Fixed: ${fixed.map(p=>esc(hwTitle(p))).join(", ")}</b> — it'll come back once next week to check.</p>` : `<p class="muted small">Get ${HW_DAY_RIGHT}+ right on ${HW_DAYS} different days to fix a weak spot.</p>`}
+      <button class="btn primary" id="hwDone" style="width:100%">Back to My homework</button></section>`; },
+  wireEnd: ()=>{ $("#hwDone").onclick = ()=>{ HWV = {view:"list"}; renderHomework(); }; },
+};
+function renderHwPractice(el){ renderPractice(el, HWV, HW_QUIZ); }
+/* the mistake "pattern" for a wrong answer */
+function patOfAnswer(q, a){
+  if (q.pat.startsWith("tout")) return TOUT_GN[a] && TOUT_GN[q.answer] ? toutPattern(a, q.answer) : "tout-fixed";
+  if (q.pat.startsWith("ade") && q.prep){ let gp = null; Object.entries(PREP_JOIN).forEach(([p, m])=>Object.values(m).forEach(v=>{ if (v===a) gp = p; })); return gp && gp!==q.prep ? "ade-prep" : "ade-art"; }
+  if (q.pat==="words") return "word:" + norm(q.answer);
+  return q.pat;
+}
+
+/* =====================================================================
+   🏋️ GRAMMAR GYM — topic cards, a 10-question drill each, daily warm-up.
+   Topics open in order: get 60% on one (last 20 answers) and the next opens.
+   Mistakes here feed straight into Homework.
+   ===================================================================== */
+const GYM_UNLOCK = 60, GYM_MIN = 10, GYM_WINDOW = 20;
+const GYM_GROUPS = [["basics","The basics"],["verbs","Verbs"],["small","Small words"]];
+const GYM = [
+  {id:"art",  group:"basics", title:"le / la / un / une", pat:"gender", skill:"gender"},
+  {id:"adj",  group:"basics", title:"Adjectives: bruyant / bruyante", pat:"gym-adj", skill:"agree"},
+  {id:"cest", group:"basics", title:"c'est vs il / elle est", pat:"gym-cest"},
+  {id:"neg",  group:"basics", title:"Negation: ne… pas, pas de", pat:"gym-neg"},
+  {id:"pres", group:"verbs",  title:"Present tense endings", pat:"gym-pres", skill:"verbs"},
+  {id:"on",   group:"verbs",  title:"“on” takes the il / elle form", pat:"gym-on"},
+  {id:"ade",  group:"small",  title:"à / de + le / la", pat:"ade-prep", skill:"ade", open:true},
+  {id:"tout", group:"small",  title:"tout / toute / tous / toutes", pat:"tout-fem", skill:"tout", open:true},
+];
+const gymTopic = id => GYM.find(t=>t.id===id);
+function gymTopicOfPat(p){
+  if (!p) return null;
+  if (p.startsWith("gym-")) return p.slice(4);
+  if (p.startsWith("tout")) return "tout";
+  if (p.startsWith("ade")) return "ade";
+  if (p==="gender") return "art";
+  return null;
+}
+Object.assign(HW_INFO, {
+  "gym-adj":  {group:"gym", title:"Adjectives: bruyant / bruyante", short:"Adjective not matching its noun", want:[]},
+  "gym-cest": {group:"gym", title:"c'est vs il / elle est", short:"Mixing up c'est and il / elle est", want:[]},
+  "gym-neg":  {group:"gym", title:"Negation: ne… pas, pas de", short:"Negative sentences", want:[]},
+  "gym-pres": {group:"gym", title:"Present tense endings", short:"Wrong verb ending", want:[]},
+  "gym-on":   {group:"gym", title:"“on” takes the il / elle form", short:"Using the nous form with on", want:[]},
+});
+function gymState(){
+  if (!state.gym){                                                  // first time: start from the skills you already practised
+    state.gym = {log:{}, open:{}};
+    GYM.forEach(t=>{ if (t.skill && state.skills && state.skills[t.skill]) state.gym.log[t.id] = state.skills[t.skill].slice(-GYM_WINDOW).map(x=>x[1]); });
+  }
+  state.gym.log = state.gym.log || {}; state.gym.open = state.gym.open || {};
+  return state.gym;
+}
+function gymLog(id, ok){ const g = gymState(); const a = g.log[id] = g.log[id] || []; a.push(ok?1:0); if (a.length > GYM_WINDOW) a.splice(0, a.length-GYM_WINDOW); gymUnlocks(); }
+function gymScore(id){ const a = gymState().log[id] || []; return {n:a.length, pct: a.length ? Math.round(a.reduce((s,x)=>s+x,0)/a.length*100) : 0}; }
+const gymPassed = id => { const s = gymScore(id); return s.n >= GYM_MIN && s.pct >= GYM_UNLOCK; };
+function gymIsOpen(t){
+  const g = gymState(); if (t.open || g.open[t.id]) return true;
+  const inGroup = GYM.filter(x=>x.group===t.group), i = inGroup.indexOf(t);
+  return i===0 || gymPassed(inGroup[i-1].id);
+}
+let gymNewlyOpen = [];
+function gymUnlocks(){ const g = gymState(); GYM.forEach(t=>{ if (!g.open[t.id] && gymIsOpen(t)){ g.open[t.id] = Date.now(); if (Object.keys(g.open).length > 1 && !t.open) gymNewlyOpen.push(t.id); } }); }
+
+/* ---------- question banks ---------- */
+const ADJ_BANK = [
+  ["bruyant","bruyante","bruyants","bruyantes","noisy","pt"],["petit","petite","petits","petites","small","pt"],["grand","grande","grands","grandes","big / tall","pt"],
+  ["content","contente","contents","contentes","happy","p"],["fatigué","fatiguée","fatigués","fatiguées","tired","p"],["intelligent","intelligente","intelligents","intelligentes","clever","p"],
+  ["heureux","heureuse","heureux","heureuses","happy","p"],["gentil","gentille","gentils","gentilles","kind","p"],["beau","belle","beaux","belles","beautiful","pt"],
+  ["blanc","blanche","blancs","blanches","white","t"],["noir","noire","noirs","noires","black","t"],["vert","verte","verts","vertes","green","t"],["confortable","confortable","confortables","confortables","comfortable","t"]];
+const ADJ_FRAMES = [
+  ["Ma voisine est ___.","My neighbour (a woman) is","voisine","fs","p"],["Mon voisin est ___.","My neighbour (a man) is","voisin","ms","p"],
+  ["Mes sœurs sont ___.","My sisters are","sœurs","fp","p"],["Mes parents sont ___.","My parents are","parents","mp","p"],
+  ["Ma mère est ___.","My mum is","mère","fs","p"],["Mon frère est ___.","My brother is","frère","ms","p"],["Mes amies sont ___.","My (girl) friends are","amies","fp","p"],
+  ["La maison est ___.","The house is","maison","fs","t"],["Le chat est ___.","The cat is","chat","ms","t"],["Les chaises sont ___.","The chairs are","chaises","fp","t"],["Les tapis sont ___.","The rugs are","tapis","mp","t"],["La voiture est ___.","The car is","voiture","fs","t"]];
+const GN_IDX = {ms:0, fs:1, mp:2, fp:3};
+function qAdj(n){
+  const out = [];
+  for (let k=0; k<n*3 && out.length<n; k++){
+    const f = ADJ_FRAMES[Math.floor(Math.random()*ADJ_FRAMES.length)], fits = ADJ_BANK.filter(a=>a[5].includes(f[4])), a = fits[Math.floor(Math.random()*fits.length)];
+    const ans = a[GN_IDX[f[3]]]; if (out.some(q=>q.prompt===f[0] && q.answer===ans)) continue;
+    out.push({pat:"gym-adj", topic:"adj", kind:"choice", prompt:f[0], en:`${f[1]} ${a[4]}.`, options:[...new Set(a.slice(0,4))], answer:ans,
+      why:{q:`Why ${ans}?`, options:shuffle(Object.entries(WHY_GN).map(([g,x])=>`${f[2]} is ${x}`)), answerText:`${f[2]} is ${WHY_GN[f[3]]}`},
+      explain:`Add <b>-e</b> for feminine, <b>-s</b> for more than one${a[0]===a[1] ? ` (${a[0]} already ends in -e, so it doesn't change for feminine)` : ""}.`, say:f[0].replace("___", ans)});
+  }
+  return out;
+}
+const CEST_WHY = {c:"Next comes un / une / mon / a name, or a general idea → c'est", i:"Describing him / it: an adjective or a job → il est", e:"Describing her / it (feminine): an adjective or a job → elle est"};
+const CEST_BANK = [
+  ["___ mon frère.","That's my brother.","c'est","c"],["___ une bonne idée !","That's a good idea!","c'est","c"],["___ Marie, ma voisine.","That's Marie, my neighbour.","c'est","c"],
+  ["Mon père ? ___ médecin.","My dad? He's a doctor.","il est","i"],["Ma sœur ? ___ très grande.","My sister? She's very tall.","elle est","e"],["Paul ? ___ gentil.","Paul? He's kind.","il est","i"],
+  ["La cuisine ? ___ petite.","The kitchen? It's small.","elle est","e"],["___ un bon film.","It's a good film.","c'est","c"],["Le français, ___ difficile !","French — it's hard!","c'est","c"],
+  ["Ma mère ? ___ prof.","My mum? She's a teacher.","elle est","e"],["___ moi !","It's me!","c'est","c"],["Regarde le chat, ___ noir.","Look at the cat, it's black.","il est","i"],
+  ["___ lundi aujourd'hui.","It's Monday today.","c'est","c"],["Mon voisin ? ___ un homme bruyant.","My neighbour? He's a noisy man.","c'est","c"],["La voiture ? ___ rouge.","The car? It's red.","elle est","e"],
+  ["Mon frère ? ___ très drôle.","My brother? He's really funny.","il est","i"]];
+function qCest(n){
+  return shuffle(CEST_BANK.slice()).slice(0, n).map(([s,en,a,k])=>({pat:"gym-cest", topic:"cest", kind:"choice", prompt:s, en, options:["c'est","il est","elle est"], answer:a,
+    why:{q:`Why ${a}?`, options:shuffle(Object.values(CEST_WHY)), answerText:CEST_WHY[k]}, explain:CEST_WHY[k], say:s.replace("___", a).replace(/^c'est/,"C'est").replace(/^il est/,"Il est").replace(/^elle est/,"Elle est")}));
+}
+const NEG_WHY = {de:"After a negative, un / une / des / du / de la become de (d' before a vowel)", order:"ne goes before the verb, pas after it", ne:"ne becomes n' before a vowel", jamais:"jamais / plus replace pas — never use both", like:"With aimer / adorer / détester, keep le / la — no de", etre:"être never takes de: ce n'est pas un / mon…"};
+const NEG_BANK = [
+  ["I don't have a car.","Je n'ai pas de voiture.",["Je n'ai pas une voiture.","Je ne ai pas de voiture."],"de"],
+  ["I don't eat meat.","Je ne mange pas de viande.",["Je ne mange pas du viande.","Je mange ne pas de viande."],"de"],
+  ["I never drink coffee.","Je ne bois jamais de café.",["Je ne bois pas jamais de café.","Je ne bois jamais du café."],"jamais"],
+  ["She doesn't live here any more.","Elle n'habite plus ici.",["Elle ne habite plus ici.","Elle n'habite pas plus ici."],"ne"],
+  ["We don't like football.","On n'aime pas le foot.",["On n'aime pas de foot.","On ne aime pas le foot."],"like"],
+  ["He doesn't have any friends.","Il n'a pas d'amis.",["Il n'a pas des amis.","Il n'a pas de amis."],"de"],
+  ["I'm not tired.","Je ne suis pas fatigué.",["Je ne pas suis fatigué.","Je suis ne pas fatigué."],"order"],
+  ["There's no noise.","Il n'y a pas de bruit.",["Il n'y a pas du bruit.","Il n'y a pas un bruit."],"de"],
+  ["I don't go out any more.","Je ne sors plus.",["Je ne sors pas plus.","Je sors ne plus."],"jamais"],
+  ["They never watch TV.","Ils ne regardent jamais la télé.",["Ils ne regardent pas jamais la télé.","Ils regardent ne jamais la télé."],"jamais"],
+  ["It's not my bag.","Ce n'est pas mon sac.",["Ce n'est pas de mon sac.","Ce ne est pas mon sac."],"etre"],
+  ["I don't want any bread.","Je ne veux pas de pain.",["Je ne veux pas du pain.","Je veux ne pas de pain."],"de"],
+  ["We don't have a garden.","Nous n'avons pas de jardin.",["Nous n'avons pas un jardin.","Nous ne avons pas de jardin."],"de"],
+  ["I hate the noise.","Je déteste le bruit.",["Je déteste de bruit.","Je déteste du bruit."],"like"]];
+function qNeg(n){
+  return shuffle(NEG_BANK.slice()).slice(0, n).map(([en, right, wrong, k])=>({pat:"gym-neg", topic:"neg", kind:"choice", sentences:true, prompt:en, en:"Pick the right French", options:shuffle([right, ...wrong]), answer:right,
+    why:{q:"What's the rule here?", options:shuffle([NEG_WHY[k], ...shuffle(Object.values(NEG_WHY).filter(x=>x!==NEG_WHY[k])).slice(0,2)]), answerText:NEG_WHY[k]}, explain:NEG_WHY[k], say:right}));
+}
+const VERBS_GYM = {
+  parler:["to speak","er",["parle","parles","parle","parlons","parlez","parlent"]], manger:["to eat","er",["mange","manges","mange","mangeons","mangez","mangent"]],
+  aimer:["to like","er",["aime","aimes","aime","aimons","aimez","aiment"]], regarder:["to watch","er",["regarde","regardes","regarde","regardons","regardez","regardent"]],
+  écouter:["to listen","er",["écoute","écoutes","écoute","écoutons","écoutez","écoutent"]], habiter:["to live","er",["habite","habites","habite","habitons","habitez","habitent"]],
+  finir:["to finish","ir",["finis","finis","finit","finissons","finissez","finissent"]], choisir:["to choose","ir",["choisis","choisis","choisit","choisissons","choisissez","choisissent"]],
+  attendre:["to wait","re",["attends","attends","attend","attendons","attendez","attendent"]], vendre:["to sell","re",["vends","vends","vend","vendons","vendez","vendent"]],
+  être:["to be","x",["suis","es","est","sommes","êtes","sont"]], avoir:["to have","x",["ai","as","a","avons","avez","ont"]], aller:["to go","x",["vais","vas","va","allons","allez","vont"]],
+  faire:["to do / make","x",["fais","fais","fait","faisons","faites","font"]], prendre:["to take","x",["prends","prends","prend","prenons","prenez","prennent"]],
+  lire:["to read","x",["lis","lis","lit","lisons","lisez","lisent"]], dormir:["to sleep","x",["dors","dors","dort","dormons","dormez","dorment"]]};
+const SUBJ = [["je","I"],["tu","you"],["il","he"],["nous","we"],["vous","you (plural / polite)"],["ils","they"]], SUBJ_ALT = {2:[["elle","she"]], 5:[["elles","they (girls)"]]};
+const ENDINGS = {er:["-e","-es","-e","-ons","-ez","-ent"], ir:["-is","-is","-it","-issons","-issez","-issent"], re:["-s","-s","(nothing)","-ons","-ez","-ent"]};
+const subjFor = (i, form) => { let [s, e] = (SUBJ_ALT[i] && Math.random()<0.5) ? SUBJ_ALT[i][0] : SUBJ[i]; if (s==="je" && /^[aeéèêiouhy]/i.test(form)) s = "j'"; return [s, e]; };
+function myVerbs(){   // verbs you've added as conjugation cards come first
+  const mine = new Set(); state.cards.forEach(c=>{ if (isConjCat(catOf(c))) Object.keys(VERBS_GYM).forEach(v=>{ if (norm(catOf(c)).includes(norm(v)) || norm(c.fr).includes(norm(VERBS_GYM[v][2][2]))) mine.add(v); }); });
+  return mine;
+}
+function qPres(n){
+  const mine = [...myVerbs()], all = Object.keys(VERBS_GYM), out = [];
+  for (let k=0; k<n*3 && out.length<n; k++){
+    const v = (mine.length && Math.random()<0.6) ? mine[Math.floor(Math.random()*mine.length)] : all[Math.floor(Math.random()*all.length)];
+    const [ven, type, forms] = VERBS_GYM[v], i = Math.floor(Math.random()*6), ans = forms[i]; if (out.some(q=>q.answer===ans && q.verb===v)) continue;
+    const [s, se] = subjFor(i, ans);
+    const opts = shuffle([...new Set([ans, ...shuffle(forms.filter(f=>f!==ans))])]).slice(0, 4); if (!opts.includes(ans)) opts[0] = ans;
+    const q = {pat:"gym-pres", topic:"pres", verb:v, kind:"choice", prompt:`${s}${s.endsWith("'")?"":" "}___ (${v})`, en:`${se[0].toUpperCase()+se.slice(1)} — ${ven.replace(/^to /,"")}`, options:shuffle(opts), answer:ans,
+      explain: type==="x" ? `<b>${v}</b> is irregular: ${forms.map((f,j)=>`${SUBJ[j][0]==="je" && /^[aeéèêiouhy]/i.test(f) ? "j'" : SUBJ[j][0]+" "}${f}`).join(", ")}` : `-${type} verbs: ${SUBJ[i][0]} → <b>${ENDINGS[type][i]}</b>`, say:`${s}${s.endsWith("'")?"":" "}${ans}`};
+    if (type!=="x") q.why = {q:`Why ${ans}?`, options:shuffle([`${SUBJ[i][0]} → ${ENDINGS[type][i]}`, ...shuffle(ENDINGS[type].map((e,j)=>`${SUBJ[j][0]} → ${e}`).filter((x,j)=>j!==i && ENDINGS[type][j]!==ENDINGS[type][i])).slice(0,2)]), answerText:`${SUBJ[i][0]} → ${ENDINGS[type][i]}`};
+    out.push(q);
+  }
+  return out;
+}
+const ON_CTX = [["___ au cinéma ce soir ?","aller","Shall we go to the cinema tonight?"],["Le samedi, ___ au marché.","aller","On Saturdays we go to the market."],["___ ensemble ce soir.","manger","We're eating together tonight."],
+  ["En France, ___ beaucoup de pain.","manger","In France, people eat a lot of bread."],["___ du sport le week-end.","faire","We do sport at the weekend."],["Nous, ___ français à la maison.","parler","Us — we speak French at home."],
+  ["___ fatigués aujourd'hui.","être","We're tired today."],["___ un nouveau voisin.","avoir","We have a new neighbour."],["___ la télé le soir.","regarder","We watch TV in the evening."],["___ le bus devant la gare.","attendre","We wait for the bus outside the station."],
+  ["___ à Londres.","habiter","We live in London."],["___ toujours tard le dimanche.","dormir","We always sleep late on Sundays."]];
+function qOn(n){
+  return shuffle(ON_CTX.slice()).slice(0, n).map(([s, v, en])=>{ const f = VERBS_GYM[v][2], ans = "on " + f[2];
+    return {pat:"gym-on", topic:"on", kind:"choice", prompt:s, en, options:shuffle([...new Set([ans, "on " + f[3], "on " + f[5]])]), answer:ans,
+      why:{q:`Why ${ans}?`, options:shuffle(["on always uses the il / elle form","on means “we”, so it takes the nous form","on is plural, so it takes the ils form"]), answerText:"on always uses the il / elle form"},
+      explain:`<b>on</b> means "we" or "people", but it's grammatically like <b>il</b>: on va, on mange, on est.`, say:s.replace("___", ans)}; });
+}
+function qArt(n){
+  const mine = shuffle(state.cards.filter(c=>/^(le|la)\s/i.test(c.fr.trim()) && !/\//.test(c.fr)));
+  const fallback = [["chaise","la","the chair"],["livre","le","the book"],["maison","la","the house"],["voiture","la","the car"],["chat","le","the cat"],["table","la","the table"],["lit","le","the bed"],["fenêtre","la","the window"],["téléphone","le","the phone"],["cuisine","la","the kitchen"],["jardin","le","the garden"],["porte","la","the door"]].map(([w,a,en])=>({fr:`${a} ${w}`, en}));
+  const pool = (mine.length >= 6 ? mine : mine.concat(shuffle(fallback))).slice(0, n);
+  return pool.map((c, i)=>{ const [art, ...rest] = c.fr.trim().split(/\s+/), noun = rest.join(" "), fem = art.toLowerCase()==="la", tip = GENDER_TIPS.find(t=>t[0].test(norm(noun)));
+    const indef = i % 3 === 2;
+    const ans = indef ? (fem ? "une" : "un") : art.toLowerCase();
+    return {pat:"gender", topic:"art", kind:"choice", prompt: indef ? `J'ai ___ ${noun}.` : `___ ${noun}`, en: indef ? `I have ${c.en.replace(/^the\s+/i,"a ")}.` : c.en, options: indef ? ["un","une"] : ["le","la"], answer:ans,
+      why:{q:`Why ${ans}?`, options:shuffle([`${noun} is feminine → la / une`, `${noun} is masculine → le / un`]), answerText:`${noun} is ${fem?"feminine → la / une":"masculine → le / un"}`},
+      explain: tip ? tip[2] : `Learn it with its article: <b>${esc(c.fr)}</b>.`, say: indef ? `J'ai ${ans} ${noun}.` : c.fr}; });
+}
+function gymQuestions(id, n){
+  if (id==="art") return qArt(n);
+  if (id==="adj") return qAdj(n);
+  if (id==="cest") return qCest(n);
+  if (id==="neg") return qNeg(n);
+  if (id==="pres") return qPres(n);
+  if (id==="on") return qOn(n);
+  if (id==="ade") return qAde("ade-prep", n).map(q=>Object.assign(q, {topic:"ade"}));
+  if (id==="tout") return shuffle(qTout("tout-fem", Math.ceil(n/2)).concat(qTout("tout-pl", Math.floor(n/2)))).slice(0, n).map(q=>Object.assign(q, {topic:"tout"}));
+  return [];
+}
+const GYM_RULES = {
+  adj:`<b>An adjective matches its noun</b>: add <b>-e</b> for feminine, <b>-s</b> for more than one.
+    <table class="preptab hw-tab"><tr><th></th><th>one</th><th>more than one</th></tr><tr><th>masculine</th><td>bruyant</td><td>bruyant<b>s</b></td></tr><tr><th>feminine</th><td>bruyant<b>e</b></td><td>bruyant<b>es</b></td></tr></table>
+    <p class="small">Some change more: heureux → heureuse, gentil → gentille, beau → belle, blanc → blanche. Words already ending in -e don't change for feminine (confortable).</p>
+    <p class="small muted">Most go <b>after</b> the noun: <i>un chat noir</i>. Short common ones go <b>before</b>: beau, bon, petit, grand, jeune, vieux — <i>une petite maison</i>.</p>`,
+  cest:`<b>c'est or il / elle est?</b><ul class="hw-ol"><li><b>c'est</b> + un / une / mon / ma / a name: <i>c'est mon frère, c'est un bon film</i></li><li><b>c'est</b> for a general idea: <i>le français, c'est difficile</i></li>
+    <li><b>il / elle est</b> + an adjective about a specific person or thing: <i>elle est grande</i></li><li><b>il / elle est</b> + a job, with no un / une: <i>il est médecin</i></li></ul>`,
+  neg:`<b>Making a sentence negative</b><ul class="hw-ol"><li><b>ne</b> before the verb, <b>pas</b> after it: <i>je ne mange pas</i></li><li><b>ne → n'</b> before a vowel: <i>je n'aime pas</i></li>
+    <li><b>un / une / des / du / de la → de</b>: <i>j'ai une voiture → je n'ai pas de voiture</i></li><li>but <b>le / la stay</b> with aimer / détester, and after <b>être</b>: <i>ce n'est pas mon sac</i></li>
+    <li><b>jamais</b> (never), <b>plus</b> (any more) take the place of pas</li></ul>`,
+  pres:`<b>Present tense endings</b><table class="preptab hw-tab"><tr><th></th><th>-er</th><th>-ir</th><th>-re</th></tr>
+    ${SUBJ.map(([s],i)=>`<tr><th>${s}</th><td>${ENDINGS.er[i]}</td><td>${ENDINGS.ir[i]}</td><td>${ENDINGS.re[i]}</td></tr>`).join("")}</table>
+    <p class="small">The big irregulars to know by heart: <b>être</b> (suis, es, est…), <b>avoir</b> (ai, as, a…), <b>aller</b> (vais, vas, va…), <b>faire</b> (fais, fais, fait…).</p>`,
+  on:`<b>on = we / people</b>, but it takes the <b>il / elle</b> form of the verb.<ul class="hw-ol"><li><i>on <b>va</b></i> (not on allons) · <i>on <b>mange</b></i> · <i>on <b>est</b></i></li><li>It's the everyday way to say "we": <i>on va au cinéma ?</i> = shall we go to the cinema?</li><li>Adjectives after <i>on est</i> can be plural: <i>on est fatigués</i>.</li></ul>`,
+};
+function gymRuleHtml(t){
+  if (t.id==="art") return lessonBody({pat:"gender"});
+  if (t.id==="ade") return lessonBody({pat:"ade-prep"});
+  if (t.id==="tout") return lessonBody({pat:"tout-fem"});
+  return `<section class="card">${GYM_RULES[t.id]||""}</section>`;
+}
+
+/* ---------- pages ---------- */
+let GV = {view:"hub"};
+function renderGym(){
+  const el = $("#gymArea");
+  if (GV.view==="topic") return renderGymTopic(el);
+  if (GV.view==="drill") return renderPractice(el, GV, GYM_QUIZ);
+  gymUnlocks(); gymNewlyOpen = [];
+  const g = gymState(), warmDone = g.warm === dayKey(Date.now()), spots = new Set(weakSpots().map(w=>gymTopicOfPat(w.pat)).filter(Boolean));
+  el.innerHTML = `
+    <section class="gym-hero">
+      <div class="hw-kicker" style="color:rgba(255,255,255,.85)">DAILY WARM-UP</div>
+      <div class="hw-big">${warmDone ? "Done for today ✓" : "5 mixed questions · 2 min"}</div>
+      <div class="hw-sub" style="color:rgba(255,255,255,.9)">A bit of every topic you've opened, so nothing slips</div>
+      <button class="btn gym-start" id="gymWarm">${warmDone ? "Do another" : "Start warm-up"}</button></section>
+    ${GYM_GROUPS.map(([gid, gname])=>{ const ts = GYM.filter(t=>t.group===gid), open = ts.filter(gymIsOpen).length;
+      return `<div class="row" style="justify-content:space-between;align-items:baseline;margin:14px 0 8px"><h2 style="margin:0;font-size:16px">${gname}</h2><span class="muted small">${open} of ${ts.length} open</span></div>
+      <section class="card" style="padding:4px 14px">${ts.map((t,i)=>{
+        if (!gymIsOpen(t)){ const prev = ts[i-1]; return `<div class="gym-row locked"><span class="gym-lock">🔒</span><div style="flex:1"><b>${esc(t.title)}</b><div class="small">${gymIsOpen(prev) ? `Opens at ${GYM_UNLOCK}% on ${esc(prev.title)}` : `Opens after ${esc(prev.title)}`}</div></div></div>`; }
+        const sc = gymScore(t.id);
+        return `<button class="gym-row" data-t="${t.id}"><div class="gym-top"><b>${esc(t.title)}</b><span style="color:${sc.n ? pctColor(sc.pct) : "var(--muted)"};font-weight:700">${sc.n ? sc.pct + "%" : "new"}</span></div>
+          <div class="bar"><div class="${pctClass(sc.pct)}" style="width:${Math.max(sc.n ? sc.pct : 0, 2)}%"></div></div>
+          ${spots.has(t.id) ? `<div class="small gym-hwnote">In your homework</div>` : sc.n && sc.n < GYM_MIN ? `<div class="small muted" style="margin-top:6px">${sc.n} answer${sc.n===1?"":"s"} so far</div>` : ""}</button>`; }).join("")}</section>`; }).join("")}
+    <p class="muted small center">Get ${GYM_UNLOCK}% on a topic (from your last ${GYM_WINDOW} answers) to open the next one.</p>`;
+  $("#gymWarm").onclick = ()=>{ const open = GYM.filter(gymIsOpen), qs = shuffle(open.flatMap(t=>gymQuestions(t.id, 2))).slice(0, 5); startGymDrill(qs, "Daily warm-up", null); };
+  el.querySelectorAll(".gym-row[data-t]").forEach(b=>b.onclick = ()=>{ GV = {view:"topic", id:b.dataset.t}; renderGym(); window.scrollTo(0,0); });
+}
+function renderGymTopic(el){
+  const t = gymTopic(GV.id), sc = gymScore(t.id), idx = GYM.filter(x=>x.group===t.group), next = idx[idx.indexOf(t)+1];
+  const mine = (state.mistakes||[]).filter(m=>gymTopicOfPat(mistakePattern(m))===t.id).slice(-3).reverse();
+  el.innerHTML = `<button class="linkbtn" id="gymBack">← Grammar gym</button>
+    <div class="hw-kicker" style="margin-top:8px;color:var(--muted)">${esc(GYM_GROUPS.find(g=>g[0]===t.group)[1].toUpperCase())}</div>
+    <h2 class="hw-lt">${esc(t.title)}</h2>
+    <section class="card row" style="align-items:center;gap:14px"><div style="font-size:30px;font-weight:700;color:${sc.n ? pctColor(sc.pct) : "var(--muted)"}">${sc.n ? sc.pct + "%" : "new"}</div>
+      <div style="flex:1"><div class="bar"><div class="${pctClass(sc.pct)}" style="width:${Math.max(sc.pct,2)}%"></div></div>
+      <div class="muted small" style="margin-top:6px">${sc.n >= GYM_MIN ? `From your last ${sc.n} answers` : `${sc.n} of ${GYM_MIN} answers needed for a score`}${next && !gymIsOpen(next) ? ` · ${GYM_UNLOCK}% opens ${esc(next.title)}` : ""}</div></div></section>
+    ${gymRuleHtml(t)}
+    ${mine.length ? `<section class="hw-yours"><div class="hw-kicker" style="color:var(--warn)">YOUR RECENT MISTAKES</div>${mine.map(m=>`<div>${esc((m.q||"").replace(/\s*\(.*\)\s*$/,"")).replace("___", `<s>${esc(m.you||"")}</s> <b class="okc">${esc(m.right)}</b>`)}</div>`).join("")}
+      ${weakSpots().some(w=>gymTopicOfPat(w.pat)===t.id) ? `<button class="linkbtn" id="gymToHw" style="color:var(--warn)">These are in your homework →</button>` : ""}</section>` : ""}
+    <button class="btn primary" id="gymGo" style="width:100%">Start drill · 10 questions</button>`;
+  $("#gymBack").onclick = ()=>{ GV = {view:"hub"}; renderGym(); };
+  if ($("#gymToHw")) $("#gymToHw").onclick = ()=>goKey("homework");
+  $("#gymGo").onclick = ()=>startGymDrill(gymQuestions(t.id, 10), t.title, t.id);
+}
+function startGymDrill(qs, label, id){
+  if (!qs.length){ toast("Not enough to practise yet"); return; }
+  GV = {view:"drill", qs, i:0, right:0, label, id, startPct: id ? gymScore(id).pct : 0}; gymNewlyOpen = []; renderGym(); window.scrollTo(0,0);
+}
+const GYM_QUIZ = {
+  kicker: q => GV.id ? GV.label : `Warm-up · ${gymTopic(q.topic) ? gymTopic(q.topic).title : ""}`,
+  quit: ()=>{ GV = GV.id ? {view:"topic", id:GV.id} : {view:"hub"}; renderGym(); },
+  rerender: ()=>renderGym(),
+  onAnswer: (q, a, ok)=>{
+    gymLog(q.topic, ok);
+    const t = gymTopic(q.topic); if (t && t.skill) logSkill(t.skill, ok);
+    if (!ok) logMistake({src:"gym", q:q.prompt + (q.en ? ` (${q.en})` : ""), you:a, right:q.answer, pat:patOfAnswer(q, a), word:q.answer});
+  },
+  after: (P, q)=> P.id ? `<div class="muted small" style="margin-top:8px">Topic score: ${gymScore(P.id).pct}%</div>` : "",
+  endHtml: P => { const opened = [...new Set(gymNewlyOpen)].map(gymTopic).filter(Boolean);
+    if (!P.id) gymState().warm = dayKey(Date.now());
+    const sc = P.id ? gymScore(P.id) : null;
+    return `<section class="card center"><h2>${P.right===P.qs.length ? "Perfect! 🌟" : "Done ✓"}</h2>
+      <p style="font-size:28px;font-weight:700;margin:4px 0">${P.right} / ${P.qs.length}</p>
+      ${sc ? `<p class="muted">${esc(P.label)}: ${P.startPct}% → <b style="color:${pctColor(sc.pct)}">${sc.pct}%</b></p>` : ""}
+      ${opened.length ? `<p class="okc"><b>🔓 New topic open: ${opened.map(t=>esc(t.title)).join(", ")}</b></p>` : ""}
+      ${P.qs.length - P.right >= 1 ? `<p class="muted small">Anything you get wrong twice turns into Homework.</p>` : ""}
+      <div class="row"><button class="btn" id="gymHub">Grammar gym</button><button class="btn primary" id="gymAgain">${P.id ? "10 more" : "Another warm-up"}</button></div></section>`; },
+  wireEnd: P => {
+    save();
+    $("#gymHub").onclick = ()=>{ GV = {view:"hub"}; renderGym(); };
+    $("#gymAgain").onclick = ()=>{ if (P.id) startGymDrill(gymQuestions(P.id, 10), P.label, P.id); else { const open = GYM.filter(gymIsOpen); startGymDrill(shuffle(open.flatMap(t=>gymQuestions(t.id, 2))).slice(0,5), "Daily warm-up", null); } };
+  },
+};
+/* Writing twists lean towards topics you've opened in the gym */
+const TWIST_TOPIC = {neg:"neg", on:"on", ade:"ade"};
+const twistBoost = k => { try { const t = gymTopic(TWIST_TOPIC[k]); return t && gymIsOpen(t) ? 1.6 : 1; } catch(e){ return 1; } };
+
 /* accent buttons under a typing box */
 const accentBar = id => `<div class="hw-acc" data-for="${id}">${["é","è","ê","à","â","ç","ô","û","î","œ"].map(a=>`<button type="button" data-k="${a}">${a}</button>`).join("")}</div>`;
 function wireAccentBar(id){ const bar = document.querySelector(`.hw-acc[data-for="${id}"]`); if (!bar) return;
@@ -1206,9 +1504,9 @@ function say(text, slow, onend){
 
 /* ---------- navigation ---------- */
 let curView = "overview";
-const renderers = {overview:renderOverview, hard:renderHard, weak:renderWeak, mistakes:renderMistakes, homework:renderHomework, study:renderStudy, match:startMatch, speak:startSpeak, create:startCreate, words:renderWords, settings:renderSettings};
-const NAV = {overview:["overview"], study:["study"], match:["match"], speak:["speak"], journal:["create","journal"], writing:["create","words"], prep:["create","prep"], words:["words"], settings:["settings"], hard:["hard"], weak:["weak"], mistakes:["mistakes"], homework:["homework"]};
-const TITLES = {overview:"Flashcards", study:"Study", match:"Match", speak:"Speak", journal:"Journal", writing:"Writing", prep:"Grammar gym", words:"Words", settings:"Settings", hard:"Hard words", weak:"Weak spots", mistakes:"Mistake log", homework:"Homework"};
+const renderers = {overview:renderOverview, hard:renderHard, weak:renderWeak, mistakes:renderMistakes, homework:renderHomework, gym:renderGym, study:renderStudy, match:startMatch, speak:startSpeak, create:startCreate, words:renderWords, settings:renderSettings};
+const NAV = {overview:["overview"], study:["study"], match:["match"], speak:["speak"], journal:["create","journal"], writing:["create","words"], prep:["create","prep"], words:["words"], settings:["settings"], hard:["hard"], weak:["weak"], mistakes:["mistakes"], homework:["homework"], gym:["gym"]};
+const TITLES = {overview:"Flashcards", study:"Study", match:"Match", speak:"Speak", journal:"Journal", writing:"Writing", prep:"Grammar gym", words:"Words", settings:"Settings", hard:"Hard words", weak:"Weak spots", mistakes:"Mistake log", homework:"Homework", gym:"Grammar gym"};
 function navKey(){
   if (curView==="create") return (C.mode==="journal" || C.mode==="rewrite") ? "journal" : C.mode==="prep" ? "prep" : "writing";
   return curView;
@@ -1224,7 +1522,8 @@ function goKey(k){
   const [v, m] = NAV[k] || ["overview"];
   closeDrawer();
   if (k==="match" && !canResume("match")) matchChosen = false;
-  if (k==="homework" && !(curView==="homework")) HWV = {view:"list"};      // opening Match → choose a game (unless one is in progress)
+  if (k==="homework" && !(curView==="homework")) HWV = {view:"list"};
+  if (k==="gym" && !(curView==="gym")) GV = {view:"hub"};      // opening Match → choose a game (unless one is in progress)
   if (m){ if (curView==="create" && C.mode==="words") { snapDraft(); save(); } if (C.mode!==m || m==="journal") live.create = null; C.mode = m; }
   go(v);
 }
@@ -1237,7 +1536,7 @@ $("#drawer").addEventListener("click", e=>{ const b = e.target.closest("[data-go
 function go(v){
   curView = v;
   document.querySelectorAll(".view").forEach(el=>el.classList.toggle("on", el.id==="v-"+v));
-  $("#catbar").style.display = (["words","settings","speak","overview","hard","weak","mistakes","homework"].includes(v) || (v==="create" && (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep"))) ? "none" : "";
+  $("#catbar").style.display = (["words","settings","speak","overview","hard","weak","mistakes","homework","gym"].includes(v) || (v==="create" && (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep"))) ? "none" : "";
   paintNav();
   if (canResume(v)){ if (v==="create") paintCreateSeg(); return; }   // pick up where you left off
   renderers[v]();
@@ -1422,7 +1721,6 @@ function renderOverview(){
       <p class="muted small" style="margin:0 0 4px">Your categories · weakest first</p>
       ${weak.length ? "" : `<p class="muted small" style="margin:8px 0">Study a few cards and your weakest categories will show here.</p>`}
       ${weak.map(w=>`<div class="wk"><div class="wk-top"><span>${esc(w.label)}</span><span style="color:${pctColor(w.pct)}">${w.pct}%</span></div><div class="bar"><div class="${pctClass(w.pct)}" style="width:${Math.max(w.pct,2)}%"></div></div></div>`).join("")}
-      <button class="btn primary" id="ovWeakGo" style="width:100%;margin-top:8px">🎯 Practise my weak spots</button>
     </section>
     <section class="card">
       <h2 style="margin:0;font-size:17px">Hard words <span style="color:var(--bad)">♥ ${hard.length}</span></h2>
@@ -1434,7 +1732,6 @@ function renderOverview(){
   $("#ovStudy").onclick = ()=>{ live.study = null; goKey("study"); };
   $("#ovWeak").onclick = ()=>goKey("weak");
   if ($("#ovHw")) $("#ovHw").onclick = ()=>goKey("homework");
-  $("#ovWeakGo").onclick = ()=>startCustom(weakSessionCards(), "🎯 Weak spots session");
   if ($("#ovHardAll")){ $("#ovHardAll").onclick = ()=>goKey("hard"); $("#ovHardGo").onclick = ()=>startCustom(hard, "♥ Hard words"); }
 }
 let hardFilter = "all";
@@ -1485,20 +1782,14 @@ function renderWeak(){
       ${cats.length ? "" : `<p class="muted small" style="margin:12px 0">Study a few cards and your categories will show here.</p>`}
     </section>
     <p class="muted small center" style="margin-top:-6px">Tap a category to practise it.${notStarted ? ` ${notStarted} categor${notStarted===1?"y":"ies"} not started yet ${notStarted===1?"is":"are"} hidden.` : ""}</p>
-    <section class="card">
-      <div class="secthead"><h2>Skills</h2><span class="muted small">last 30 days</span></div>
-      <p class="muted small" style="margin:2px 0 4px">From 🏋️ Grammar gym, Match → Type it, conjugation cards and Claude's journal corrections.</p>
-      ${shown.map(s=>`<div class="wk"><div class="wk-top"><span>${esc(s.name)}</span><span style="color:${pctColor(s.pct)}">${s.pct}%</span></div>
-        <div class="bar"><div class="${pctClass(s.pct)}" style="width:${Math.max(s.pct,2)}%"></div></div>
-        <div class="row" style="align-items:center"><span class="muted small" style="flex:1">${s.n} checks</span><button class="linkbtn" data-sk="${s.k}">Practise →</button></div></div>`).join("")}
-      ${waiting.length ? `<p class="muted small" style="margin:8px 0 0">Not enough practice yet to score: ${waiting.map(s=>esc(s.name.replace(/ \(.*\)/,""))).join(", ")}.</p>` : ""}
-    </section>
+    <button class="card mistlink" id="wGym"><span class="hw-ic">🏋️</span><span style="flex:1;text-align:left"><b>Grammar skills</b><br><span class="muted small">Now in the Grammar gym, with a score for every topic</span></span><span class="muted">›</span></button>
     <section class="card">
       <h2 style="margin:0 0 4px;font-size:17px">📤 My week for Claude</h2>
       <p class="muted small" style="margin:0 0 10px">Saves a short summary of your week: weakest categories, skills, hard words and journal mistakes. Send it to Claude for practice made just for you.</p>
       <button class="btn primary" id="wSummary" style="width:100%">Save my weekly summary</button>
     </section>`;
   if ($("#wTop")) $("#wTop").onclick = ()=>practiseCat(top.cat);
+  if ($("#wGym")) $("#wGym").onclick = ()=>goKey("gym");
   el.querySelectorAll("[data-ws]").forEach(b=>b.onclick = ()=>{ weakSort = b.dataset.ws; renderWeak(); });
   el.querySelectorAll("[data-cat]").forEach(b=>b.onclick = ()=>practiseCat(b.dataset.cat));
   el.querySelectorAll("[data-sk]").forEach(b=>b.onclick = ()=>practiseSkill(b.dataset.sk));
@@ -1701,7 +1992,7 @@ function checkType(){
   else if (dropArt(strip(A))===dropArt(strip(E)) && A.split(/\s|'/)[0]!==E.split(/\s|'/)[0]) verdict = "article";
   else verdict = "wrong";
   if (hasAcc && (verdict==="right" || verdict==="accents")) logSkill("accents", verdict==="right");
-  if (noun && (verdict==="right" || verdict==="article")) logSkill("gender", verdict==="right");
+  if (noun && (verdict==="right" || verdict==="article")){ logSkill("gender", verdict==="right"); gymLog("art", verdict==="right"); }
   const ok = verdict==="right" || (verdict==="accents" && state.settings.lenient);
   if (verdict!=="right") logMistake({src:"type", q:c.en, you:inp.value.trim(), right:E, kind:verdict==="wrong" ? "wrong" : verdict==="accents" ? "accents only" : "wrong le / la", word:c.fr});
   let lvl = "";
@@ -2330,7 +2621,7 @@ const TWISTS = [
 ];
 function pickTwist(not){
   const use = state.twistUse || {};
-  const list = TWISTS.filter(x=>x.k!==not).map(x=>({x, w: Math.pow(Math.random(), 1/(1/(1+(use[x.k]||0))))})).sort((a,b)=>b.w-a.w);
+  const list = TWISTS.filter(x=>x.k!==not).map(x=>({x, w: Math.pow(Math.random(), 1/(1/(1+(use[x.k]||0)))) * twistBoost(x.k)})).sort((a,b)=>b.w-a.w);
   return list[0].x.k;
 }
 const twistOf = k => TWISTS.find(x=>x.k===k) || TWISTS[0];
@@ -3995,8 +4286,10 @@ setTimeout(processPending, 2500);   // check anything written while offline
 /* ---------- Share → French Flashcards: highlighted text arrives here ---------- */
 (function handleShare(){
   const q = new URLSearchParams(location.search);
-  if (!q.has("share")){ setTimeout(maybeBackupNudge, 1200); return; }
+  // Android replaces the address's ?share=1 with ?title=…&text=…&url=…, so look for the shared text itself
+  if (!q.has("share") && !q.has("text") && !q.has("title") && !q.has("url")){ setTimeout(maybeBackupNudge, 1200); return; }
   let t = (q.get("text") || q.get("title") || "").trim();
+  if (!t && q.get("url") && !/^https?:/i.test(q.get("url"))) t = q.get("url").trim();     // some apps put the words in "url"
   history.replaceState(null, "", location.pathname);           // tidy the address so a refresh doesn't re-add it
   t = t.replace(/https?:\/\/\S+/g, "").replace(/^["'«“‘\s]+|["'»”’\s.,;:!?]+$/g, "").replace(/\s+/g, " ").trim();
   if (!t){ toast("Nothing to add — highlight a word, then Share"); return; }
