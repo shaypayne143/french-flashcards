@@ -341,8 +341,52 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 .lvpill{background:color-mix(in srgb,var(--good) 25%,var(--surface));color:var(--text);padding:3px 10px;border-radius:99px;font-size:13px;font-weight:700}
 .cin.okb{border-color:var(--good)}.cin.nob{border-color:var(--bad)}
 .newb,.req .newb{font-size:10px;font-weight:800;letter-spacing:.04em;color:#fff;background:#3554d1;border-radius:99px;padding:2px 7px;vertical-align:2px}
-.selAdd{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:60;display:none;align-items:center;gap:6px;max-width:calc(100% - 32px);padding:12px 18px;border-radius:99px;border:0;background:#3554d1;color:#fff;font:inherit;font-size:15px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.35);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.selAdd.on{display:inline-flex}.selAdd.have{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.selAdd{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translateX(-50%);z-index:60;display:none;align-items:center;gap:6px;max-width:calc(100% - 32px);padding:12px 18px;border-radius:99px;border:0;background:#3554d1;color:#fff;font:inherit;font-size:15px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.35);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.selAdd.on{display:inline-flex}
+
+/* ---------- homework ---------- */
+.hw-hero{background:#2b1f4d;border:1px solid #5a43a8;border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:6px;color:#fff;margin-bottom:12px}
+:root[data-theme="light"] .hw-hero{background:#efe9ff;border-color:#b9a6f2;color:#241a46}
+.hw-kicker{font-size:12px;font-weight:700;letter-spacing:.4px;color:#c9b6ff}
+:root[data-theme="light"] .hw-kicker{color:#5a43a8}
+.hw-big{font-size:22px;font-weight:700}.hw-sub{font-size:13px;color:#d9ccff}
+:root[data-theme="light"] .hw-sub{color:#5a4a86}
+.hw-start{margin-top:8px;background:#fff!important;color:#2b1f4d!important;border:0!important;font-weight:700}
+.hw-ovic{width:44px;height:44px;flex:0 0 44px;border-radius:14px;background:#3d2d6e;display:flex;align-items:center;justify-content:center;font-size:22px}
+.hw-h{font-size:16px;margin:14px 0 8px}
+.hw-spot{display:block;width:100%;text-align:left;font:inherit;color:var(--text);cursor:pointer;margin-bottom:10px}
+.hw-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.hw-badge{font-size:12px;font-weight:700;color:#ffad7a;background:#45291a;border-radius:99px;padding:2px 8px;white-space:nowrap}
+.hw-badge.cl{color:#c9b6ff;background:#2b1f4d}
+.hw-prog{display:flex;align-items:center;gap:8px;margin-top:10px}.hw-prog .bar{flex:1}.hw-prog .bar>div{background:#6f8cff}
+.hw-open{font-size:13px;color:var(--accent2,#a9b9ff);font-weight:600;margin-top:8px}
+.hw-ic{font-size:22px}.okc{color:var(--good)}
+.hw-lt{margin:8px 0 4px;font-size:24px;line-height:1.2}
+.hw-yours{background:#3a2f12;color:#f7dfa6;border-radius:16px;padding:12px 14px;margin-bottom:12px;line-height:1.6}
+:root[data-theme="light"] .hw-yours{background:#fff4d6;color:#5a4410}
+.hw-yours s{opacity:.75}
+.hw-tab td.hl{background:rgba(111,140,255,.22)}
+.hw-ol{margin:8px 0 0;padding-left:20px;line-height:1.6}
+.hw-wrow{display:flex;gap:8px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--border)}.hw-wrow .muted{flex:1}
+.hw-why{margin-top:12px;background:#2b1f4d;border:1px solid #5a43a8;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}
+:root[data-theme="light"] .hw-why{background:#efe9ff;border-color:#b9a6f2}
+.hw-whyo{min-height:44px;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid #5a43a8;background:transparent;color:var(--text);font:inherit;font-size:15px;cursor:pointer}
+.hw-whyo.ok{border:2px solid var(--good);background:rgba(60,207,125,.12)}.hw-whyo.no{border:2px solid var(--bad)}
+.hw-in{width:100%;box-sizing:border-box;margin-top:12px;height:52px;border-radius:14px;border:2px solid var(--border);background:var(--bg);color:var(--text);font:inherit;font-size:20px;padding:0 14px;text-align:center}
+.hw-acc{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;margin-top:8px}
+.hw-acc button{height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font:inherit;font-size:16px;padding:0}
+.hw-bigq{font-size:24px}
+.dbadge{margin-left:auto;min-width:22px;height:22px;padding:0 6px;box-sizing:border-box;border-radius:99px;background:#5a43a8;color:#fff;font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.dbadge[hidden]{display:none}
+.patrow{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:var(--surface2);margin-top:8px;width:100%;font:inherit;color:var(--text);text-align:left;border:0;cursor:pointer}
+.patrow .n{font-size:18px;font-weight:700;color:#ffad7a;width:34px}
+.af-status{font-size:13px;font-weight:600;background:#1f2d55;color:#c4d2ff;border-radius:12px;padding:8px 12px;margin:-2px 0 10px}
+:root[data-theme="light"] .af-status{background:#e6ecff;color:#22389a}
+.af-check{font-size:12px;font-weight:700;color:#f5c25a;background:#3a2f12;border-radius:99px;padding:4px 10px;white-space:nowrap}
+.mistlink{display:flex;align-items:center;gap:12px;width:100%;font:inherit;color:var(--text);cursor:pointer}
+.mrow{padding:10px 0;border-bottom:1px solid var(--border)}.mrow:last-child{border-bottom:0}
+.mrow .q{font-weight:600}.mrow .you{color:var(--bad)}.mrow .ans{color:var(--good)}
+.msrc{display:inline-block;font-size:11px;font-weight:700;padding:1px 8px;border-radius:99px;background:var(--surface2);color:var(--muted);margin-right:6px}.selAdd.have{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
 .twist{display:flex;gap:10px;align-items:center;margin:10px 0 2px;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,#7b5cf0 18%,var(--surface));border:1px solid color-mix(in srgb,#7b5cf0 55%,var(--surface))}
 .twist .tw-h{font-size:11px;font-weight:700;letter-spacing:.5px;color:#8f6ff5}.twist .tw-s{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap}
 .twist.done{background:color-mix(in srgb,var(--good) 18%,var(--surface));border-color:var(--good)}.twist.done .tw-s{color:var(--good)}
@@ -366,10 +410,10 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
   <button data-go="speak"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0"></path><line x1="12" y1="18" x2="12" y2="21"></line></svg></span>Speak</button>
   <div class="dsep"></div>
   <button data-go="journal"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg></span>Journal</button>
+  <button data-go="homework"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 4V3h6v1"></path><polyline points="9 12 11 14 15 10"></polyline><line x1="9" y1="17" x2="15" y2="17"></line></svg></span>Homework<span class="dbadge" id="hwBadge" hidden></span></button>
   <div class="dsep"></div>
   <div class="dhead">Create</div>
   <button data-go="writing"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg></span>Writing</button>
-  <button data-go="prep"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h4a2 2 0 1 1 4 0h4v4a2 2 0 1 1 0 4v4H4z"></path></svg></span>à / de articles</button>
   <div class="dsep"></div>
   <button data-go="words"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"></path><path d="M4 21V5"></path></svg></span>Words</button>
   <button data-go="settings"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"></path></svg></span>Settings</button>
@@ -386,6 +430,8 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
   <section class="view on" id="v-overview"><div id="ovArea"></div></section>
   <section class="view" id="v-hard"><div id="hardArea"></div></section>
   <section class="view" id="v-weak"><div id="weakArea"></div></section>
+  <section class="view" id="v-mistakes"><div id="mistArea"></div></section>
+  <section class="view" id="v-homework"><div id="hwArea"></div></section>
 
   <!-- STUDY -->
   <section class="view" id="v-study">
@@ -403,7 +449,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 
   <!-- CREATE -->
   <section class="view" id="v-create">
-    <div class="seg" id="cModeSeg"><button data-m="words">🔒 3 words</button><button data-m="prep">🧩 à / de</button><button data-m="journal">📓 Journal</button></div>
+    <div class="seg" id="cModeSeg"><button data-m="words">🔒 3 words</button><button data-m="journal">📓 Journal</button></div>
     <div id="createArea"></div>
     <input type="file" id="jFile" accept=".csv,text/csv,text/plain" hidden>
   </section>
@@ -487,7 +533,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-09-9";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-11-1";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -626,7 +672,7 @@ const lockedCards = () => pool().filter(needsSentence);
 /* daily review log (for the Overview and the weekly summary) */
 function dayLog(){ state.daily = state.daily || {}; const k = dayKey(Date.now()); return state.daily[k] = state.daily[k] || {rev:0, ok:0, bad:0}; }
 /* skills: every check of à/de, gender, accents, verb endings… is logged so Weak spots can show them */
-const SKILLS = {ade:"à / de (au, du, de la…)", gender:"Gender (le / la)", accents:"Accents", verbs:"Verb endings", agree:"Agreement (-e, -s, -ent)"};
+const SKILLS = {ade:"à / de (au, du, de la…)", tout:"tout / toute / tous / toutes", gender:"Gender (le / la)", accents:"Accents", verbs:"Verb endings", agree:"Agreement (-e, -s, -ent)"};
 function logSkill(k, ok){ state.skills = state.skills || {}; const a = state.skills[k] = state.skills[k] || []; a.push([Date.now(), ok?1:0]); if (a.length>400) a.splice(0, a.length-400); }
 function skillStat(k, days){
   const since = Date.now() - (days||30)*DAY, a = ((state.skills||{})[k]||[]).filter(x=>x[0]>=since);
@@ -634,6 +680,424 @@ function skillStat(k, days){
 }
 /* ♥ hard words: added automatically after N misses, taken off again once the word is known (level 4) */
 const hardAfter = () => state.settings.hardAfter ?? 3;
+/* ---------- 📝 mistake log: what you were asked, what you answered, the right answer ---------- */
+const MIST_SRC = {type:"Type it", write:"Write from memory", match:"Tap to match", study:"Study", ade:"Grammar gym — à / de", tout:"Grammar gym — tout / tous", hw:"Homework"};
+function logMistake(m){
+  state.mistakes = state.mistakes || [];
+  state.mistakes.push(Object.assign({at: Date.now()}, m));
+  if (state.mistakes.length > 600) state.mistakes.splice(0, state.mistakes.length - 600);
+}
+const mistakesSince = t => (state.mistakes||[]).filter(m=>m.at >= t);
+let mistRange = "sent";
+/* group mistakes by pattern: "chose tous instead of toutes (4×)" */
+function mistakePatterns(list){
+  const by = new Map();
+  list.forEach(m=>{ const p = mistakePattern(m); if (!p || p.startsWith("word:")) return; by.set(p, (by.get(p)||[]).concat(m)); });
+  const label = (p, ms) => {
+    const last = ms[ms.length-1];
+    if (p.startsWith("tout") && p!=="tout-fixed") return `tout: ${HW_INFO[p].short.replace(/^You /,"you ")} (e.g. chose ${last.you} instead of ${last.right})`;
+    return `${(HW_INFO[p]||{}).short || p} (e.g. ${last.you ? `“${last.you}” instead of “${last.right}”` : last.right})`;
+  };
+  return [...by].map(([p, ms])=>({pat:p, n:ms.length, text:label(p, ms)})).sort((a,b)=>b.n-a.n);
+}
+function mistStart(){
+  if (mistRange==="week") return Date.now() - 7*DAY;
+  if (mistRange==="all") return 0;
+  return state.mistakesSentAt || 0;
+}
+function mistakesText(list){
+  const d = t => new Date(t).toLocaleDateString("en-GB", {day:"numeric", month:"short"});
+  const out = [`My French mistakes (${list.length ? d(list[0].at) + " – " + d(list[list.length-1].at) : "none"} · ${list.length} mistake${list.length===1?"":"s"})`,
+    "Please look for patterns in what I keep getting wrong, explain them simply, and give me a few practice exercises. Hints first — ask me before giving the answers.", ""];
+  Object.keys(MIST_SRC).forEach(src=>{
+    const items = list.filter(m=>m.src===src); if (!items.length) return;
+    out.push(MIST_SRC[src] + ":");
+    const seen = new Map();
+    items.forEach(m=>{
+      const line = src==="study" ? `- didn't remember: ${m.right} = ${m.q}`
+        : src==="match" ? `- matched "${m.q}" with "${m.you}" (it means "${m.right}")`
+        : `- ${m.q} → I ${/^(ade|tout|hw)$/.test(src) ? "chose / typed" : "typed"} "${m.you}" · answer "${m.right}"${m.kind && m.kind!=="wrong" ? ` (${m.kind})` : ""}`;
+      seen.set(line, (seen.get(line)||0) + 1);
+    });
+    seen.forEach((n, line)=>out.push(line + (n>1 ? ` (×${n})` : "")));
+    out.push("");
+  });
+  const pats = mistakePatterns(list);
+  if (pats.length){ out.push("Patterns I keep repeating:"); pats.forEach(x=>out.push(`- ${x.n}× ${x.text}`)); out.push(""); }
+  const per = new Map(); list.forEach(m=>{ const k = m.word || m.right; per.set(k, (per.get(k)||0)+1); });
+  const top = [...per].filter(x=>x[1]>1).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  if (top.length) out.push("Most missed: " + top.map(([w,n])=>`${w} ×${n}`).join(", "));
+  out.push("", WORKSHEET_HELP);
+  return out.join("\n").trim();
+}
+async function copyText(t){
+  try { await navigator.clipboard.writeText(t); return true; } catch(e){}
+  const ta = document.createElement("textarea"); ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0"; document.body.appendChild(ta); ta.select();
+  let ok = false; try { ok = document.execCommand("copy"); } catch(e){} ta.remove(); return ok;
+}
+function renderMistakes(){
+  const el = $("#mistArea"), list = mistakesSince(mistStart()), d = t => new Date(t).toLocaleDateString("en-GB", {day:"numeric", month:"short"});
+  const counts = Object.keys(MIST_SRC).map(k=>[k, list.filter(m=>m.src===k).length]).filter(x=>x[1]);
+  el.innerHTML = `
+    <div class="chiprow">${[["sent", state.mistakesSentAt ? "Since I last sent" : "All so far"],["week","Last 7 days"],["all","Everything"]].map(([k,l])=>`<button class="chipb ${mistRange===k?"on":""}" data-mr="${k}">${l}</button>`).join("")}</div>
+    ${(()=>{ const pats = mistakePatterns(list); const spots = new Set(weakSpots().map(w=>w.pat)); if (!pats.length) return "";
+      return `<section class="card"><div class="row" style="justify-content:space-between;align-items:baseline"><b style="font-size:16px">Your patterns</b><span class="muted small">${list.length} mistakes</span></div>
+        ${pats.slice(0,6).map(x=>`<button class="patrow" data-pat="${esc(x.pat)}"><span class="n" style="${x.n<2?"color:var(--muted)":""}">${x.n}×</span><span style="flex:1;font-size:14px">${esc(x.text)}</span>${spots.has(x.pat) ? `<span class="hw-badge cl">homework</span>` : ""}</button>`).join("")}</section>`; })()}
+    <section class="card">
+      <div style="font-size:28px;font-weight:700">${list.length}</div>
+      <div class="muted small">mistake${list.length===1?"":"s"}${state.mistakesSentAt && mistRange==="sent" ? ` since you last sent them (${d(state.mistakesSentAt)})` : ""}</div>
+      ${counts.length ? `<div class="ov-chips" style="margin-top:8px">${counts.map(([k,n])=>`<span>${MIST_SRC[k]} ${n}</span>`).join("")}</div>` : ""}
+      <button class="btn primary" id="mCopy" style="width:100%;margin-top:12px" ${list.length?"":"disabled"}>📋 Copy for Claude</button>
+      ${navigator.share ? `<button class="btn" id="mShare" style="width:100%;margin-top:8px" ${list.length?"":"disabled"}>↗ Share…</button>` : ""}
+      <p class="muted small" style="margin:8px 0 0">Copies a ready-made message with your mistakes. Paste it into your chat with Claude.</p>
+    </section>
+    <section class="card">
+      <b>Got a worksheet from Claude?</b>
+      <p class="muted small" style="margin:4px 0 8px">Paste it here and it becomes homework.</p>
+      <textarea id="mWs" rows="4" placeholder="Paste the worksheet…" style="width:100%;box-sizing:border-box;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:inherit;font-size:14px;padding:10px"></textarea>
+      <button class="btn" id="mWsAdd" style="width:100%;margin-top:8px">Add to my homework</button>
+    </section>
+    <section class="card" style="padding:4px 16px">
+      ${list.length ? list.slice().reverse().slice(0,150).map(m=>`<div class="mrow">
+        <div class="small muted"><span class="msrc">${esc(MIST_SRC[m.src]||m.src)}</span>${d(m.at)}</div>
+        ${m.src==="study" ? `<div class="q">${esc(m.right)} <span class="muted">= ${esc(m.q)}</span></div><div class="small you">Didn't remember it</div>`
+          : m.src==="match" ? `<div class="q">${esc(m.q)}</div><div class="small"><span class="you">Matched with “${esc(m.you)}”</span> · <span class="ans">it means “${esc(m.right)}”</span></div>`
+          : `<div class="q">${esc(m.q)}</div><div class="small"><span class="you">You: ${esc(m.you)}</span> · <span class="ans">Right: ${esc(m.right)}</span>${m.kind && m.kind!=="wrong" ? ` <span class="muted">(${esc(m.kind)})</span>` : ""}</div>`}
+      </div>`).join("") : `<p class="muted" style="margin:14px 0">No mistakes here yet. They're logged from Type it, Write from memory, Tap to match, Study and Grammar gym.</p>`}
+    </section>
+    ${(state.mistakes||[]).length ? `<button class="linkbtn" id="mClear" style="display:block;margin:4px auto 0;color:var(--bad)">Delete the whole mistake log</button>` : ""}`;
+  el.querySelectorAll("[data-mr]").forEach(b=>b.onclick = ()=>{ mistRange = b.dataset.mr; renderMistakes(); });
+  el.querySelectorAll(".patrow").forEach(b=>b.onclick = ()=>{ const w = weakSpots().find(x=>x.pat===b.dataset.pat); if (!w){ toast("Not homework yet — it becomes homework after 2 of the same mistake"); return; } HWV = {view:"lesson", spot:w}; goKey("homework"); HWV = {view:"lesson", spot:w}; renderHomework(); });
+  $("#mWsAdd").onclick = ()=>{
+    const ws = parseWorksheet($("#mWs").value);
+    if (!ws.qs.length){ toast("I couldn't find any questions — each line needs: sentence | answer | wrong answers"); return; }
+    state.hwCustom = state.hwCustom || []; const id = Date.now().toString(36);
+    state.hwCustom.push({id, title:ws.title, qs:ws.qs, at:Date.now()}); save();
+    toast(`📋 Added “${ws.title}” — ${ws.qs.length} questions in your homework`); $("#mWs").value = "";
+  };
+  const sent = ()=>{
+    setTimeout(()=>{ if (confirm("Mark these as sent? Next time, “Since I last sent” will only show new mistakes.")){ state.mistakesSentAt = Date.now(); mistRange = "sent"; save(); renderMistakes(); } }, 300);
+  };
+  if ($("#mCopy")) $("#mCopy").onclick = async ()=>{ const ok = await copyText(mistakesText(list)); toast(ok ? "📋 Copied — paste it into your chat with Claude" : "Couldn't copy — try Share"); if (ok) sent(); };
+  if ($("#mShare")) $("#mShare").onclick = async ()=>{ try { await navigator.share({title:"My French mistakes", text: mistakesText(list)}); sent(); } catch(e){} };
+  if ($("#mClear")) $("#mClear").onclick = ()=>{ if (confirm("Delete every logged mistake? This can't be undone.")){ state.mistakes = []; state.mistakesSentAt = 0; save(); renderMistakes(); } };
+}
+/* =====================================================================
+   📋 HOMEWORK — built from your repeated mistakes
+   A mistake gets a "pattern" (what KIND of mistake it was). Two or more of the
+   same pattern in 14 days = a weak spot. Fix it by getting it right on 2 different
+   days; it comes back once for a check-up a week later.
+   ===================================================================== */
+const HW_WINDOW = 14*DAY, HW_MIN = 2, HW_DAYS = 2, HW_DAY_RIGHT = 3, HW_CHECK = 7*DAY;
+const TOUT_GN = {tout:"ms", toute:"fs", tous:"mp", toutes:"fp"};
+function toutPattern(chosen, right){
+  const a = TOUT_GN[chosen], b = TOUT_GN[right];
+  if (!b) return "tout-fixed";
+  if (!a) return "tout-fem";
+  if (b[0]==="f" && a[0]==="m") return "tout-fem";
+  if (b[1]==="p" && a[1]==="s") return "tout-pl";
+  if (b[0]==="m" && a[0]==="f") return "tout-masc";
+  if (b[1]==="s" && a[1]==="p") return "tout-sing";
+  return "tout-fem";
+}
+/* the pattern of any logged mistake (works for old ones logged before patterns existed) */
+function mistakePattern(m){
+  if (m.pat) return m.pat;
+  if (m.src==="tout") return /set phrase/.test(m.kind||"") ? "tout-fixed" : toutPattern(m.you, m.right);
+  if (m.src==="ade") return /à or de|à\/de/.test(m.kind||"") ? "ade-prep" : "ade-art";
+  if (m.src==="type" || m.src==="write"){
+    if (/accent/.test(m.kind||"")) return "accents";
+    if (/le \/ la/.test(m.kind||"")) return "gender";
+  }
+  return m.word ? "word:" + norm(m.word) : null;
+}
+const HW_INFO = {
+  "tout-fem":  {group:"tout", title:"tout / toute / tous / toutes", short:"You forget the feminine", want:["fs","fp"]},
+  "tout-pl":   {group:"tout", title:"tout / toute / tous / toutes", short:"You forget the plural", want:["mp","fp"]},
+  "tout-masc": {group:"tout", title:"tout / toute / tous / toutes", short:"You use the feminine by mistake", want:["ms","mp"]},
+  "tout-sing": {group:"tout", title:"tout / toute / tous / toutes", short:"You use the plural by mistake", want:["ms","fs"]},
+  "tout-fixed":{group:"tout", title:"tout in set phrases", short:"Set phrases never change: always tout", want:[]},
+  "ade-prep":  {group:"ade", title:"à or de?", short:"Mixing up à and de", want:[]},
+  "ade-art":   {group:"ade", title:"au, du, de la, des…", short:"Picking the wrong le / la / les", want:[]},
+  "gender":    {group:"gender", title:"le or la?", short:"Getting the gender wrong", want:[]},
+  "accents":   {group:"accents", title:"Accents", short:"Right word, missing or wrong accent", want:[]},
+  "words":     {group:"words", title:"Words you keep missing", short:"The same words keep tripping you up", want:[]},
+};
+function hwRec(pat){ state.hw = state.hw || {}; return state.hw[pat] = state.hw[pat] || {status:"active", days:{}, since:0}; }
+/* the weak spots to work on right now */
+function weakSpots(){
+  const now = Date.now(), recent = (state.mistakes||[]).filter(m=>m.at >= now - HW_WINDOW);
+  const by = new Map();
+  recent.forEach(m=>{ let p = mistakePattern(m); if (!p) return; if (p.startsWith("word:")) p = "words"; if (!by.has(p)) by.set(p, []); by.get(p).push(m); });
+  const out = [];
+  by.forEach((list, pat)=>{
+    const rec = (state.hw||{})[pat];
+    const since = rec && rec.since || 0, fresh = list.filter(m=>m.at > since);
+    if (pat==="words"){
+      const per = new Map(); fresh.forEach(m=>{ const k = norm(m.word||m.right); per.set(k, (per.get(k)||[]).concat(m)); });
+      const words = [...per].filter(([,ms])=>ms.length >= HW_MIN).map(([k,ms])=>({key:k, n:ms.length, last:ms[ms.length-1]}));
+      if (words.length) out.push({pat, n:words.reduce((s,w)=>s+w.n,0), list:fresh, words});
+      return;
+    }
+    if (fresh.length >= HW_MIN) out.push({pat, n:fresh.length, list:fresh});
+  });
+  out.forEach(w=>{ const r = hwRec(w.pat); if (r.status!=="active"){ r.status = "active"; r.days = {}; } });   // new mistakes after fixing → back on the list
+  (state.hwCustom||[]).filter(c=>!c.done).forEach(c=>out.push({pat:"custom:"+c.id, n:c.qs.length, custom:c}));
+  return out.filter(w=>{ const r = hwRec(w.pat); return r.status==="active"; }).sort((a,b)=>b.n-a.n);
+}
+const checkupsDue = () => Object.entries(state.hw||{}).filter(([,r])=>r.status==="fixed" && r.checkAt && r.checkAt <= Date.now()).map(([p])=>p);
+const hwDaysDone = pat => Object.values(hwRec(pat).days||{}).filter(n=>n >= HW_DAY_RIGHT).length;
+function hwTitle(pat){ if (pat.startsWith("custom:")){ const c = (state.hwCustom||[]).find(x=>"custom:"+x.id===pat); return c ? c.title : "Worksheet from Claude"; } return (HW_INFO[pat]||{}).title || pat; }
+function hwExample(w){
+  if (w.custom) return `${w.custom.qs.length} questions from Claude`;
+  if (w.words) return w.words.slice(0,3).map(x=>{ const c = state.cards.find(c=>norm(c.fr)===x.key); return `<b>${esc(c ? c.fr : x.last.word || x.last.right)}</b> ×${x.n}`; }).join(" · ");
+  const m = w.list[w.list.length-1];
+  if (!m) return "";
+  const ex = m.src==="tout" || m.src==="ade" || m.src==="hw" ? (m.q||"").replace(/\s*\(.*\)\s*$/,"").replace("___", `<s>${esc(m.you)}</s> <b class="okc">${esc(m.right)}</b>`) : `<s>${esc(m.you)}</s> → <b class="okc">${esc(m.right)}</b>`;
+  return `${esc(HW_INFO[w.pat].short)}: ${ex.includes("<") ? ex : esc(ex)}`;
+}
+
+/* ---------- questions for each kind of weak spot ---------- */
+const WHY_GN = {ms:"masculine, just one", fs:"feminine, just one", mp:"masculine, more than one", fp:"feminine, more than one"};
+function qTout(pat, n){
+  const want = (HW_INFO[pat]||{}).want || [];
+  if (pat==="tout-fixed") return shuffle(TOUT_FIXED.slice()).slice(0, n).map(([s,en])=>({pat, kind:"choice", prompt:s, en, options:["tout","toute","tous","toutes"], answer:"tout",
+      why:{q:"Why is it tout?", options:["It's a set phrase — it never changes","The next word is masculine","The next word is plural"], answer:0}, say:s.replace("___","tout")}));
+  const pool = shuffle(TOUT_BANK.slice());
+  const pick = pool.filter(x=>want.includes(x[3])).slice(0, Math.ceil(n*0.7)).concat(pool.filter(x=>!want.includes(x[3]))).slice(0, n);
+  return shuffle(pick).map(([s,en,np,g])=>({pat, kind:"choice", prompt:s, en, options:["tout","toute","tous","toutes"], answer:TOUT_FORMS[g],
+    why:{q:`Why is it ${TOUT_FORMS[g]}?`, options:shuffle(Object.values(WHY_GN)).map(x=>`${np.replace(/^(les|la|le|l'|mes|tes|ses)\s?/,"")} is ${x}`), answerText:`${np.replace(/^(les|la|le|l'|mes|tes|ses)\s?/,"")} is ${WHY_GN[g]}`},
+    explain:`<i>${esc(np)}</i> ${TOUT_WHY[g]}`, say:s.replace("___", TOUT_FORMS[g])}));
+}
+function qAde(pat, n){
+  return buildPrepQs().slice(0, n).map(q=>{
+    const right = PREP_JOIN[q.prep][q.art], full = `${q.pre} ${prepJoin(right, q.noun)}.`;
+    const opts = shuffle([...new Set([right, PREP_JOIN[q.prep==="à"?"de":"à"][q.art], PREP_JOIN[q.prep][q.art==="le"?"la":"le"], PREP_JOIN[q.prep==="à"?"de":"à"][q.art==="le"?"la":"le"]])]);
+    const why = pat==="ade-prep"
+      ? {q:`Why ${q.prep}?`, options:shuffle([q.why.replace(/<[^>]+>/g,""), ...shuffle(Object.values(PREP_BANK).map(b=>b.why.replace(/<[^>]+>/g,"")).filter(w=>w!==q.why.replace(/<[^>]+>/g,""))).slice(0,2)]), answerText:q.why.replace(/<[^>]+>/g,"")}
+      : {q:`Why ${right}?`, options:shuffle(Object.entries(PREP_ART).map(([a,t])=>`${q.noun} ${t.replace(/<[^>]+>/g,"")}`)), answerText:`${q.noun} ${PREP_ART[q.art].replace(/<[^>]+>/g,"")}`};
+    return {pat, kind:"choice", prompt:`${q.pre} ___ ${q.noun}.`, en:q.en, options:opts, answer:right, why, explain:`${q.why} · <i>${esc(q.art==="l'"?"l'"+q.noun:q.art+" "+q.noun)}</i> ${PREP_ART[q.art]} · ${q.prep} + ${q.art} = <b>${esc(right)}</b>`, say:full};
+  });
+}
+const GENDER_TIPS = [[/(tion|sion|té|ure|ette|ance|ence|ée|ie|ude)$/, "f", "Words ending in -tion, -té, -ure, -ette, -ance/-ence are usually feminine."],
+  [/(age|ment|eau|isme|eur|oir|at)$/, "m", "Words ending in -age, -ment, -eau, -isme, -oir are usually masculine."]];
+function qGender(pat, n){
+  const nouns = shuffle(state.cards.filter(c=>/^(le|la)\s/i.test(c.fr.trim()) && !/\//.test(c.fr))).slice(0, n);
+  return nouns.map(c=>{ const [art, ...rest] = c.fr.trim().split(/\s+/), noun = rest.join(" "), tip = GENDER_TIPS.find(t=>t[0].test(norm(noun)));
+    return {pat, kind:"choice", prompt:`___ ${noun}`, en:c.en, options:["le","la"], answer:art.toLowerCase(), explain: tip ? tip[2] : `Learn it with its article: <b>${esc(c.fr)}</b>.`, say:c.fr}; });
+}
+function accentVariants(w){
+  const swaps = [["é","è"],["è","é"],["ê","è"],["à","a"],["â","a"],["ç","c"],["ô","o"],["û","u"],["î","i"],["ù","u"],["é","e"],["è","e"]];
+  const out = new Set(); swaps.forEach(([a,b])=>{ if (w.includes(a)) out.add(w.replace(a,b)); });
+  out.add(strip(w)); out.delete(w); return [...out];
+}
+function qAccents(pat, n){
+  const cards = shuffle(state.cards.filter(c=>/[àâçéèêëîïôûùüœ]/i.test(c.fr) && !/\//.test(c.fr))).slice(0, n);
+  return cards.map(c=>({pat, kind:"choice", prompt:c.en, en:"Pick the right spelling", options:shuffle([c.fr, ...shuffle(accentVariants(c.fr)).slice(0,2)]), answer:c.fr,
+    explain:`é = "ay" · è / ê = "eh" · à, ù just tell words apart (à = to, a = has).`, say:c.fr, big:true}));
+}
+function qWords(w, n){
+  const keys = (w && w.words ? w.words.map(x=>x.key) : []);
+  const cards = keys.map(k=>state.cards.find(c=>norm(c.fr)===k)).filter(Boolean);
+  return shuffle(cards).slice(0, n).map(c=>({pat:"words", kind:"type", prompt:c.en, en:"Type it in French", answer:c.fr, card:c.id, say:c.fr, explain: c.ex ? `<i>${esc(c.ex)}</i>` : ""}));
+}
+function qCustom(c, n){
+  return shuffle(c.qs.slice()).slice(0, n).map(q=>({pat:"custom:"+c.id, kind:"choice", prompt:q.s, en:q.en||"", options:shuffle([q.a, ...q.wrong]), answer:q.a, explain:q.why ? esc(q.why) : "", say:q.s.replace("___", q.a)}));
+}
+function questionsFor(w, n){
+  const p = w.pat;
+  if (p.startsWith("custom:")) return qCustom(w.custom || (state.hwCustom||[]).find(c=>"custom:"+c.id===p) || {qs:[]}, n);
+  if (p.startsWith("tout")) return qTout(p, n);
+  if (p.startsWith("ade")) return qAde(p, n);
+  if (p==="gender") return qGender(p, n);
+  if (p==="accents") return qAccents(p, n);
+  if (p==="words") return qWords(w, n);
+  return [];
+}
+function buildWorksheet(){
+  const spots = weakSpots().slice(0, 4), checks = checkupsDue();
+  let qs = [];
+  checks.forEach(p=>{ questionsFor({pat:p}, 2).forEach(q=>{ q.checkup = true; qs.push(q); }); });
+  const pools = spots.map(w=>questionsFor(w, 10));                       // then take turns between weak spots until there are 10
+  while (qs.length < 10 && pools.some(x=>x.length)) pools.forEach(x=>{ if (x.length && qs.length < 10) qs.push(x.shift()); });
+  return shuffle(qs);
+}
+/* ---------- the pages ---------- */
+let HWV = {view:"list"};
+function renderHomework(){
+  const el = $("#hwArea");
+  if (HWV.view==="lesson") return renderHwLesson(el);
+  if (HWV.view==="practice") return renderHwPractice(el);
+  const spots = weakSpots(), checks = checkupsDue();
+  const nQ = Math.min(10, spots.length*5 + checks.length*2);
+  el.innerHTML = `
+    ${spots.length || checks.length ? `<section class="hw-hero">
+      <div class="hw-kicker">TODAY'S WORKSHEET</div>
+      <div class="hw-big">${Math.max(nQ, 4)} questions · about ${Math.max(2, Math.round(Math.max(nQ,4)/2))} min</div>
+      <div class="hw-sub">Made from ${spots.length ? `your ${spots.length} weak spot${spots.length===1?"":"s"}` : ""}${spots.length && checks.length ? " + " : ""}${checks.length ? `${checks.length} check-up${checks.length===1?"":"s"}` : ""}</div>
+      <button class="btn hw-start" id="hwStart">Start homework</button></section>`
+    : `<section class="card center"><h2 style="margin:6px 0">No homework today 🎉</h2>
+      <p class="muted small">When you make the same kind of mistake twice in two weeks, it turns into homework here.</p>
+      <button class="btn" id="hwAny">Practise tout & à / de anyway</button></section>`}
+    ${spots.length ? `<h2 class="hw-h">Weak spots to fix</h2>` : ""}
+    ${spots.map((w,i)=>{ const d = hwDaysDone(w.pat), today = (hwRec(w.pat).days||{})[dayKey(Date.now())]||0;
+      return `<button class="card hw-spot" data-i="${i}">
+        <div class="hw-top"><b>${esc(hwTitle(w.pat))}</b>${w.custom ? `<span class="hw-badge cl">from Claude</span>` : `<span class="hw-badge">${w.n} mistake${w.n===1?"":"s"}</span>`}</div>
+        <div class="muted small" style="margin-top:4px">${hwExample(w)}</div>
+        <div class="hw-prog"><div class="bar"><div style="width:${Math.max(4, d/HW_DAYS*100)}%"></div></div><span class="muted small">${d ? `${d} of ${HW_DAYS} days` : today ? `${today}/${HW_DAY_RIGHT} right today` : "not started"}</span></div>
+        <div class="hw-open">Open lesson →</div></button>`; }).join("")}
+    <button class="card mistlink" id="hwMist"><span class="hw-ic">📝</span><span style="flex:1;text-align:left"><b>Mistake log</b><br><span class="muted small">All your mistakes · Copy for Claude</span></span><span class="muted">›</span></button>`;
+  if ($("#hwStart")) $("#hwStart").onclick = ()=>startHwPractice(buildWorksheet(), "Homework");
+  if ($("#hwAny")) $("#hwAny").onclick = ()=>startHwPractice(shuffle(qTout("tout-fem", 5).concat(qAde("ade-prep", 5))), "Practice");
+  el.querySelectorAll(".hw-spot").forEach(b=>b.onclick = ()=>{ HWV = {view:"lesson", spot:spots[+b.dataset.i]}; renderHomework(); window.scrollTo(0,0); });
+  $("#hwMist").onclick = ()=>goKey("mistakes");
+}
+function yourMistakesHtml(w){
+  const list = (w.list||[]).slice(-4).reverse();
+  if (!list.length) return "";
+  return `<section class="hw-yours"><div class="hw-kicker" style="color:var(--warn)">YOUR MISTAKES</div>
+    ${list.map(m=>`<div>${m.src==="tout"||m.src==="ade"||m.src==="hw" ? esc((m.q||"").replace(/\s*\(.*\)\s*$/,"")).replace("___", `<s>${esc(m.you)}</s> <b class="okc">${esc(m.right)}</b>`) : `${esc(m.q)}: <s>${esc(m.you||"—")}</s> <b class="okc">${esc(m.right)}</b>`}</div>`).join("")}</section>`;
+}
+function lessonBody(w){
+  const p = w.pat;
+  if (p.startsWith("tout")){
+    const want = new Set((weakSpots().filter(x=>x.pat.startsWith("tout")).flatMap(x=>(HW_INFO[x.pat]||{}).want||[])));
+    const cell = (g, txt) => `<td class="${want.has(g)?"hl":""}">${txt}</td>`;
+    return `<section class="card"><b>tout matches the word after it</b>
+      <table class="preptab hw-tab"><tr><th></th><th>one</th><th>more than one</th></tr>
+        <tr><th>masculine</th>${cell("ms","<b>tout</b> le temps")}${cell("mp","<b>tous</b> les jours")}</tr>
+        <tr><th>feminine</th>${cell("fs","<b>toute</b> la nuit")}${cell("fp","<b>toutes</b> les semaines")}</tr></table>
+      ${want.size ? `<div class="muted small">Highlighted: the ones you get wrong.</div>` : ""}</section>
+      <section class="card"><b>Ask yourself 3 things</b><ol class="hw-ol">
+        <li>What's the noun after it? <span class="muted">semaines</span></li>
+        <li>Is it <b>la</b> or <b>le</b>? <span class="muted">la semaine → feminine</span></li>
+        <li>One or more than one? <span class="muted">les → more → <b class="okc">toutes</b></span></li></ol></section>
+      <section class="card"><b>Good to know</b>
+        <p class="small">tout + <b>le / la</b> = <i>all / the whole</i> (toute la journée = all day). tous / toutes + <b>les</b> = <i>every</i> (tous les jours = every day).</p>
+        <p class="small"><b>tous</b> on its own = "all of them", and you say the s: <i>Ils sont tous là</i> ("toos").</p>
+        <p class="small"><b>tout</b> = "very": <i>tout petit</i>, but <i>toute petite</i> before a feminine word starting with a consonant.</p>
+        <p class="small">Set phrases never change: <i>tout de suite, à tout à l'heure, pas du tout, c'est tout</i>.</p></section>`;
+  }
+  if (p.startsWith("ade")) return `<section class="card">${prepRuleHtml()}</section>`;
+  if (p==="gender") return `<section class="card"><b>le or la?</b><p class="small">There's no rule for every word, so always learn a noun <b>with</b> its article (la chaise, not chaise). These endings help:</p>
+      <ul class="hw-ol"><li><b>Usually feminine:</b> -tion, -sion, -té, -ure, -ette, -ance, -ence, -ée</li><li><b>Usually masculine:</b> -age, -ment, -eau, -isme, -oir</li></ul>
+      <p class="small muted">Why it matters: le / la changes au/à la, du/de la, and the endings of adjectives.</p></section>`;
+  if (p==="accents") return `<section class="card"><b>Accents change the sound</b><ul class="hw-ol">
+      <li><b>é</b> (accent aigu) = "ay": été, café</li><li><b>è / ê</b> = "eh": très, fenêtre</li><li><b>ç</b> = "s" before a, o, u: ça, garçon</li><li><b>à / ù</b> just tell words apart: à (to) / a (has), où (where) / ou (or)</li></ul>
+      <p class="small muted">Tip: use the accent buttons under the typing box.</p></section>`;
+  if (p==="words") return `<section class="card"><b>Your tricky words</b>${(w.words||[]).map(x=>{ const c = state.cards.find(c=>norm(c.fr)===x.key); return `<div class="hw-wrow"><b>${esc(c?c.fr:x.last.right)}</b> <span class="muted">${esc(c?c.en:x.last.q)}</span><span class="hw-badge">×${x.n}</span></div>`; }).join("")}
+      <p class="small muted">Say each one out loud and make a sentence with it.</p></section>`;
+  if (w.custom) return `<section class="card"><b>${esc(w.custom.title)}</b><p class="small muted">A worksheet from Claude · ${w.custom.qs.length} questions.</p>${w.custom.note ? `<p class="small">${esc(w.custom.note)}</p>` : ""}</section>`;
+  return "";
+}
+function renderHwLesson(el){
+  const w = HWV.spot, d = hwDaysDone(w.pat);
+  el.innerHTML = `<button class="linkbtn" id="hwBack">← My homework</button>
+    <h2 class="hw-lt">${esc(hwTitle(w.pat))}</h2>
+    <p class="muted small" style="margin:-4px 0 10px">${esc((HW_INFO[w.pat]||{}).short || "")}${d ? ` · ${d} of ${HW_DAYS} days done` : ""}</p>
+    ${yourMistakesHtml(w)}${lessonBody(w)}
+    <button class="btn primary" id="hwGo" style="width:100%">Practise this · 8 questions</button>`;
+  $("#hwBack").onclick = ()=>{ HWV = {view:"list"}; renderHomework(); };
+  $("#hwGo").onclick = ()=>{ const qs = questionsFor(w, 8); if (!qs.length){ toast("Not enough words for this one yet"); return; } startHwPractice(qs, hwTitle(w.pat)); };
+}
+function startHwPractice(qs, label){
+  if (!qs.length){ toast("Nothing to practise yet"); return; }
+  HWV = {view:"practice", qs, i:0, right:0, label, stage:"answer"}; renderHomework(); window.scrollTo(0,0);
+}
+function hwLog(pat, ok){
+  const r = hwRec(pat), k = dayKey(Date.now());
+  if (ok){ r.days = r.days || {}; r.days[k] = (r.days[k]||0) + 1; }
+  if (r.status==="fixed" && r.checkAt && r.checkAt <= Date.now()){            // check-up
+    r.checkRes = (r.checkRes||[]).concat(ok);
+    if (!ok){ r.status = "active"; r.days = {}; r.checkRes = []; r.since = 0; }
+    else if (r.checkRes.length >= 2){ r.status = "done"; r.checkAt = 0; }
+    return;
+  }
+  if (r.status==="active" && hwDaysDone(pat) >= HW_DAYS){ r.status = "fixed"; r.since = Date.now(); r.checkAt = Date.now() + HW_CHECK; r.checkRes = []; HWV.fixed = (HWV.fixed||[]).concat(pat);
+    if (pat.startsWith("custom:")){ const c = (state.hwCustom||[]).find(x=>"custom:"+x.id===pat); if (c) c.done = true; } }
+}
+function renderHwPractice(el){
+  const P = HWV;
+  if (P.i >= P.qs.length){
+    const fixed = [...new Set(P.fixed||[])];
+    el.innerHTML = `<section class="card center"><h2>${P.right===P.qs.length ? "Perfect! 🌟" : "Homework done ✓"}</h2>
+      <p style="font-size:28px;font-weight:700;margin:4px 0">${P.right} / ${P.qs.length}</p>
+      ${fixed.length ? `<p class="okc"><b>Fixed: ${fixed.map(p=>esc(hwTitle(p))).join(", ")}</b> — it'll come back once next week to check.</p>` : `<p class="muted small">Get ${HW_DAY_RIGHT}+ right on ${HW_DAYS} different days to fix a weak spot.</p>`}
+      <button class="btn primary" id="hwDone" style="width:100%">Back to My homework</button></section>`;
+    $("#hwDone").onclick = ()=>{ HWV = {view:"list"}; renderHomework(); };
+    return;
+  }
+  const q = P.qs[P.i], info = HW_INFO[q.pat] || {};
+  const parts = q.prompt.split("___");
+  el.innerHTML = `<div class="row" style="align-items:center;margin-bottom:6px"><button class="linkbtn" id="hwQuit">✕ Stop</button><span style="flex:1"></span><span class="muted small">${P.i+1} / ${P.qs.length}</span></div>
+    <div class="progress"><div style="width:${P.i/P.qs.length*100}%"></div></div>
+    <div class="hw-kicker" style="margin:10px 0 6px">${q.checkup ? "CHECK-UP · " : ""}${esc((q.pat.startsWith("custom:") ? hwTitle(q.pat) : info.short || hwTitle(q.pat)).toUpperCase())}</div>
+    <section class="card">
+      <div class="prepq${q.big?" hw-bigq":""}">${parts.length>1 ? `${esc(parts[0])}<span class="gap">___</span>${esc(parts[1])}` : esc(q.prompt)}</div>
+      ${q.en ? `<div class="muted small" style="margin-top:4px">${esc(q.en)}</div>` : ""}
+      ${q.kind==="type" ? `<input type="text" id="hwIn" class="hw-in" autocomplete="off" autocapitalize="off" placeholder="Type the French…">${accentBar("hwIn")}<button class="btn primary" id="hwCheck" style="width:100%;margin-top:8px">Check</button>`
+        : `<div class="prepopts"><div class="preprow">${q.options.map(o=>`<button class="prepo" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`}
+      <div id="hwFb"></div>
+    </section>`;
+  $("#hwQuit").onclick = ()=>{ if (confirm("Stop this homework? Your answers so far still count.")){ HWV = {view:"list"}; renderHomework(); } };
+  if (q.kind==="type"){
+    const inp = $("#hwIn"); wireAccentBar("hwIn"); setTimeout(()=>inp.focus(), 50);
+    const check = ()=>{ if (!inp.value.trim() || q.answered) return; const a = inp.value.trim(), alts = q.answer.split("/").map(s=>norm(s.trim()));
+      const ok = alts.includes(norm(a)); hwAnswer(q, a, ok, !ok && alts.some(x=>strip(x)===strip(norm(a)))); inp.readOnly = true; };
+    $("#hwCheck").onclick = check; inp.onkeydown = e=>{ if (e.key==="Enter") check(); };
+  } else el.querySelectorAll(".prepo").forEach(b=>b.onclick = ()=>hwAnswer(q, b.dataset.a, b.dataset.a===q.answer));
+}
+function hwAnswer(q, a, ok, nearAccent){
+  if (q.answered) return; q.answered = true; const P = HWV;
+  if (ok) P.right++;
+  hwLog(q.pat, ok);
+  if (q.pat.startsWith("tout")) logSkill("tout", ok); else if (q.pat.startsWith("ade")) logSkill("ade", ok); else if (q.pat==="gender") logSkill("gender", ok); else if (q.pat==="accents") logSkill("accents", ok);
+  if (!ok) logMistake({src:"hw", q:q.prompt + (q.en ? ` (${q.en})` : ""), you:a, right:q.answer, pat: q.pat.startsWith("tout-") && TOUT_GN[a] ? toutPattern(a, q.answer) : q.pat==="words" ? "word:"+norm(q.answer) : q.pat, word:q.answer, kind: nearAccent ? "accents only" : "wrong"});
+  if (q.card){ const c = state.cards.find(c=>c.id===q.card); if (c && !ok) { c.wrong++; registerMiss(c); } }
+  save();
+  document.querySelectorAll(".prepo").forEach(b=>{ b.disabled = true; if (b.dataset.a===q.answer) b.classList.add("ok"); else if (b.dataset.a===a) b.classList.add("no"); });
+  const full = q.say || "";
+  $("#hwFb").innerHTML = `<div class="fb ${ok?"ok":"no"}" style="margin-top:12px">${ok ? "✅ Right!" : `Not quite — it's <b>${esc(q.answer)}</b>`}</div>
+    ${q.why && ok ? `<div class="hw-why"><div class="hw-kicker" style="color:#c9b6ff">NOW: ${esc(q.why.q.toUpperCase())}</div>
+      ${q.why.options.map((o,i)=>`<button class="hw-whyo" data-w="${i}">${esc(o)}</button>`).join("")}</div>` : ""}
+    ${!ok || !q.why ? `${q.explain ? `<div class="small" style="margin-top:10px">${q.explain}</div>` : ""}` : ""}
+    ${full ? `<div class="prepfull"><span style="flex:1">${esc(full)}</span><button class="jicon sm" id="hwSay" aria-label="Hear it">🔊</button></div>` : ""}
+    <button class="btn primary" id="hwNext" style="width:100%;margin-top:10px" ${q.why && ok ? "hidden" : ""}>${P.i+1<P.qs.length ? "Next →" : "See my score"}</button>`;
+  if ($("#hwSay")) $("#hwSay").onclick = ()=>say(full);
+  document.querySelectorAll(".hw-whyo").forEach(b=>b.onclick = ()=>{
+    const pickedText = q.why.options[+b.dataset.w], good = q.why.answerText ? pickedText===q.why.answerText : +b.dataset.w===q.why.answer;
+    document.querySelectorAll(".hw-whyo").forEach(x=>{ x.disabled = true; const t = q.why.options[+x.dataset.w]; if (q.why.answerText ? t===q.why.answerText : +x.dataset.w===q.why.answer) x.classList.add("ok"); else if (x===b) x.classList.add("no"); });
+    b.insertAdjacentHTML("afterend", `<div class="small" style="margin-top:6px">${good ? "✓ That's the reason." : "Not quite — the green one is the reason."}${q.explain ? ` ${q.explain}` : ""}</div>`);
+    $("#hwNext").hidden = false;
+  });
+  $("#hwNext").onclick = ()=>{ P.i++; renderHomework(); window.scrollTo(0,0); };
+  if (full) say(full);
+}
+/* accent buttons under a typing box */
+const accentBar = id => `<div class="hw-acc" data-for="${id}">${["é","è","ê","à","â","ç","ô","û","î","œ"].map(a=>`<button type="button" data-k="${a}">${a}</button>`).join("")}</div>`;
+function wireAccentBar(id){ const bar = document.querySelector(`.hw-acc[data-for="${id}"]`); if (!bar) return;
+  bar.addEventListener("pointerdown", e=>e.preventDefault());
+  bar.querySelectorAll("button").forEach(b=>b.onclick = ()=>{ const i = $("#"+id); const s = i.selectionStart ?? i.value.length, e = i.selectionEnd ?? s; i.value = i.value.slice(0,s) + b.dataset.k + i.value.slice(e); i.setSelectionRange(s+1, s+1); i.focus(); }); }
+
+/* ---------- worksheets from Claude: paste → homework ----------
+   Format (one question per line):  sentence with ___ | right answer | wrong, wrong | why (optional)
+   First line may be:  WORKSHEET: title                                                     */
+function parseWorksheet(text){
+  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  let title = "Worksheet from Claude"; const qs = [];
+  lines.forEach(l=>{
+    const t = l.match(/^(?:#+\s*)?worksheet\s*[:\-–]\s*(.+)$/i); if (t){ title = t[1].trim(); return; }
+    if (!l.includes("|")) return;
+    const [s, a, wrong, why] = l.replace(/^[-*\d.)\s]+/,"").split("|").map(x=>(x||"").trim());
+    if (!s || !a) return;
+    const w = (wrong||"").split(/\s*[,;\/]\s*/).map(x=>x.trim()).filter(x=>x && x!==a);
+    if (!w.length) return;
+    qs.push({s: s.includes("___") ? s : s + " ___", a, wrong:w.slice(0,3), why:why||""});
+  });
+  return {title, qs};
+}
+const WORKSHEET_HELP = `When you send me a worksheet back, put one question per line like this:\nWORKSHEET: tout / toutes\nJe vois mes parents ___ les semaines. | toutes | tout, toute, tous | semaines is feminine plural`;
+
 function registerMiss(card){
   card.misses = (card.misses||0) + 1;
   const n = hardAfter();
@@ -742,36 +1206,38 @@ function say(text, slow, onend){
 
 /* ---------- navigation ---------- */
 let curView = "overview";
-const renderers = {overview:renderOverview, hard:renderHard, weak:renderWeak, study:renderStudy, match:startMatch, speak:startSpeak, create:startCreate, words:renderWords, settings:renderSettings};
-const NAV = {overview:["overview"], study:["study"], match:["match"], speak:["speak"], journal:["create","journal"], writing:["create","words"], prep:["create","prep"], words:["words"], settings:["settings"], hard:["hard"], weak:["weak"]};
-const TITLES = {overview:"Flashcards", study:"Study", match:"Match", speak:"Speak", journal:"Journal", writing:"Writing", prep:"à / de articles", words:"Words", settings:"Settings", hard:"Hard words", weak:"Weak spots"};
+const renderers = {overview:renderOverview, hard:renderHard, weak:renderWeak, mistakes:renderMistakes, homework:renderHomework, study:renderStudy, match:startMatch, speak:startSpeak, create:startCreate, words:renderWords, settings:renderSettings};
+const NAV = {overview:["overview"], study:["study"], match:["match"], speak:["speak"], journal:["create","journal"], writing:["create","words"], prep:["create","prep"], words:["words"], settings:["settings"], hard:["hard"], weak:["weak"], mistakes:["mistakes"], homework:["homework"]};
+const TITLES = {overview:"Flashcards", study:"Study", match:"Match", speak:"Speak", journal:"Journal", writing:"Writing", prep:"Grammar gym", words:"Words", settings:"Settings", hard:"Hard words", weak:"Weak spots", mistakes:"Mistake log", homework:"Homework"};
 function navKey(){
   if (curView==="create") return (C.mode==="journal" || C.mode==="rewrite") ? "journal" : C.mode==="prep" ? "prep" : "writing";
   return curView;
 }
 function paintNav(){
   const k = navKey(), sub = SUBPAGES.includes(k), mb = $("#menuBtn");
-  if (mb.dataset.mode !== (sub?"back":"menu")){ mb.dataset.mode = sub?"back":"menu"; mb.innerHTML = sub ? ICON_BACK : ICON_MENU; mb.setAttribute("aria-label", sub ? "Back to Overview" : "Open menu"); }
+  if (mb.dataset.mode !== (sub?"back":"menu")){ mb.dataset.mode = sub?"back":"menu"; mb.innerHTML = sub ? ICON_BACK : ICON_MENU; mb.setAttribute("aria-label", sub ? "Back" : "Open menu"); }
+  const hb = $("#hwBadge"); if (hb){ let n = 0; try { n = weakSpots().length + checkupsDue().length; } catch(e){} hb.hidden = !n; hb.textContent = n; }
   $("#pageTitle").innerHTML = esc(TITLES[k] || "Flashcards") + (k==="words" ? ` <span style="color:var(--muted);font-weight:500">${state.cards.length}</span>` : "");
   document.querySelectorAll("#drawer [data-go]").forEach(b=>{ const on = b.dataset.go===k; b.classList.toggle("on", on); if (on) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
 }
 function goKey(k){
   const [v, m] = NAV[k] || ["overview"];
   closeDrawer();
-  if (k==="match" && !canResume("match")) matchChosen = false;      // opening Match → choose a game (unless one is in progress)
+  if (k==="match" && !canResume("match")) matchChosen = false;
+  if (k==="homework" && !(curView==="homework")) HWV = {view:"list"};      // opening Match → choose a game (unless one is in progress)
   if (m){ if (curView==="create" && C.mode==="words") { snapDraft(); save(); } if (C.mode!==m || m==="journal") live.create = null; C.mode = m; }
   go(v);
 }
 function openDrawer(){ $("#drawer").classList.add("open"); $("#drawerBg").hidden = false; $("#menuBtn").setAttribute("aria-expanded","true"); paintNav(); }
 function closeDrawer(){ $("#drawer").classList.remove("open"); $("#drawerBg").hidden = true; $("#menuBtn").setAttribute("aria-expanded","false"); }
-const SUBPAGES = ["hard","weak"];
+const SUBPAGES = ["hard","weak","mistakes"];
 const ICON_MENU = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>`, ICON_BACK = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>`;
-$("#menuBtn").onclick = ()=> SUBPAGES.includes(navKey()) ? goKey("overview") : openDrawer(); $("#drawerX").onclick = closeDrawer; $("#drawerBg").onclick = closeDrawer;
+$("#menuBtn").onclick = ()=> SUBPAGES.includes(navKey()) ? goKey(navKey()==="mistakes" ? "homework" : "overview") : openDrawer(); $("#drawerX").onclick = closeDrawer; $("#drawerBg").onclick = closeDrawer;
 $("#drawer").addEventListener("click", e=>{ const b = e.target.closest("[data-go]"); if (b) goKey(b.dataset.go); });
 function go(v){
   curView = v;
   document.querySelectorAll(".view").forEach(el=>el.classList.toggle("on", el.id==="v-"+v));
-  $("#catbar").style.display = (["words","settings","speak","overview","hard","weak"].includes(v) || (v==="create" && (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep"))) ? "none" : "";
+  $("#catbar").style.display = (["words","settings","speak","overview","hard","weak","mistakes","homework"].includes(v) || (v==="create" && (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep"))) ? "none" : "";
   paintNav();
   if (canResume(v)){ if (v==="create") paintCreateSeg(); return; }   // pick up where you left off
   renderers[v]();
@@ -895,7 +1361,7 @@ function showStudyCard(){
   $("#sSay").onclick = ()=>say(c.fr);
   $("#sSlow").onclick = ()=>say(c.fr, true);
   if ($("#sEx")) $("#sEx").onclick = ()=>say(c.ex);
-  $("#again").onclick = ()=>{ grade(c,false); sess.again++; studyQueue.push(c); nextStudy(); };
+  $("#again").onclick = ()=>{ logMistake({src:"study", q:c.en, right:c.fr, word:c.fr}); grade(c,false); sess.again++; studyQueue.push(c); nextStudy(); };
   $("#gotit").onclick = ()=>{ grade(c,true); sess.got++; nextStudy(); };
   $("#easy").onclick = ()=>{ gradeEasy(c); sess.easy++; nextStudy(); };
   if ($("#endSess")) $("#endSess").onclick = ()=>{ sessLabel = ""; live.study = null; renderStudy(); };
@@ -941,6 +1407,11 @@ function renderOverview(){
       <div class="ov-chips"><span>${nRev} review${nRev===1?"":"s"}</span><span>${nNew} new</span>${nLock?`<span>🔒 ${nLock} locked</span>`:""}</div>
       <button class="btn" id="ovStudy">${due.length ? "Start studying" : "Practise anyway"}</button>
     </section>
+    ${(()=>{ const sp = weakSpots(), ck = checkupsDue(); if (!sp.length && !ck.length) return "";
+      return `<section class="hw-hero hw-ov"><div class="row" style="align-items:center;gap:12px"><span class="hw-ovic">📋</span><div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:17px">Homework: ${sp.length ? `${sp.length} weak spot${sp.length===1?"":"s"}` : "a quick check-up"}</div>
+        <div class="hw-sub">${esc(sp.slice(0,2).map(w=>hwTitle(w.pat)).join(" · ") || "check you still remember")} · about 5 min</div></div></div>
+        <button class="btn hw-start" id="ovHw">Do my homework</button></section>`; })()}
     <section class="ov-stats">
       <div class="ov-stat"><b>${all.length}</b><span>words</span></div>
       <div class="ov-stat"><b>${learned}%</b><span>learned</span></div>
@@ -962,6 +1433,7 @@ function renderOverview(){
     </section>`;
   $("#ovStudy").onclick = ()=>{ live.study = null; goKey("study"); };
   $("#ovWeak").onclick = ()=>goKey("weak");
+  if ($("#ovHw")) $("#ovHw").onclick = ()=>goKey("homework");
   $("#ovWeakGo").onclick = ()=>startCustom(weakSessionCards(), "🎯 Weak spots session");
   if ($("#ovHardAll")){ $("#ovHardAll").onclick = ()=>goKey("hard"); $("#ovHardGo").onclick = ()=>startCustom(hard, "♥ Hard words"); }
 }
@@ -1015,7 +1487,7 @@ function renderWeak(){
     <p class="muted small center" style="margin-top:-6px">Tap a category to practise it.${notStarted ? ` ${notStarted} categor${notStarted===1?"y":"ies"} not started yet ${notStarted===1?"is":"are"} hidden.` : ""}</p>
     <section class="card">
       <div class="secthead"><h2>Skills</h2><span class="muted small">last 30 days</span></div>
-      <p class="muted small" style="margin:2px 0 4px">From 🔗 à / de practice, Match → Type it, conjugation cards and Claude's journal corrections.</p>
+      <p class="muted small" style="margin:2px 0 4px">From 🏋️ Grammar gym, Match → Type it, conjugation cards and Claude's journal corrections.</p>
       ${shown.map(s=>`<div class="wk"><div class="wk-top"><span>${esc(s.name)}</span><span style="color:${pctColor(s.pct)}">${s.pct}%</span></div>
         <div class="bar"><div class="${pctClass(s.pct)}" style="width:${Math.max(s.pct,2)}%"></div></div>
         <div class="row" style="align-items:center"><span class="muted small" style="flex:1">${s.n} checks</span><button class="linkbtn" data-sk="${s.k}">Practise →</button></div></div>`).join("")}
@@ -1034,7 +1506,7 @@ function renderWeak(){
 }
 function practiseSkill(k){
   const low = c => !isNew(c) && c.box <= 3;
-  if (k==="ade"){ goKey("prep"); return; }
+  if (k==="ade" || k==="tout"){ goKey("homework"); return; }
   if (k==="gender") return startCustom(state.cards.filter(c=>low(c) && /^(le|la)\s/i.test(c.fr)).slice(0,20), "Gender: le or la?");
   if (k==="accents") return startCustom(state.cards.filter(c=>low(c) && /[àâçéèêëîïôûùüœ]/i.test(c.fr)).slice(0,20), "Accents");
   if (k==="verbs") return startCustom(state.cards.filter(c=>isConjCat(catOf(c)) && (c.box<=3)).slice(0,20), "Verb endings");
@@ -1149,6 +1621,8 @@ $("#matchGrid").addEventListener("click", e=>{
     mMistakes++;
     [a,b].forEach(x=>{ x.classList.add("wrong"); setTimeout(()=>x.classList.remove("wrong"),400); mBad.add(x.dataset.id); });
     const c = state.cards.find(c=>c.id===(a.dataset.side==="fr"?a.dataset.id:b.dataset.id));
+    const enTile = a.dataset.side==="fr" ? b : a;
+    if (c) logMistake({src:"match", q:c.fr, you:enTile.textContent.replace(/▲\d+/,"").trim(), right:c.en, word:c.fr});
     if (c){ c.wrong++; registerMiss(c); save(); }
     paintMStats();
   }
@@ -1229,6 +1703,7 @@ function checkType(){
   if (hasAcc && (verdict==="right" || verdict==="accents")) logSkill("accents", verdict==="right");
   if (noun && (verdict==="right" || verdict==="article")) logSkill("gender", verdict==="right");
   const ok = verdict==="right" || (verdict==="accents" && state.settings.lenient);
+  if (verdict!=="right") logMistake({src:"type", q:c.en, you:inp.value.trim(), right:E, kind:verdict==="wrong" ? "wrong" : verdict==="accents" ? "accents only" : "wrong le / la", word:c.fr});
   let lvl = "";
   if (ok){
     T.right++;
@@ -1306,6 +1781,7 @@ function checkWrite(){
   else if (answers.some(a=>strip(a)===strip(ans))){ ok = state.settings.lenient; cls="near"; msg="Nearly — watch the accents: " + esc(wCard.fr); }
   else { cls="no"; msg="✗ It's: " + esc(wCard.fr); ok=false; }
   if (ok) wScore++;
+  if (cls!=="ok") logMistake({src:"write", q:wCard.en, you:inp.value.trim(), right:wCard.fr, kind: cls==="near" ? "accents only" : "wrong", word:wCard.fr});
   grade(wCard, ok);
   say(wCard.fr);
   $("#wFb").innerHTML = `<div class="fb ${cls}">${msg}</div>`;
@@ -1606,7 +2082,117 @@ function buildPrepQs(){
   });
   return qs;
 }
-function startPrep(){ PR = {q:buildPrepQs(), i:0, right:0}; renderPrep(); }
+function startPrep(){
+  if ((state.settings.gymDrill||"ade") === "tout") return startTout();
+  PR = {q:buildPrepQs(), i:0, right:0}; renderPrep();
+}
+const gymTabs = () => `<div class="seg gymseg" style="margin-bottom:10px">${[["ade","à / de"],["tout","tout / tous"]].map(([k,l])=>`<button data-d="${k}" class="${(state.settings.gymDrill||"ade")===k?"on":""}">${l}</button>`).join("")}</div>`;
+function wireGymTabs(){ document.querySelectorAll(".gymseg button").forEach(b=>b.onclick = ()=>{ state.settings.gymDrill = b.dataset.d; save(); startPrep(); }); }
+
+/* ---------- tout / toute / tous / toutes: it matches the noun after it ---------- */
+const TOUT_FORMS = {ms:"tout", fs:"toute", mp:"tous", fp:"toutes"};
+const TOUT_WHY = {ms:"is masculine, one thing → <b>tout</b>", fs:"is feminine, one thing → <b>toute</b>", mp:"is masculine, more than one → <b>tous</b>", fp:"is feminine, more than one → <b>toutes</b>"};
+// [sentence with ___, English, noun phrase, gender+number]
+const TOUT_BANK = [
+  ["Je travaille ___ les jours.","I work every day.","les jours","mp"],
+  ["Il a plu ___ la journée.","It rained all day.","la journée","fs"],
+  ["Elle parle ___ le temps.","She talks all the time.","le temps","ms"],
+  ["___ le monde est là.","Everyone is here.","le monde","ms"],
+  ["J'ai dormi ___ la nuit.","I slept all night.","la nuit","fs"],
+  ["Je cours ___ les matins.","I run every morning.","les matins","mp"],
+  ["On mange ensemble ___ les soirs.","We eat together every evening.","les soirs","mp"],
+  ["Je vais au marché ___ les week-ends.","I go to the market every weekend.","les week-ends","mp"],
+  ["Je vois mes parents ___ les semaines.","I see my parents every week.","les semaines","fp"],
+  ["___ la famille est venue.","The whole family came.","la famille","fs"],
+  ["___ les filles chantent.","All the girls are singing.","les filles","fp"],
+  ["___ les garçons jouent au foot.","All the boys play football.","les garçons","mp"],
+  ["J'ai lu ___ le week-end.","I read all weekend.","le week-end","ms"],
+  ["Il fait chaud ___ l'année.","It's hot all year.","l'année","fs"],
+  ["Je suis resté ici ___ l'été.","I stayed here all summer.","l'été","ms"],
+  ["J'ai travaillé ___ la semaine.","I worked all week.","la semaine","fs"],
+  ["Le bus passe ___ les heures.","The bus comes every hour.","les heures","fp"],
+  ["Je me trompe ___ les fois !","I get it wrong every time!","les fois","fp"],
+  ["On part en vacances ___ les ans.","We go on holiday every year.","les ans","mp"],
+  ["J'ai attendu ___ le matin.","I waited all morning.","le matin","ms"],
+  ["J'ai répondu à ___ les questions.","I answered all the questions.","les questions","fp"],
+  ["___ mes amis sont venus.","All my friends came.","mes amis","mp"],
+  ["J'ai rangé ___ mes affaires.","I tidied all my things.","mes affaires","fp"],
+  ["J'ai nettoyé ___ la maison.","I cleaned the whole house.","la maison","fs"],
+  ["Il connaît ___ le quartier.","He knows the whole neighbourhood.","le quartier","ms"],
+  ["Je paie le loyer ___ les mois.","I pay the rent every month.","les mois","mp"],
+  ["J'ai mangé ___ le gâteau.","I ate the whole cake.","le gâteau","ms"],
+  ["J'ai bu ___ la bouteille.","I drank the whole bottle.","la bouteille","fs"],
+  ["___ les chambres sont prêtes.","All the bedrooms are ready.","les chambres","fp"],
+  ["Le voisin fait du bruit ___ les nuits.","The neighbour makes noise every night.","les nuits","fp"],
+];
+const TOUT_FIXED = [   // set phrases — always "tout", whatever comes after
+  ["À ___ à l'heure !","See you later!"],["Je reviens ___ de suite.","I'll be right back."],["C'est ___ !","That's all!"],["Pas du ___.","Not at all."],["___ à coup, il pleut.","Suddenly, it's raining."],
+];
+let TT = {q:[], i:0, right:0};
+function startTout(){
+  const qs = shuffle(TOUT_BANK.slice()).slice(0, 8).map(([s,en,np,g])=>({s, en, np, g, ans:TOUT_FORMS[g]}));
+  shuffle(TOUT_FIXED.slice()).slice(0, 2).forEach(([s,en])=>qs.push({s, en, fixed:true, ans:"tout"}));
+  TT = {q:shuffle(qs), i:0, right:0}; renderTout();
+}
+function toutRuleHtml(){
+  return `<div class="card" style="margin-top:10px">
+    <b>tout matches the word after it</b>
+    <table class="preptab" style="margin-top:8px"><tr><th></th><th>one</th><th>more than one</th></tr>
+      <tr><th>masculine</th><td><b>tout</b> le temps</td><td><b>tous</b> les jours</td></tr>
+      <tr><th>feminine</th><td><b>toute</b> la nuit</td><td><b>toutes</b> les semaines</td></tr></table>
+    <ol class="small" style="margin:8px 0 0;padding-left:20px;line-height:1.5">
+      <li>Look at the noun after it: is it <b>le / la</b> (one) or <b>les</b> (more than one)?</li>
+      <li>Masculine or feminine? Feminine adds <b>-e</b>, plural adds <b>-s</b>.</li>
+      <li><b>tout + le/la</b> often means <i>all / the whole</i> (toute la journée = all day). <b>tous / toutes + les</b> often means <i>every</i> (tous les jours = every day).</li>
+      <li>Set phrases never change: <i>tout de suite, à tout à l'heure, pas du tout, c'est tout</i>.</li></ol>
+    <div class="muted small" style="margin-top:6px">🔊 Sounds: tout = "too", toute = "toot", tous = "too", toutes = "toot".</div></div>`;
+}
+function renderTout(){
+  const el = $("#createArea");
+  if (TT.i >= TT.q.length){
+    el.innerHTML = `${gymTabs()}<div class="card center"><h2>🏋️ Done!</h2><p style="font-size:28px;font-weight:650;margin:6px 0">${TT.right} / ${TT.q.length}</p>
+      <p class="muted">${TT.right===TT.q.length ? "Perfect — you've got it!" : TT.right>=7 ? "Nearly there — keep practising." : "Have another go — use 📋 The rule if you get stuck."}</p>
+      <button class="btn primary" id="toutAgain">🔁 10 more</button></div>${toutRuleHtml()}`;
+    wireGymTabs(); $("#toutAgain").onclick = startTout; return;
+  }
+  const q = TT.q[TT.i], parts = q.s.split("___");
+  el.innerHTML = `${gymTabs()}
+    <div class="muted small center" style="margin-bottom:6px">🏋️ Fill the gap · ${TT.i+1} of ${TT.q.length} · ✓ ${TT.right}</div>
+    <div class="progress"><div style="width:${TT.i/TT.q.length*100}%"></div></div>
+    <div class="card">
+      <div class="prepq">${esc(parts[0])}<span class="gap">___</span>${esc(parts[1])}</div>
+      <div class="muted small" style="margin-top:4px">${esc(q.en)}</div>
+      <div id="toutHintBox" style="margin-top:8px">${q.fixed ? "" : `<button class="btn sm" id="toutHint">💡 Hint: look at the word after the gap</button>`}</div>
+      <div class="prepopts"><div class="preprow">${["tout","toute","tous","toutes"].map(a=>`<button class="prepo" data-a="${a}">${a}</button>`).join("")}</div></div>
+      <div id="toutFb"></div>
+    </div>
+    <button class="btn" id="toutRuleBtn" style="width:100%">📋 The rule</button><div id="toutRule" hidden>${toutRuleHtml()}</div>`;
+  wireGymTabs();
+  if ($("#toutHint")) $("#toutHint").onclick = ()=>{ $("#toutHintBox").innerHTML = `<div class="small">💡 <b>${esc(q.np)}</b> — ${q.g[1]==="p" ? "more than one" : "just one"}, ${q.g[0]==="f" ? "feminine" : "masculine"}</div>`; };
+  $("#toutRuleBtn").onclick = ()=>{ const r = $("#toutRule"); r.hidden = !r.hidden; };
+  el.querySelectorAll(".prepo").forEach(b=>b.onclick = ()=>answerTout(b.dataset.a));
+}
+function answerTout(a){
+  const q = TT.q[TT.i]; if (q.answered) return; q.answered = true;
+  const ok = a===q.ans; if (ok) TT.right++;
+  logSkill("tout", ok);
+  if (!ok) logMistake({src:"tout", pat: q.fixed ? "tout-fixed" : toutPattern(a, q.ans), q:`${q.s} (${q.en})`, you:a, right:q.ans, word:q.np ? `${q.ans} ${q.np}` : q.s.replace("___", q.ans)});
+  save();
+  document.querySelectorAll(".prepo").forEach(b=>{ b.disabled = true; if (b.dataset.a===q.ans) b.classList.add("ok"); else if (b.dataset.a===a) b.classList.add("no"); });
+  const full = q.s.replace("___", q.ans), cap = full.charAt(0).toUpperCase() + full.slice(1);
+  const steps = q.fixed
+    ? `<li>This is a set phrase — it's always <b>tout</b>, it never changes.</li>`
+    : `<li class="${ok?"":"bad"}"><i>${esc(q.np)}</i> ${TOUT_WHY[q.g]}${ok?"":` <span class="why">(you chose <b>${esc(a)}</b>)</span>`}</li>
+       <li>${q.g[1]==="p" ? "<b>tous / toutes + les …</b> → <i>every / all the</i>" : "<b>tout / toute + le / la …</b> → <i>all / the whole</i>"}</li>`;
+  $("#toutFb").innerHTML = `
+    <div class="fb ${ok?"ok":"no"}" style="margin-top:12px">${ok ? "✅ Right!" : `Not quite — it's <b>${esc(q.ans)}</b>`}</div>
+    <ol class="prepsteps">${steps}</ol>
+    <div class="prepfull"><span style="flex:1">${esc(cap)}</span><button class="jicon sm" id="toutSay" aria-label="Hear it">🔊</button></div>
+    <button class="btn primary" id="toutNext" style="width:100%;margin-top:10px">${TT.i+1<TT.q.length ? "Next →" : "See my score"}</button>`;
+  $("#toutSay").onclick = ()=>say(cap);
+  $("#toutNext").onclick = ()=>{ TT.i++; renderTout(); };
+  say(cap);
+}
 function prepRuleHtml(){
   return `<div class="card" style="margin-top:10px">
     <b>Two questions, then join them</b>
@@ -1622,14 +2208,14 @@ function prepRuleHtml(){
 function renderPrep(){
   const el = $("#createArea");
   if (PR.i >= PR.q.length){
-    el.innerHTML = `<div class="card center"><h2>🧩 Done!</h2><p style="font-size:28px;font-weight:650;margin:6px 0">${PR.right} / ${PR.q.length}</p>
+    el.innerHTML = `${gymTabs()}<div class="card center"><h2>🧩 Done!</h2><p style="font-size:28px;font-weight:650;margin:6px 0">${PR.right} / ${PR.q.length}</p>
       <p class="muted">${PR.right===PR.q.length ? "Perfect — you've got it!" : PR.right>=7 ? "Nearly there — keep practising." : "Have another go — use 📋 The rule if you get stuck."}</p>
       <button class="btn primary" id="prepAgain">🔁 10 more</button></div>${prepRuleHtml()}`;
-    $("#prepAgain").onclick = startPrep; return;
+    wireGymTabs(); $("#prepAgain").onclick = startPrep; return;
   }
   const q = PR.q[PR.i];
   const btn = a => `<button class="prepo" data-a="${a}">${a}</button>`;
-  el.innerHTML = `
+  el.innerHTML = `${gymTabs()}
     <div class="muted small center" style="margin-bottom:6px">🧩 Fill the gap · ${PR.i+1} of ${PR.q.length} · ✓ ${PR.right}</div>
     <div class="progress"><div style="width:${PR.i/PR.q.length*100}%"></div></div>
     <div class="card">
@@ -1643,6 +2229,7 @@ function renderPrep(){
       <div id="prepFb"></div>
     </div>
     <button class="btn" id="prepRuleBtn" style="width:100%">📋 The rule</button><div id="prepRule" hidden>${prepRuleHtml()}</div>`;
+  wireGymTabs();
   $("#prepHint").onclick = ()=>{ $("#prepHintBox").innerHTML = `<div class="small">💡 <b>${esc(q.art==="l'" ? "l'"+q.noun : q.art+" "+q.noun)}</b> = ${esc(q.nounEn)}</div>`; };
   $("#prepRuleBtn").onclick = ()=>{ const r = $("#prepRule"); r.hidden = !r.hidden; };
   el.querySelectorAll(".prepo").forEach(b=>b.onclick = ()=>answerPrep(b.dataset.a));
@@ -1654,7 +2241,9 @@ function answerPrep(a){
   let gotPrep = null, gotArt = null;                       // which of the two steps went wrong?
   Object.entries(PREP_JOIN).forEach(([p, m])=>Object.entries(m).forEach(([art, v])=>{ if (v===a){ gotPrep = p; gotArt = art; } }));
   const bad1 = !ok && gotPrep!==q.prep, bad2 = !ok && gotArt!==q.art;
-  logSkill("ade", !bad1); if (q.art!=="l'") logSkill("gender", !bad2); save();
+  logSkill("ade", !bad1); if (q.art!=="l'") logSkill("gender", !bad2);
+  if (!ok) logMistake({src:"ade", pat: bad1 ? "ade-prep" : "ade-art", q:`${q.pre} ___ ${q.noun}. (${q.en})`, you:a, right, kind: bad1 && bad2 ? "à/de and le/la" : bad1 ? "à or de" : "le / la / les", word:`${q.prep} + ${q.art}`});
+  save();
   document.querySelectorAll(".prepo").forEach(b=>{ b.disabled = true; if (b.dataset.a===right) b.classList.add("ok"); else if (b.dataset.a===a) b.classList.add("no"); });
   const full = `${q.pre} ${prepJoin(right, q.noun)}.`;
   const nounWithArt = q.art==="l'" ? "l'"+q.noun : q.art+" "+q.noun;
@@ -2838,7 +3427,7 @@ $("#selAdd").addEventListener("click", ()=>{
   $("#selAdd").classList.remove("on");
   if ($("#selAdd").classList.contains("have")){ toast("Already in your words"); return; }
   try { window.getSelection().removeAllRanges(); } catch(e){}
-  openAdd(); const f = $("#aFr"); f.value = t; f.dispatchEvent(new Event("input", {bubbles:true})); $("#aEn").focus();
+  openAdd(); const f = $("#aFr"); f.value = t; f.dispatchEvent(new Event("input", {bubbles:true})); $("#aEn").focus(); autoFillForm(false);
 });
 function openAdd(presetCat){
   let added = 0;
@@ -2849,8 +3438,10 @@ function openAdd(presetCat){
       <button class="btn sm" id="aCSV" style="flex:1">📄 From a CSV file</button>
     </div>
     <div class="muted small" id="aCount" style="margin:0 0 10px">&nbsp;</div>
-    <div class="field"><label>French</label><input type="text" id="aFr" placeholder="e.g. le chien" autocomplete="off" autocapitalize="off"></div>
-    <div class="field"><label>English</label><input type="text" id="aEn" placeholder="e.g. the dog" autocomplete="off"></div>
+    <div class="field"><label>French</label><div class="row" style="gap:8px;align-items:center"><input type="text" id="aFr" placeholder="e.g. le chien" autocomplete="off" autocapitalize="off" style="flex:1;min-width:0"><span class="af-check" id="aArtChk" hidden>le? check</span><button class="btn sm" id="aFill" type="button" title="Fill in the English, type, example and category">✨ Fill in</button></div></div>
+    <div class="af-status" id="aAuto" hidden></div>
+    <div class="field"><label>English</label><input type="text" id="aEn" placeholder="e.g. the dog" autocomplete="off"><div class="chips" id="aAlt"></div></div>
+    <div class="field"><label>Type</label><select id="aType"><option value="">work it out for me</option>${Object.entries(TYPE_INFO).map(([k,l])=>`<option value="${k}">${l}</option>`).join("")}</select></div>
     <div class="field"><label>Sounds like (optional)</label><input type="text" id="aPron" placeholder="e.g. luh SHYA(N)" autocomplete="off" autocapitalize="off"></div>
     <div class="field"><label>Category</label>${catPicker("aCat", startCat)}
       <div class="chips" id="aSugg"></div></div>
@@ -2875,14 +3466,16 @@ function openAdd(presetCat){
     if (!addWord(fr, en, cat, $("#aPron").value, $("#aEx").value, $("#aExEn").value, $("#aExPron").value)){
       toast("That word is already in your list"); $("#aFr").focus(); return false;
     }
+    if ($("#aType").value) state.cards[state.cards.length-1].type = $("#aType").value;
     state.settings.lastCat = cat; save(); added++;
     $("#aCount").textContent = `✓ ${added} word${added===1?"":"s"} added — last: ${fr.trim()} → ${cleanCat(cat)}`;
     return true;
   };
   $("#aMore").onclick = ()=>{
     if (!saveOne()) return;
-    ids.forEach(id=>$(id).value=""); $("#aSugg").innerHTML = ""; $("#aFr").focus();
+    ids.forEach(id=>$(id).value=""); $("#aSugg").innerHTML = ""; $("#aAlt").innerHTML = ""; $("#aType").value = ""; $("#aAuto").hidden = true; $("#aArtChk").hidden = true; $("#aFr").focus();
   };
+  $("#aFill").onclick = ()=>autoFillForm(true);
   $("#aDone").onclick = ()=>{ if (!typed() && added){ finish(); return; } if (saveOne()) finish(); };
   $("#aX").onclick = ()=>{ if (typed() && !confirm("Close without saving this word?")) return; finish(); };
   $("#aEn").onkeydown = e=>{ if (e.key==="Enter") $("#aMore").click(); };
@@ -2892,6 +3485,68 @@ function openAdd(presetCat){
   setTimeout(()=>$("#aFr")?.focus(), 50);
 }
 
+
+/* ---------- ✨ auto-fill a new word: English, other meanings, type, le / la, example, category ---------- */
+async function gtx(text, sl, tl, extra){
+  const r = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t${extra||""}&q=` + encodeURIComponent(text));
+  if (!r.ok) throw new Error("translate " + r.status); return r.json();
+}
+const POS_MAP = {noun:"noun", verb:"verb", adjective:"adj", adverb:"adv", preposition:"prep", conjunction:"other", pronoun:"other", interjection:"phrase"};
+async function lookupWord(fr){
+  const j = await gtx(fr, "fr", "en", "&dt=bd&dt=ex");
+  const main = (j[0]||[]).map(x=>x && x[0] || "").join("").trim();
+  const dict = Array.isArray(j[1]) ? j[1] : [];
+  const first = dict[0] || [], pos = POS_MAP[first[0]] || "";
+  const alts = []; dict.forEach(d=>(d[1]||[]).forEach(t=>{ if (t && norm(t)!==norm(main) && norm(t)!==norm(main)+"s" && norm(t)+"s"!==norm(main) && !alts.includes(t) && alts.length < 4) alts.push(t); }));
+  const base = first[3] && typeof first[3]==="string" ? first[3] : "";
+  let ex = ""; try { ex = (j[13] && j[13][0] && j[13][0][0] && j[13][0][0][0] || "").replace(/<[^>]+>/g,"").trim(); } catch(e){}
+  return {main, alts, pos, base, ex};
+}
+const withThe = (en, pos) => pos==="noun" && !/^(the|a|an|some)\s/i.test(en) ? "the " + en : pos==="verb" && !/^to\s/i.test(en) ? "to " + en : en;
+async function autoFillForm(manual){
+  const st = $("#aAuto"), frEl = $("#aFr"); if (!st || !frEl) return;
+  const fr = frEl.value.trim(); if (!fr){ if (manual) toast("Type the French word first"); return; }
+  if (!navigator.onLine){ st.hidden = false; st.textContent = "Offline — only the French is filled in. Tap ✨ Fill in when you're back online."; return; }
+  st.hidden = false; st.textContent = "✨ Looking it up…";
+  try {
+    const L = await lookupWord(fr);
+    if ($("#aFr").value.trim() !== fr) return;                                     // they changed the word meanwhile
+    let frOut = fr, artChk = false;
+    const hasArt = /^(le|la|les|l'|un|une|des)\s|^l'/i.test(fr);
+    if (L.pos==="noun" && !hasArt && L.main){
+      artChk = true;
+      for (const meaning of [L.main, ...L.alts].slice(0, 4)){            // translate "the <meaning>" back to French and see which article comes with our word
+        try {
+          const bare = meaning.replace(/^(the|a|an)\s+/i, "");
+          const back = ((await gtx("the " + bare, "en", "fr"))[0]||[]).map(x=>x && x[0] || "").join("").trim();
+          const m = back.match(/^(le|la|les)\s+(.+)$|^(l')\s*(.+)$/i);
+          if (m && norm(strip(m[2]||m[4])).includes(norm(strip(fr)).slice(0, Math.max(3, fr.length-2)))){ const a = (m[1]||m[3]).toLowerCase(); frOut = a==="l'" ? "l'" + fr : a + " " + fr; break; }
+        } catch(e){ break; }
+      }
+    }
+    if (frOut !== fr) $("#aFr").value = frOut;
+    $("#aArtChk").hidden = !artChk; $("#aArtChk").textContent = frOut!==fr ? `${frOut.split(/\s|'/)[0]}${frOut.startsWith("l'")?"'":""}? check` : "le or la?";
+    const enEl = $("#aEn");
+    if (!enEl.value.trim() && L.main) enEl.value = withThe(L.main, L.pos);
+    $("#aAlt").innerHTML = L.alts.length ? `<span class="muted small" style="align-self:center">Other meanings:</span>` + L.alts.map(a=>`<button type="button" class="chip" data-en="${esc(withThe(a, L.pos))}">${esc(withThe(a, L.pos))}</button>`).join("") : "";
+    $("#aAlt").querySelectorAll("[data-en]").forEach(b=>b.onclick = ()=>{ const cur = enEl.value; enEl.value = b.dataset.en; b.dataset.en = cur; b.textContent = cur; enEl.dispatchEvent(new Event("input", {bubbles:true})); });
+    if (L.pos && !$("#aType").value) $("#aType").value = POS_MAP[L.pos] ? L.pos : (TYPE_INFO[L.pos] ? L.pos : "");
+    if (L.pos==="verb" && L.base && norm(L.base)!==norm(fr) && !/(er|ir|re|oir)$/.test(norm(fr))){
+      $("#aAlt").insertAdjacentHTML("afterbegin", `<button type="button" class="chip" id="aBase" style="border-color:var(--accent)">Add the full verb: <b>${esc(L.base)}</b></button>`);
+      $("#aBase").onclick = async ()=>{ $("#aFr").value = L.base; $("#aEn").value = ""; $("#aAlt").innerHTML = ""; await autoFillForm(true); };
+    }
+    if (L.ex && !$("#aEx").value.trim()){
+      $("#aEx").value = L.ex;
+      try { const t = ((await gtx(L.ex, "fr", "en"))[0]||[]).map(x=>x && x[0] || "").join("").trim(); if (t && !$("#aExEn").value.trim()) $("#aExEn").value = t; } catch(e){}
+      const d = $("#aEx").closest("details"); if (d) d.open = true;
+    }
+    if (!$("#aCat").value.trim()){ const sg = suggestCats($("#aFr").value, enEl.value)[0]; if (sg) setCatPicker("aCat", sg.name); }
+    ["#aFr","#aEn"].forEach(id=>$(id).dispatchEvent(new Event("input", {bubbles:true})));
+    st.textContent = `✨ Filled in for you${artChk ? " — check le / la" : ""}. Check, then save.`;
+  } catch(e){
+    st.textContent = "Couldn't look it up right now — fill it in yourself, or try ✨ Fill in again.";
+  }
+}
 /* ---------- smart category suggestions (offline, rule-based) ---------- */
 const CAT_HINTS = {
  "Animals":"animal pet cat dog bird horse cow pig sheep fish mouse rabbit lion tiger bear wolf fox duck chicken hen goat monkey snake frog insect bee spider elephant donkey butterfly",
@@ -3354,8 +4009,9 @@ setTimeout(processPending, 2500);   // check anything written while offline
     $("#aFr").value = m ? m[1] : t;
     if (m) $("#aEn").value = m[2];
     ["#aFr","#aEn"].forEach(id=>$(id).dispatchEvent(new Event("input", {bubbles:true})));
-    const dup = state.cards.find(c=>norm(c.fr)===norm($("#aFr").value));
+    const dup = state.cards.find(c=>norm(c.fr)===norm($("#aFr").value) || norm(c.fr).replace(/^(le|la|les|l')\s?/,"")===norm($("#aFr").value));
     if (dup) toast(`“${dup.fr}” is already in your list (${dup.en})`);
+    else if (!m) autoFillForm(false);
     (m ? $("#aCat_sel") : $("#aEn")).focus();
   }, 120);
 })();
