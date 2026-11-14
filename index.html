@@ -407,6 +407,13 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 .gym-row:last-child{border-bottom:0}.gym-row .bar{margin-top:8px}
 .gym-row.locked{display:flex;align-items:center;gap:10px;color:var(--muted);cursor:default}.gym-row.locked b{color:var(--muted)}
 .gym-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.bg-hero{background:#14304a;border:1px solid #2f6f9e}:root[data-theme="light"] .bg-hero{background:#2f6f9e}
+.gymchip{border:1px solid #2f6f9e;background:color-mix(in srgb,#2f6f9e 30%,var(--surface));color:var(--text);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.bg-wrap{background:var(--surface);border:1px solid var(--border);border-radius:18px;margin-top:10px;overflow:hidden}.bg-wrap.here{border-color:#2f6f9e}
+.bg-unit{display:flex;align-items:center;gap:8px;width:100%;padding:12px 14px;background:none;border:0;color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.bg-unit.locked{background:var(--surface);border:1px solid var(--border);border-radius:18px;margin-top:10px;opacity:.6;cursor:default}
+.bg-ut{flex:1;min-width:0;font-size:13px;color:var(--muted)}.bg-pct{font-size:12px;font-weight:700}.bg-here{font-size:11.5px;font-weight:700;color:#5aa9e6}
+.bg-dot{width:7px;height:7px;border-radius:99px;background:#ffad7a;flex:0 0 7px}.bg-topics{padding:0 14px 4px;border-top:1px solid var(--border)}.bg-topics .gym-row:last-child{border-bottom:0}
 .gym-lock{font-size:16px;opacity:.8}.gym-hwnote{color:#c9b6ff;font-weight:600;margin-top:6px}
 :root[data-theme="light"] .gym-hwnote{color:#5a43a8}
 .preprow.qz-col{flex-direction:column;display:flex}.preprow.qz-col .prepo{text-align:left;width:100%}
@@ -565,7 +572,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-14-6";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-14-7";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -1418,12 +1425,92 @@ function gymRuleHtml(t){
   return `<section class="card">${GYM_RULES[t.id]||""}</section>`;
 }
 
+/* ---------- 📘 the gym by book unit (only when your book pack is added) ----------
+   Everyone starts on Unit 1. Units up to "your class" are open; after that a unit opens at 60% on the one before. */
+const BG = "b:";                                                     // gym ids for book topics: "b:u5-tout"
+const bgTopic = id => id && id.startsWith(BG) ? bookTopic(id.slice(BG.length)) : null;
+const gymTitle = id => { const b = bgTopic(id); if (b) return b.title; const t = gymTopic(id); return t ? t.title : ""; };
+const classUnit = () => Math.max(1, gymState().classUnit || 1);
+function bgUnitScore(u){                                             // a unit's % = the average of its topics you've answered
+  const sc = u.topics.map(t=>gymScore(BG+t.id)).filter(x=>x.n);
+  return {n: sc.reduce((a,x)=>a+x.n,0), pct: sc.length ? Math.round(sc.reduce((a,x)=>a+x.pct,0)/sc.length) : 0, started: sc.length};
+}
+function bgUnitOpen(u){
+  if (u.n <= classUnit()) return true;
+  const prev = state.book.units.find(x=>x.n===u.n-1); if (!prev) return true;
+  if (!bgUnitOpen(prev)) return false;
+  const s = bgUnitScore(prev); return s.n >= GYM_MIN && s.pct >= GYM_UNLOCK;
+}
+const bgOpenCount = () => state.book ? state.book.units.filter(bgUnitOpen).length : 0;
+const bgUnitWeak = u => { const sp = weakSpots().map(w=>w.pat); return u.topics.some(t=>sp.includes("book:"+t.id) || (t.pats||[]).some(p=>sp.includes(p))); };
+function bgQuestions(t, n){                                          // book questions (+ the app's own for linked topics), tagged with the topic
+  const tt = t.unit ? t : {...t, unit: state.book.units.find(u=>u.topics.includes(t))};
+  let qs = qBook(tt, n);
+  const app = (tt.pats||[])[0];
+  if (app && qs.length < n) qs = qs.concat(questionsForApp({pat:app}, n - qs.length));
+  return mixKinds(shuffle(qs).slice(0, n)).map(q=>Object.assign(q, {topic: BG+tt.id}));
+}
+function bgWarmup(){
+  const cu = classUnit(), units = state.book.units.filter(bgUnitOpen);
+  const now = units.find(u=>u.n===cu) || units[units.length-1], before = units.filter(u=>u.n < now.n);
+  const take = (u, k) => shuffle(u.topics.flatMap(t=>bgQuestions({...t, unit:u}, 3))).slice(0, k);
+  const qs = take(now, before.length ? 8 : 10).concat(before.length ? shuffle(before.flatMap(u=>take(u, 2))).slice(0, 2) : []);
+  return {qs: shuffle(qs), unit: now, extra: before.length ? 2 : 0};
+}
+function renderGymBook(el){
+  const g = gymState(), cu = classUnit(), warmDone = g.warm === dayKey(Date.now()), W = bgWarmup();
+  GV.openU = GV.openU || {};
+  el.innerHTML = `
+    <section class="gym-hero bg-hero">
+      <div class="hw-kicker" style="color:rgba(255,255,255,.85)">DAILY WARM-UP</div>
+      <div class="hw-big">${warmDone ? "Done for today ✓" : `${W.qs.length - W.extra} questions from Unité ${W.unit.n}`}</div>
+      <div class="hw-sub" style="color:rgba(255,255,255,.9)">${W.extra ? `Mixed with ${W.extra} from earlier units so you don't forget them.` : "From the unit your class is on."}</div>
+      <button class="btn gym-start" id="gymWarm">${warmDone ? "Do another" : "Start warm-up"}</button></section>
+    ${state.book.units.map(u=>{ const open = bgUnitOpen(u), sc = bgUnitScore(u), isClass = u.n===cu, exp = open && GV.openU[u.n];
+      if (!open) return `<div class="bg-unit locked"><b>Unité ${u.n}</b><span class="bg-ut">${esc(u.title)}</span><span class="muted small">🔒</span></div>`;
+      return `<div class="bg-wrap${isClass ? " here" : ""}"><button class="bg-unit" data-u="${u.n}"><b>Unité ${u.n}</b>${bgUnitWeak(u) ? `<span class="bg-dot" title="In your homework"></span>` : ""}<span class="bg-ut">${esc(u.title)}</span>
+        ${isClass ? `<span class="bg-here">your class is here</span>` : sc.started ? `<span class="bg-pct" style="color:${pctColor(sc.pct)}">${sc.pct >= GYM_UNLOCK && sc.n >= GYM_MIN ? "✓ " : ""}${sc.pct}%</span>` : ""}<span class="muted">${exp ? "▾" : "▸"}</span></button>
+        ${exp ? `<div class="bg-topics">${u.topics.map(t=>{ const ts = gymScore(BG+t.id); return `<button class="gym-row" data-bt="${BG+t.id}"><div class="gym-top"><b>${esc(t.title)}</b><span style="color:${ts.n ? pctColor(ts.pct) : "var(--muted)"};font-weight:700">${ts.n ? ts.pct + "%" : "new"}</span></div>
+          <div class="bar"><div class="${pctClass(ts.pct)}" style="width:${Math.max(ts.n ? ts.pct : 0, 2)}%"></div></div></button>`; }).join("")}</div>` : ""}</div>`; }).join("")}
+    <p class="muted small center">Units up to your class are open. After that, ${GYM_UNLOCK}% on a unit opens the next one.</p>`;
+  $("#gymWarm").onclick = ()=>{ const w = bgWarmup(); startGymDrill(w.qs, "Daily warm-up", null); };
+  el.querySelectorAll(".bg-unit[data-u]").forEach(b=>b.onclick = ()=>{ const n = +b.dataset.u; GV.openU[n] = !GV.openU[n]; renderGym(); });
+  el.querySelectorAll("[data-bt]").forEach(b=>b.onclick = ()=>{ GV = {view:"topic", id:b.dataset.bt, openU:GV.openU}; renderGym(); window.scrollTo(0,0); });
+}
+function pickClassUnit(){
+  const cu = classUnit();
+  openModal(`<div class="row" style="align-items:center;margin-bottom:4px"><b style="flex:1;font-size:18px">Which unit is your class on?</b><button class="icon-btn" id="cuX" aria-label="Close">✕</button></div>
+    <p class="muted small" style="margin:0 0 8px">Everyone starts on Unit 1. Pick the unit your class is on and every unit up to it opens straight away. Later units open as you get ${GYM_UNLOCK}% on the one before.</p>
+    ${state.book.units.map(u=>`<button class="dcrow ov" data-cu="${u.n}"><span class="dcn"><b>Unité ${u.n}</b><span class="muted small">${esc(u.title)}</span></span>${u.n===cu ? `<span style="color:var(--accent);font-weight:700">●</span>` : ""}</button>`).join("")}`);
+  $("#cuX").onclick = closeModal;
+  document.querySelectorAll("[data-cu]").forEach(b=>b.onclick = ()=>{ gymState().classUnit = +b.dataset.cu; save(); closeModal(); GV = {view:"hub"}; renderGym(); toast(`Your class is on Unité ${b.dataset.cu}`); });
+}
+function renderBgTopic(el){
+  const t = bgTopic(GV.id), u = state.book.units.find(x=>x.topics.some(y=>y.id===t.id)), tt = {...t, unit:u}, sc = gymScore(GV.id);
+  const mine = (state.mistakes||[]).filter(m=>{ const p = mistakePattern(m); return p==="book:"+t.id || (m.src==="gym" && (t.pats||[]).includes(p)); }).slice(-3).reverse();
+  const app = (t.pats||[])[0];
+  el.innerHTML = `<button class="linkbtn" id="gymBack">← Grammar gym</button>
+    <div class="hw-kicker" style="margin-top:8px;color:var(--accent)">UNITÉ ${u.n} · ${esc(u.title.toUpperCase())}</div>
+    <h2 class="hw-lt">${esc(t.title)}</h2>
+    <section class="card row" style="align-items:center;gap:14px"><div style="font-size:30px;font-weight:700;color:${sc.n ? pctColor(sc.pct) : "var(--muted)"}">${sc.n ? sc.pct + "%" : "new"}</div>
+      <div style="flex:1"><div class="bar"><div class="${pctClass(sc.pct)}" style="width:${Math.max(sc.pct,2)}%"></div></div>
+      <div class="muted small" style="margin-top:6px">${sc.n >= GYM_MIN ? `From your last ${sc.n} answers` : `${sc.n} of ${GYM_MIN} answers needed for a score`} · the unit's ${GYM_UNLOCK}% opens the next unit</div></div></section>
+    ${bookRuleHtml(tt)}
+    ${app && !app.startsWith("ade") ? lessonBodyApp({pat:app}) : app ? lessonBodyApp({pat:app}) : ""}
+    ${mine.length ? `<section class="hw-yours"><div class="hw-kicker" style="color:var(--warn)">YOUR RECENT MISTAKES</div>${mine.map(m=>`<div>${esc((m.q||"").replace(/\s*\(.*\)\s*$/,"")).replace("___", `<s>${esc(m.you||"")}</s> <b class="okc">${esc(m.right)}</b>`)}</div>`).join("")}</section>` : ""}
+    <button class="btn primary" id="gymGo" style="width:100%">Practise · 10 questions</button>`;
+  $("#gymBack").onclick = ()=>{ GV = {view:"hub", openU:GV.openU}; renderGym(); };
+  $("#gymGo").onclick = ()=>startGymDrill(bgQuestions(tt, 10), t.title, GV.id);
+}
+
 /* ---------- pages ---------- */
 let GV = {view:"hub"};
 function renderGym(){
   const el = $("#gymArea");
-  if (GV.view==="topic") return renderGymTopic(el);
+  paintGymChip();
+  if (GV.view==="topic") return bgTopic(GV.id) ? renderBgTopic(el) : renderGymTopic(el);
   if (GV.view==="drill") return renderPractice(el, GV, GYM_QUIZ);
+  if (state.book) return renderGymBook(el);
   gymUnlocks(); gymNewlyOpen = [];
   const g = gymState(), warmDone = g.warm === dayKey(Date.now()), spots = new Set(weakSpots().map(w=>gymTopicOfPat(w.pat)).filter(Boolean));
   el.innerHTML = `
@@ -1463,11 +1550,11 @@ function renderGymTopic(el){
 }
 function startGymDrill(qs, label, id){
   if (!qs.length){ toast("Not enough to practise yet"); return; }
-  GV = {view:"drill", qs, i:0, right:0, label, id, startPct: id ? gymScore(id).pct : 0}; gymNewlyOpen = []; renderGym(); window.scrollTo(0,0);
+  GV = {view:"drill", qs, i:0, right:0, label, id, startPct: id ? gymScore(id).pct : 0, openU:GV.openU, unitsOpen: bgOpenCount()}; gymNewlyOpen = []; renderGym(); window.scrollTo(0,0);
 }
 const GYM_QUIZ = {
-  kicker: q => GV.id ? GV.label : `Warm-up · ${gymTopic(q.topic) ? gymTopic(q.topic).title : ""}`,
-  quit: ()=>{ GV = GV.id ? {view:"topic", id:GV.id} : {view:"hub"}; renderGym(); },
+  kicker: q => GV.id ? GV.label : `Warm-up · ${q.book || gymTitle(q.topic)}`,
+  quit: ()=>{ GV = GV.id ? {view:"topic", id:GV.id, openU:GV.openU} : {view:"hub", openU:GV.openU}; renderGym(); },
   rerender: ()=>renderGym(),
   onAnswer: (q, a, ok)=>{
     gymLog(q.topic, ok);
@@ -1477,8 +1564,8 @@ const GYM_QUIZ = {
   after: (P, q)=> P.id ? `<div class="muted small" style="margin-top:8px">Topic score: ${gymScore(P.id).pct}%</div>` : "",
   endHtml: P => { const opened = [...new Set(gymNewlyOpen)].map(gymTopic).filter(Boolean);
     if (!P.id) gymState().warm = dayKey(Date.now());
-    const sc = P.id ? gymScore(P.id) : null;
-    return `<section class="card center"><h2>${P.right===P.qs.length ? "Perfect! 🌟" : "Done ✓"}</h2>
+    const sc = P.id ? gymScore(P.id) : null, nowOpen = bgOpenCount(), newU = state.book && nowOpen > (P.unitsOpen||0) ? state.book.units.filter(bgUnitOpen)[nowOpen-1] : null;
+    return `<section class="card center">${newU ? `<p class="okc"><b>🔓 Unité ${newU.n} is open: ${esc(newU.title)}</b></p>` : ""}<h2>${P.right===P.qs.length ? "Perfect! 🌟" : "Done ✓"}</h2>
       <p style="font-size:28px;font-weight:700;margin:4px 0">${P.right} / ${P.qs.length}</p>
       ${sc ? `<p class="muted">${esc(P.label)}: ${P.startPct}% → <b style="color:${pctColor(sc.pct)}">${sc.pct}%</b></p>` : ""}
       ${opened.length ? `<p class="okc"><b>🔓 New topic open: ${opened.map(t=>esc(t.title)).join(", ")}</b></p>` : ""}
@@ -1486,8 +1573,9 @@ const GYM_QUIZ = {
       <div class="row"><button class="btn" id="gymHub">Grammar gym</button><button class="btn primary" id="gymAgain">${P.id ? "10 more" : "Another warm-up"}</button></div></section>`; },
   wireEnd: P => {
     save();
-    $("#gymHub").onclick = ()=>{ GV = {view:"hub"}; renderGym(); };
-    $("#gymAgain").onclick = ()=>{ if (P.id) startGymDrill(gymQuestions(P.id, 10), P.label, P.id); else { const open = GYM.filter(gymIsOpen); startGymDrill(shuffle(open.flatMap(t=>gymQuestions(t.id, 2))).slice(0,5), "Daily warm-up", null); } };
+    $("#gymHub").onclick = ()=>{ GV = {view:"hub", openU:P.openU}; renderGym(); };
+    $("#gymAgain").onclick = ()=>{ const bt = bgTopic(P.id); if (bt) return startGymDrill(bgQuestions(bt, 10), P.label, P.id); if (!P.id && state.book) return startGymDrill(bgWarmup().qs, "Daily warm-up", null);
+      if (P.id) startGymDrill(gymQuestions(P.id, 10), P.label, P.id); else { const open = GYM.filter(gymIsOpen); startGymDrill(shuffle(open.flatMap(t=>gymQuestions(t.id, 2))).slice(0,5), "Daily warm-up", null); } };
   },
 };
 /* Writing twists lean towards topics you've opened in the gym */
@@ -1644,10 +1732,18 @@ function navKey(){
   if (curView==="create") return (C.mode==="journal" || C.mode==="rewrite") ? "journal" : C.mode==="prep" ? "prep" : "writing";
   return curView;
 }
+function paintGymChip(){
+  let c = $("#gymChip");
+  const show = curView==="gym" && !!state.book && GV.view==="hub";
+  if (!show){ if (c) c.hidden = true; $("#duePill").hidden = false; return; }
+  if (!c){ c = document.createElement("button"); c.id = "gymChip"; c.className = "pill gymchip"; $("#duePill").after(c); c.onclick = ()=>pickClassUnit(); }
+  c.hidden = false; c.textContent = `Unit ${classUnit()} ▾`; $("#duePill").hidden = true;
+}
 function paintNav(){
   const k = navKey(), sub = SUBPAGES.includes(k), mb = $("#menuBtn");
   if (mb.dataset.mode !== (sub?"back":"menu")){ mb.dataset.mode = sub?"back":"menu"; mb.innerHTML = sub ? ICON_BACK : ICON_MENU; mb.setAttribute("aria-label", sub ? "Back" : "Open menu"); }
   const hb = $("#hwBadge"); if (hb){ let n = 0; try { n = weakSpots().length + checkupsDue().length; } catch(e){} hb.hidden = !n; hb.textContent = n; }
+  try { paintGymChip(); } catch(e){}
   $("#pageTitle").innerHTML = esc(TITLES[k] || "Flashcards") + (k==="words" ? ` <span style="color:var(--muted);font-weight:500">${state.cards.length}</span>` : (k==="hard"||k==="hardprac") ? ` <span style="color:var(--bad)">♥${k==="hard" ? " "+hardList().length : ""}</span>` : "");
   document.querySelectorAll("#drawer [data-go]").forEach(b=>{ const on = b.dataset.go===k; b.classList.toggle("on", on); if (on) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
 }
