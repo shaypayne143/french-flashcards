@@ -389,6 +389,11 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 .qz-hintb{display:block;margin-top:8px}.qz-hint{margin-top:8px;font-size:13px;color:var(--muted);background:var(--surface2);border-radius:10px;padding:8px 10px}
 .qz-mist{width:100%;text-align:left;display:flex;flex-direction:column;gap:6px;font-size:14px;margin:10px 0 12px}.qz-mist>div{background:var(--surface2);border-radius:10px;padding:8px 10px}.qz-mist s{color:var(--bad)}
 .bookcard .hw-ol{font-size:14px}
+.lv-card{background:color-mix(in srgb,var(--good) 10%,var(--surface));border-color:color-mix(in srgb,var(--good) 45%,var(--border))}
+.lv-card .dcrow.ov{border-top-color:color-mix(in srgb,var(--good) 25%,var(--border))}.lvc{background:color-mix(in srgb,var(--good) 18%,var(--surface));color:var(--good)}
+.lv-next{background:color-mix(in srgb,var(--good) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--good) 45%,var(--border));border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.lv-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.lv-a{background:var(--good)!important;color:#0f1220!important;border:0!important;font-weight:700}.lv-b{border-color:var(--good)!important;color:var(--good)!important;font-weight:700}
+.lv-empty p{line-height:1.45}
 .qz-card .preprow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.qz-card .preprow.qz-col{grid-template-columns:1fr}.qz-card .prepo{min-width:0;width:100%;white-space:normal;overflow-wrap:anywhere}
 .hw-in{width:100%;box-sizing:border-box;margin-top:12px;height:52px;border-radius:14px;border:2px solid var(--border);background:var(--bg);color:var(--text);font:inherit;font-size:20px;padding:0 14px;text-align:center}
 .hw-acc{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;margin-top:8px}
@@ -572,7 +577,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-14-7";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-14-8";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -681,6 +686,18 @@ function refreshCatFilter(){
   if (state.settings.cat && !cats.includes(state.settings.cat) && !(state.settings.cat===CONJ_ALL && conjCats.length)) state.settings.cat = "";
   const cur = state.settings.cat, inConj = cur===CONJ_ALL || isConjCat(cur);
   const nConj = state.cards.filter(c=>isConjCat(catOf(c))).length;
+  if (typeof restrictCats==="function" && restrictCats()){
+    const rc = recentCats(), ready = rc.filter(e=>e.ready), rest = rc.filter(e=>!e.ready);
+    $("#verbFilter").hidden = true;
+    if (!rc.length){ $("#catFilter").innerHTML = `<option value="">Nothing studied yet</option>`; return; }
+    if (!rc.some(e=>e.cat===cur || (e.cat===CONJ_ALL && inConj))){ state.settings.cat = rc[0].cat; save(); }
+    const opt = e => `<option value="${esc(e.cat)}">${esc(e.cat===CONJ_ALL ? "🔤 Conjugations" : e.label)}${e.ready ? ` · ⬆ ${e.ready} ready` : " · levelled up"}</option>`;
+    $("#catFilter").innerHTML = (ready.length ? `<optgroup label="⬆ Ready to level up">${ready.map(opt).join("")}</optgroup>` : "")
+      + (rest.length ? `<optgroup label="Studied this week">${rest.map(opt).join("")}</optgroup>` : "")
+      + `<option value="__study">📚 Study a new category…</option>`;
+    $("#catFilter").value = isConjCat(state.settings.cat) ? CONJ_ALL : state.settings.cat;
+    return;
+  }
   $("#catFilter").innerHTML = `<option value="">All words (${state.cards.length})</option>` +
     plain.map(c=>`<option value="${esc(c)}">${esc(c)} (${inCat(c).length})</option>`).join("") +
     (conjCats.length ? `<option value="${CONJ_ALL}">🔤 Conjugations (${nConj})</option>` : "");
@@ -698,7 +715,7 @@ function refreshCatFilter(){
   hb.setAttribute("aria-pressed", !!state.settings.hardOnly);
   $("#catList").innerHTML = cats.filter(c=>c!==UNCAT).map(c=>`<option value="${esc(c)}">`).join("");
 }
-$("#catFilter").onchange = e=>{ state.settings.cat = e.target.value; save(); refreshCatFilter(); renderers[curView](); };
+$("#catFilter").onchange = e=>{ if (e.target.value==="__study"){ refreshCatFilter(); goKey("weak"); return; } state.settings.cat = e.target.value; save(); refreshCatFilter(); renderers[curView](); };
 $("#verbFilter").onchange = e=>{ state.settings.cat = e.target.value; save(); refreshCatFilter(); renderers[curView](); };
 
 /* ---------- spaced repetition ---------- */
@@ -1646,6 +1663,31 @@ function practiceGrade(c){
   if (early && r !== "locked") c.lvlDay = dayKey(Date.now());
   return r;
 }
+/* ---------- ⬆ level up: words you've studied in flash cards, ready for Match / Writing ---------- */
+const RECENT_DAYS = 7;
+const lastSeen = c => c.seenAt || 0;
+const catGroup = c => isConjCat(catOf(c)) ? CONJ_ALL : catOf(c);
+const canLevelNow = c => !isNew(c) && !isLocked(c) && c.box < INTERVALS.length-1 && !bonusUsed(c) && c.lvlDay !== dayKey(Date.now());
+function recentCats(){                    // categories studied in the last 7 days: [{cat, label, today, ready, at, n}], ready-today first
+  const since = Date.now() - RECENT_DAYS*DAY, today = dayKey(Date.now()), m = new Map();
+  state.cards.forEach(c=>{ const t = lastSeen(c); if (t < since) return;
+    const k = catGroup(c), e = m.get(k) || {cat:k, label:catLabel(k), today:false, ready:0, at:0, n:0};
+    e.at = Math.max(e.at, t); if (dayKey(t)===today) e.today = true; if (canLevelNow(c)) e.ready++; m.set(k, e); });
+  m.forEach(e=>{ e.n = state.cards.filter(c=>catGroup(c)===e.cat).length; });
+  return [...m.values()].sort((a,b)=>(b.today&&b.ready?1:0)-(a.today&&a.ready?1:0) || b.ready-a.ready || b.at-a.at);
+}
+const readyToday = () => recentCats().filter(e=>e.today && e.ready);
+const restrictCats = () => curView==="match" || (curView==="create" && C.mode==="words");
+const agoText = t => { const d = Math.round((new Date().setHours(0,0,0,0) - new Date(t).setHours(0,0,0,0))/DAY); return d<=0 ? "studied today" : d===1 ? "studied yesterday" : `studied ${d} days ago`; };
+function levelGate(el, what){            // Match / Writing with nothing studied lately → send them to study first
+  if (recentCats().length) return false;
+  el.innerHTML = `<div class="card center lv-empty"><div style="font-size:40px">📚</div><h2 style="margin:6px 0">Study a category first</h2>
+    <p class="muted">${what} uses the words you've studied in the last ${RECENT_DAYS} days. Learn a category in flash cards, then come back here to level the words up.</p>
+    <button class="btn primary" id="lvStudy" style="width:100%">Go to Due by category</button></div>`;
+  $("#lvStudy").onclick = ()=>goKey("weak");
+  return true;
+}
+function goLevelUp(where, cat){ state.settings.cat = cat; state.settings.hardOnly = false; save(); refreshCatFilter(); live.match = null; live.create = null; goKey(where); }
 function gradeEasy(card){
   const r = grade(card, true); if (r==="locked") return r;
   if (!isLocked(card) && card.box < INTERVALS.length-1){
@@ -1787,7 +1829,8 @@ function go(v){
   curView = v;
   document.querySelectorAll(".view").forEach(el=>el.classList.toggle("on", el.id==="v-"+v));
   $("#catbar").style.display = (["words","settings","speak","overview","hard","weak","mistakes","homework","gym"].includes(v) || (v==="study" && hardSess) || (v==="create" && (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep"))) ? "none" : "";
-  $("#hardBtn").style.display = v==="study" ? "none" : "";          // Study has no ♡ Hard only filter (hard words are practised from their own list)
+  $("#hardBtn").style.display = v==="study" || v==="match" || v==="create" ? "none" : "";
+  if (v==="match" || v==="create" || v==="study"){ if (v!=="study" && state.settings.hardOnly){ state.settings.hardOnly = false; save(); } refreshCatFilter(); }          // Study has no ♡ Hard only filter (hard words are practised from their own list)
   if (v==="study" && state.settings.hardOnly){ state.settings.hardOnly = false; save(); refreshCatFilter(); }
   paintNav();
   if (canResume(v)){ if (v==="create") paintCreateSeg(); return; }   // pick up where you left off
@@ -1865,6 +1908,15 @@ function nextStudy(){
     const next = pool().reduce((m,c)=>Math.min(m,c.due), Infinity);
     const when = isFinite(next) ? new Date(next).toLocaleString([], {weekday:"short", hour:"2-digit", minute:"2-digit"}) : "";
     const waiting = newWaiting(), lim = state.settings.newPerDay===0 ? 0 : (state.settings.newPerDay||15);
+    const did = sess.again + sess.got + sess.easy, catNow = state.settings.cat;
+    const rdy = did && catNow ? state.cards.filter(c=>inPick(c, catNow) && dayKey(lastSeen(c))===dayKey(Date.now()) && canLevelNow(c)).length : 0;
+    const head = (did ? `<div class="card center"><h2 style="margin:0 0 4px">🎉 Session done</h2><p class="muted" style="margin:0 0 10px">${catNow ? esc(catLabel(catNow)) + " · " : ""}${did} card${did===1?"":"s"}</p>${tallyHtml()}</div>` : "")
+      + (rdy ? `<section class="lv-next"><div class="hw-kicker" style="color:var(--good)">NEXT STEP</div><div class="hw-big">⬆ ${rdy} word${rdy===1?"":"s"} ready to level up</div>
+        <div class="small" style="opacity:.85">You've just studied them. Use them in Match or Writing while they're fresh and they go up a level.</div>
+        <div class="lv-btns"><button class="btn lv-a" id="lvMatch">Match</button><button class="btn lv-b" id="lvWrite">Writing</button></div></section>` : "")
+      + (did ? `<div class="row" style="margin-top:4px"><button class="btn" id="lvAnother">Another category</button><button class="btn" id="lvHome">🏠 Overview</button></div>` : "");
+    if (did){ el.innerHTML = head; if ($("#lvMatch")){ $("#lvMatch").onclick = ()=>goLevelUp("match", catNow); $("#lvWrite").onclick = ()=>goLevelUp("writing", catNow); }
+      $("#lvAnother").onclick = ()=>goKey("weak"); $("#lvHome").onclick = ()=>goKey("overview"); return; }
     el.innerHTML = `<div class="card center"><h2>🎉 All caught up</h2>
       ${waiting && lim ? `<p>You've learned today's <b>${newLog().ids.length}</b> new word${newLog().ids.length===1?"":"s"}.<br><span class="muted">${waiting} more waiting${state.settings.cat?` in ${esc(catLabel(state.settings.cat))}`:""}.</span></p>
         <div class="row" style="margin-bottom:10px"><button class="btn" id="more5">＋5 new words</button><button class="btn" id="more10">＋10 new words</button></div>` : ""}
@@ -1918,9 +1970,9 @@ function showStudyCard(){
   $("#sSay").onclick = ()=>say(c.fr);
   $("#sSlow").onclick = ()=>say(c.fr, true);
   if ($("#sEx")) $("#sEx").onclick = ()=>say(c.ex);
-  $("#again").onclick = ()=>{ logMistake({src:"study", q:c.en, right:c.fr, word:c.fr}); grade(c,false); sess.again++; studyQueue.push(c); nextStudy(); };
-  $("#gotit").onclick = ()=>{ grade(c,true); sess.got++; nextStudy(); };
-  $("#easy").onclick = ()=>{ gradeEasy(c); sess.easy++; nextStudy(); };
+  $("#again").onclick = ()=>{ c.seenAt = Date.now(); logMistake({src:"study", q:c.en, right:c.fr, word:c.fr}); grade(c,false); sess.again++; studyQueue.push(c); nextStudy(); };
+  $("#gotit").onclick = ()=>{ c.seenAt = Date.now(); grade(c,true); sess.got++; nextStudy(); };
+  $("#easy").onclick = ()=>{ c.seenAt = Date.now(); gradeEasy(c); sess.easy++; nextStudy(); };
   if ($("#endSess")) $("#endSess").onclick = ()=>{ sessLabel = ""; live.study = null; renderStudy(); };
   $("#sBackOv").onclick = ()=> hardSess ? backToHard() : goKey("overview");
   if ($("#lockGo")) $("#lockGo").onclick = ()=>writeWith([c]);
@@ -1974,9 +2026,15 @@ function renderOverview(){
     <section class="card">
       <div class="secthead"><h2>Due by category</h2>${dbc.length ? `<button class="linkbtn" id="ovWeak">See all</button>` : ""}</div>
       ${dbc.length ? dbcOvRows(dbc.slice(0,4)) + `<p class="muted small" style="margin:6px 0 0">Tap a category to study just those cards.</p>` : `<p class="muted small" style="margin:4px 0">Nothing due right now 🎉</p>`}
-    </section>`;
+    </section>
+    ${(()=>{ const rt = readyToday(); if (!rt.length) return ""; return `<section class="card lv-card"><div class="secthead" style="margin-bottom:4px"><h2>⬆ Ready to level up</h2><span class="small" style="color:var(--good)">studied today</span></div>
+      ${rt.slice(0,4).map(e=>`<button class="dcrow ov" data-lv="${esc(e.cat)}"><span class="dcn"><b>${esc(e.cat===CONJ_ALL ? "🔤 Conjugations" : e.label)}</b></span><span class="dcc lvc">${e.ready} word${e.ready===1?"":"s"}</span></button>`).join("")}
+      <div class="lv-btns"><button class="btn lv-a" id="ovLvM">Match</button><button class="btn lv-b" id="ovLvW">Writing</button></div>
+      <p class="muted small" style="margin:6px 0 0">Words you've studied can go up one level a day in Match or Writing.</p></section>`; })()}`;
   $("#ovStudy").onclick = ()=>{ state.settings.cat = ""; state.settings.hardOnly = false; save(); refreshCatFilter(); live.study = null; goKey("study"); };   // the Today card counts every category, so study them all
   if ($("#ovWeak")) $("#ovWeak").onclick = ()=>goKey("weak");
+  el.querySelectorAll("[data-lv]").forEach(b=>b.onclick = ()=>goLevelUp("match", b.dataset.lv));
+  if ($("#ovLvM")){ const first = readyToday()[0].cat; $("#ovLvM").onclick = ()=>goLevelUp("match", first); $("#ovLvW").onclick = ()=>goLevelUp("writing", first); }
   el.querySelectorAll("[data-dcat]").forEach(b=>b.onclick = ()=>practiseCat(b.dataset.dcat));
   if ($("#ovHw")) $("#ovHw").onclick = ()=>goKey("homework");
 }
@@ -2094,6 +2152,7 @@ function startMatch(){
   if (!matchChosen){ grid.innerHTML = ""; $("#mStats").innerHTML = ""; $("#matchInfo").textContent = "";
     $("#typeArea").innerHTML = `<div class="card center"><h2>🧩 Match</h2><p class="muted">Two games: tap pairs, or type the French.</p><button class="btn primary" id="mPick">Choose a game</button></div>`;
     $("#mPick").onclick = chooseMatchGame; chooseMatchGame(); return; }
+  if (levelGate($("#typeArea"), "Match")){ grid.innerHTML = ""; grid.hidden = true; $("#mStats").innerHTML = ""; $("#matchInfo").textContent = ""; return; }
   if (state.settings.matchMode==="type") return startType();
   $("#typeArea").innerHTML = ""; grid.hidden = false;
   $("#matchInfo").textContent = "🧩 Tap a French word, then its English meaning.";
@@ -2557,7 +2616,7 @@ function startCreate(){
   if (C.mode==="journal") return renderJournal();
   if (C.mode==="rewrite") return startRewrite();
   if (C.mode==="prep") return startPrep();
-  C.mode = "words"; return newChallenge();   // 🔒 3 words replaced About me
+  C.mode = "words"; refreshCatFilter(); if (levelGate($("#createArea"), "Writing")) return; return newChallenge();   // 🔒 3 words replaced About me
 }
 
 
