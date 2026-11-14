@@ -388,6 +388,8 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 .qz-inrow{display:flex;gap:8px;margin-top:12px}.qz-inrow .hw-in{margin-top:0;flex:1;min-width:0;text-align:left;font-size:18px}.qz-check{flex:0 0 auto;padding:0 18px;height:52px;font-weight:700}
 .qz-hintb{display:block;margin-top:8px}.qz-hint{margin-top:8px;font-size:13px;color:var(--muted);background:var(--surface2);border-radius:10px;padding:8px 10px}
 .qz-mist{width:100%;text-align:left;display:flex;flex-direction:column;gap:6px;font-size:14px;margin:10px 0 12px}.qz-mist>div{background:var(--surface2);border-radius:10px;padding:8px 10px}.qz-mist s{color:var(--bad)}
+.bookcard .hw-ol{font-size:14px}
+.qz-card .preprow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.qz-card .preprow.qz-col{grid-template-columns:1fr}.qz-card .prepo{min-width:0;width:100%;white-space:normal;overflow-wrap:anywhere}
 .hw-in{width:100%;box-sizing:border-box;margin-top:12px;height:52px;border-radius:14px;border:2px solid var(--border);background:var(--bg);color:var(--text);font:inherit;font-size:20px;padding:0 14px;text-align:center}
 .hw-acc{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;margin-top:8px}
 .hw-acc button{height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font:inherit;font-size:16px;padding:0}
@@ -537,8 +539,10 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
       <button class="srow" id="importBtn"><span class="lbl">Restore from backup</span><span class="chev">›</span></button>
       <button class="srow" id="csvInBtn"><span class="lbl">Import words from CSV</span><span class="chev">›</span></button>
       <button class="srow" id="csvOutBtn"><span class="lbl">Export words as CSV</span><span class="chev">›</span></button>
+      <button class="srow" id="bookBtn"><span class="lbl">📘 My book pack<span class="muted small" id="bookInfo"></span></span><span class="chev">›</span></button>
     </div>
     <input type="file" id="importFile" accept=".json,application/json" hidden>
+    <input type="file" id="bookFile" accept=".json,application/json" hidden>
 
     <div class="sgroup">START AGAIN</div>
     <div class="scard">
@@ -561,7 +565,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-14-5";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-14-6";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -723,7 +727,7 @@ function mistakePatterns(list){
   list.forEach(m=>{ const p = mistakePattern(m); if (!p || p.startsWith("word:")) return; by.set(p, (by.get(p)||[]).concat(m)); });
   const label = (p, ms) => {
     const last = ms[ms.length-1];
-    if (p.startsWith("tout") && p!=="tout-fixed") return `tout: ${HW_INFO[p].short.replace(/^You /,"you ")} (e.g. chose ${last.you} instead of ${last.right})`;
+    if (p.startsWith("tout") && p!=="tout-fixed" && HW_INFO[p]) return `tout: ${HW_INFO[p].short.replace(/^You /,"you ")} (e.g. chose ${last.you} instead of ${last.right})`;
     return `${(HW_INFO[p]||{}).short || p} (e.g. ${last.you ? `“${last.you}” instead of “${last.right}”` : last.right})`;
   };
   return [...by].map(([p, ms])=>({pat:p, n:ms.length, text:label(p, ms)})).sort((a,b)=>b.n-a.n);
@@ -876,14 +880,14 @@ function weakSpots(){
 }
 const checkupsDue = () => Object.entries(state.hw||{}).filter(([,r])=>r.status==="fixed" && r.checkAt && r.checkAt <= Date.now()).map(([p])=>p);
 const hwDaysDone = pat => Object.values(hwRec(pat).days||{}).filter(n=>n >= HW_DAY_RIGHT).length;
-function hwTitle(pat){ if (pat.startsWith("custom:")){ const c = (state.hwCustom||[]).find(x=>"custom:"+x.id===pat); return c ? c.title : "Worksheet from Claude"; } return (HW_INFO[pat]||{}).title || pat; }
+function hwTitle(pat){ if (pat.startsWith("book:")){ const t = bookTopic(pat.slice(5)); return t ? t.title : "From your book"; } if (pat.startsWith("custom:")){ const c = (state.hwCustom||[]).find(x=>"custom:"+x.id===pat); return c ? c.title : "Worksheet from Claude"; } return (HW_INFO[pat]||{}).title || pat; }
 function hwExample(w){
   if (w.custom) return `${w.custom.qs.length} questions from Claude`;
   if (w.words) return w.words.slice(0,3).map(x=>{ const c = state.cards.find(c=>norm(c.fr)===x.key); return `<b>${esc(c ? c.fr : x.last.word || x.last.right)}</b> ×${x.n}`; }).join(" · ");
   const m = w.list[w.list.length-1];
   if (!m) return "";
   const ex = m.src==="tout" || m.src==="ade" || m.src==="hw" || m.src==="gym" ? (m.q||"").replace(/\s*\(.*\)\s*$/,"").replace("___", `<s>${esc(m.you)}</s> <b class="okc">${esc(m.right)}</b>`) : `<s>${esc(m.you)}</s> → <b class="okc">${esc(m.right)}</b>`;
-  return `${esc(HW_INFO[w.pat].short)}: ${ex.includes("<") ? ex : esc(ex)}`;
+  return `${esc((HW_INFO[w.pat]||{}).short || "Mistakes")}: ${ex.includes("<") ? ex : esc(ex)}`;
 }
 
 /* ---------- questions for each kind of weak spot ---------- */
@@ -950,7 +954,32 @@ function mixKinds(qs){
   qs.forEach(q=>{ if (q.kind==="choice" && q.prompt.includes("___") && !/\//.test(q.answer) && q.answer.length <= 14 && (k++ % 3)===1){ q.kind = "type"; q.gap = true; } });
   return qs;
 }
+/* ---------- 📘 the book pack (only if you've added it in Settings) ---------- */
+const bookTopics = () => state.book ? state.book.units.flatMap(u=>u.topics.map(t=>({...t, unit:u}))) : [];
+const bookTopic = id => bookTopics().find(t=>t.id===id);
+const bookTopicsFor = pat => bookTopics().filter(t=>(t.pats||[]).some(p=>p===pat || (pat.startsWith("tout") && p.startsWith("tout")) || (pat.startsWith("ade") && p.startsWith("ade"))));
+const bookLabel = t => `Unité ${t.unit.n} · ${t.title}`;
+function qBook(t, n, pat){
+  return shuffle((t.qs||[]).slice()).slice(0, n).map(q=>{
+    const why = q.why || "", hint = /→/.test(why) ? why.split("→")[0].trim() : "";
+    let qp = pat || ((t.pats||[])[0]) || "book:"+t.id;
+    if (qp.startsWith("tout") && !TOUT_GN[q.a]) qp = "book:"+t.id;           // e.g. "Le samedi" in the tout topic
+    return {pat: qp, book: bookLabel(t), kind:"choice", prompt:q.s, en:"", options:shuffle([q.a, ...(q.wrong||[]).filter(x=>x!==q.a)].slice(0,4)), answer:q.a,
+      hint: hint && !norm(hint).includes(norm(q.a)) ? hint : "", explain: why ? esc(why) : "", say: q.s.includes("___") ? q.s.replace("___", q.a).replace(/\s*\([^)]*\)\s*$/,"") : ""};
+  });
+}
 function questionsFor(w, n){
+  const p = w.pat;
+  if (p.startsWith("book:")){ const t = bookTopic(p.slice(5)); return t ? qBook(t, n, p) : []; }
+  const bt = bookTopicsFor(p);
+  if (bt.length && !p.startsWith("custom:") && !p.startsWith("gym-")){         // with your book: about half the questions come from it
+    const fromBook = shuffle(bt.flatMap(t=>qBook(t, n, p))).slice(0, Math.ceil(n/2));
+    const own = questionsForApp(w, n);
+    return own.slice(0, n - fromBook.length).concat(fromBook);
+  }
+  return questionsForApp(w, n);
+}
+function questionsForApp(w, n){
   const p = w.pat;
   if (p.startsWith("custom:")) return qCustom(w.custom || (state.hwCustom||[]).find(c=>"custom:"+c.id===p) || {qs:[]}, n);
   if (p.startsWith("tout")) return qTout(p, n);
@@ -994,11 +1023,14 @@ function renderHomework(){
       ${hard.length ? hard.slice(0,3).map(c=>`<div class="hrow"><div class="w"><b>${esc(c.fr)}</b><span class="muted small">${esc(c.en)}</span></div><span class="small" style="color:var(--bad)">${missText(c)}</span></div>`).join("")
         + `<button class="btn primary" id="hwHardGo" style="width:100%;margin-top:8px">Practise hard words</button>`
         : `<p class="muted small" style="margin:6px 0 2px">No hard words right now 👍</p>`}</section>`; })()}
+    ${state.book ? `<section class="card" style="padding:14px"><div class="secthead" style="margin-bottom:4px"><h2 style="font-size:16px">📘 ${esc(state.book.title || "Your book")}</h2><span class="muted small">practise a unit</span></div>
+      ${state.book.units.map(u=>`<button class="dcrow ov" data-bu="${u.n}"><span class="dcn"><b>Unité ${u.n}</b><span class="muted small">${esc(u.title)}</span></span><span class="muted">›</span></button>`).join("")}</section>` : ""}
     <button class="card mistlink" id="hwMist"><span class="hw-ic">📝</span><span style="flex:1;text-align:left"><b>Mistake log</b><br><span class="muted small">All your mistakes</span></span><span class="muted">›</span></button>`;
   if ($("#hwStart")) $("#hwStart").onclick = ()=>openHwIntro({spots:spots.slice(0,4), make:buildWorksheet, label:"Homework"});
   if ($("#hwAny")) $("#hwAny").onclick = ()=>openHwIntro({spots:[{pat:"tout-fem", list:[]}, {pat:"ade-prep", list:[]}], make:()=>mixKinds(shuffle(qTout("tout-fem", 5).concat(qAde("ade-prep", 4), qToutSentence("tout-fem", 1)))), label:"Practice", practice:true});
   if ($("#hwHard")) $("#hwHard").onclick = ()=>goKey("hard");
   if ($("#hwHardGo")) $("#hwHardGo").onclick = ()=>startHard();
+  el.querySelectorAll("[data-bu]").forEach(b=>b.onclick = ()=>openBookUnit(+b.dataset.bu));
   $("#hwMist").onclick = ()=>goKey("mistakes");
 }
 function yourMistakesHtml(w){
@@ -1007,7 +1039,15 @@ function yourMistakesHtml(w){
   return `<section class="hw-yours"><div class="hw-kicker" style="color:var(--warn)">YOUR MISTAKES</div>
     ${list.map(m=>`<div>${m.src==="tout"||m.src==="ade"||m.src==="hw"||m.src==="gym" ? esc((m.q||"").replace(/\s*\(.*\)\s*$/,"")).replace("___", `<s>${esc(m.you)}</s> <b class="okc">${esc(m.right)}</b>`) : `${esc(m.q)}: <s>${esc(m.you||"—")}</s> <b class="okc">${esc(m.right)}</b>`}</div>`).join("")}</section>`;
 }
+const bookRuleHtml = t => `<section class="card bookcard"><div class="hw-kicker" style="color:var(--accent)">📘 FROM YOUR BOOK · UNITÉ ${t.unit.n}</div>
+  <b>${esc(t.title)}</b><ul class="hw-ol">${(t.rule||[]).map(r=>`<li>${esc(r)}</li>`).join("")}</ul>${t.ref ? `<div class="muted small" style="margin-top:6px">${esc(t.ref)}</div>` : ""}</section>`;
 function lessonBody(w){
+  const p = w.pat;
+  if (p.startsWith("book:")){ const t = bookTopic(p.slice(5)); return t ? bookRuleHtml(t) : ""; }
+  const bt = w.custom ? [] : bookTopicsFor(p);
+  return lessonBodyApp(w) + bt.slice(0, 2).map(bookRuleHtml).join("");
+}
+function lessonBodyApp(w){
   const p = w.pat;
   if (p.startsWith("tout")){
     const want = new Set((weakSpots().filter(x=>x.pat.startsWith("tout")).flatMap(x=>(HW_INFO[x.pat]||{}).want||[])));
@@ -1049,8 +1089,20 @@ function introLine(w){
   if (w.pat==="tout-pl") return `You used the singular ${r} time${r===1?"":"s"} when the word after it was plural.`;
   return r ? `${info.short || "Mistakes"}: ${r} time${r===1?"":"s"} in the last two weeks.` : (info.short || "");
 }
+function openBookUnit(n){
+  const u = (state.book && state.book.units.find(x=>x.n===n)); if (!u) return;
+  const make = ()=>{ const pools = u.topics.map(t=>qBook({...t, unit:u}, 10)); const qs = []; while (qs.length < 12 && pools.some(x=>x.length)) pools.forEach(x=>{ if (x.length && qs.length < 12) qs.push(x.shift()); }); return mixKinds(shuffle(qs)); };
+  openHwIntro({unit:u, spots:[], make, label:"Practice", practice:true});
+}
 function renderHwIntro(el){
-  const H = HWV, sp = H.spots || [], main = sp[0] || {pat:""}, nQ = H.qs.length;
+  const H = HWV;
+  if (H.unit){ const u = H.unit, nQ = H.qs.length;
+    el.innerHTML = `<section class="hw-hero"><div class="hw-kicker">📘 UNITÉ ${u.n}</div><div class="hw-big">${esc(u.title)}</div>
+      <div class="hw-sub">${u.topics.length} topics from your book · questions from the Cahier</div>
+      <button class="btn hw-start" id="hwGo">Start · ${nQ} questions</button></section>
+      ${u.topics.map(t=>bookRuleHtml({...t, unit:u})).join("")}`;
+    $("#hwGo").onclick = ()=>startHwPractice(H.qs, H.label, H); return; }
+  const sp = H.spots || [], main = sp[0] || {pat:""}, nQ = H.qs.length;
   const allMist = { list: sp.flatMap(w=>w.list||[]).sort((a,b)=>a.at-b.at) };
   const seen = new Set(), rules = sp.filter(w=>{ const g = (HW_INFO[w.pat]||{}).group || w.pat; if (seen.has(g)) return false; seen.add(g); return true; }).slice(0, 2);
   el.innerHTML = `
@@ -1143,7 +1195,7 @@ function quizAnswer(el, P, O, q, a, ok, nearAccent){
   if (full) say(full);
 }
 const HW_QUIZ = {
-  kicker: q => (q.checkup ? "Check-up · " : "") + (q.pat.startsWith("custom:") || q.pat.startsWith("gym-") ? hwTitle(q.pat) : (HW_INFO[q.pat]||{}).short || hwTitle(q.pat)),
+  kicker: q => (q.checkup ? "Check-up · " : "") + (q.book ? q.book : q.pat.startsWith("custom:") || q.pat.startsWith("gym-") ? hwTitle(q.pat) : (HW_INFO[q.pat]||{}).short || hwTitle(q.pat)),
   quit: ()=>{ HWV = {view:"list"}; renderHomework(); },
   rerender: ()=>renderHomework(),
   onAnswer: (q, a, ok, nearAccent)=>{
@@ -4264,6 +4316,7 @@ function deleteSelected(){
 /* ---------- SETTINGS ---------- */
 function renderSettings(){
   $("#appVer").textContent = "App version " + APP_VERSION.replace(/^ff-/,"");
+  paintBookInfo();
   $("#lenient").checked = !!state.settings.lenient;
   $("#lockChk").checked = !!state.settings.lock;
   $("#themeSel").value = state.settings.theme || "auto"; paintThemeSeg();
@@ -4327,14 +4380,36 @@ function maybeBackupNudge(){
   $("#bkNow").onclick = ()=>{ exportBackup(); closeModal(); };
   $("#bkLater").onclick = ()=>{ S.backupSnooze = now + DAY; save(); closeModal(); };
 }
+/* ---------- 📘 private book pack: kept only on this phone (inside your data + backups), never in the app's code ---------- */
+const isBookPack = b => !!b && typeof b==="object" && Array.isArray(b.units) && b.units.every(u=>Array.isArray(u.topics));
+function addBook(b){
+  state.book = b; save(); paintBookInfo();
+  const n = b.units.reduce((s,u)=>s+u.topics.reduce((t,x)=>t+(x.qs||[]).length,0),0);
+  toast(`📘 ${b.title || "Book"} added: ${b.units.length} units, ${n} questions`);
+}
+function paintBookInfo(){ const el = $("#bookInfo"); if (el) el.textContent = state.book ? `${state.book.title || "Book"} added · ${state.book.units.length} units · only on this phone` : "Add your book file to use it in Homework"; }
+$("#bookBtn").onclick = ()=>{
+  if (!state.book){ $("#bookFile").click(); return; }
+  openModal(`<h2 style="margin:0 0 6px">📘 ${esc(state.book.title || "Book")}</h2><p class="muted small" style="margin:0 0 12px">Saved only on this phone. It's in your backups too.</p>
+    <div class="row"><button class="btn" id="bkRemove" style="color:var(--bad)">Remove</button><button class="btn" id="bkReplace">Replace</button><button class="btn primary" id="bkClose">Close</button></div>`);
+  $("#bkClose").onclick = closeModal;
+  $("#bkReplace").onclick = ()=>{ closeModal(); $("#bookFile").click(); };
+  $("#bkRemove").onclick = ()=>{ if (!confirm("Remove the book from this phone? You can add the file again any time.")) return; delete state.book; save(); closeModal(); paintBookInfo(); toast("Book removed"); };
+};
+$("#bookFile").onchange = e=>{
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{ try { const b = JSON.parse(r.result); if (!isBookPack(b)) throw 0; addBook(b); } catch(err){ toast("That file isn't a book pack"); } };
+  r.readAsText(f); e.target.value = "";
+};
 $("#csvInBtn").onclick = pickCSV;
 $("#csvOutBtn").onclick = exportCSV;
 $("#importBtn").onclick = ()=>$("#importFile").click();
 $("#importFile").onchange = e=>{
   const f = e.target.files[0]; if (!f) return;
   const r = new FileReader();
-  r.onload = ()=>{ try{ const s = JSON.parse(r.result); if (!Array.isArray(s.cards)) throw 0;
-      state = fixup({cards:s.cards, cats:s.cats, settings:s.settings, journal:s.journal, newLog:s.newLog}); save(); renderWords(); toast("Backup restored"); }
+  r.onload = ()=>{ try{ const s = JSON.parse(r.result); if (isBookPack(s)){ addBook(s); return; } if (!Array.isArray(s.cards)) throw 0;
+      state = fixup({cards:s.cards, cats:s.cats, settings:s.settings, journal:s.journal, newLog:s.newLog, book: isBookPack(s.book) ? s.book : state.book}); save(); renderWords(); toast("Backup restored"); }
     catch(err){ toast("That file isn't a valid backup"); } };
   r.readAsText(f); e.target.value="";
 };
