@@ -383,6 +383,11 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 :root[data-theme="light"] .hw-why{background:#efe9ff;border-color:#b9a6f2}
 .hw-whyo{min-height:44px;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid #5a43a8;background:transparent;color:var(--text);font:inherit;font-size:15px;cursor:pointer}
 .hw-whyo.ok{border:2px solid var(--good);background:rgba(60,207,125,.12)}.hw-whyo.no{border:2px solid var(--bad)}
+.qz-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px}.qz-kind{font-size:11.5px;font-weight:700;letter-spacing:.4px;color:var(--muted)}.qz-topic{font-size:11.5px;font-weight:600;color:var(--accent);text-align:right}
+.qz-gap{display:inline-block;min-width:64px;border-bottom:2px solid var(--accent);text-align:center;letter-spacing:0!important}.qz-gap.badc{color:var(--bad)}
+.qz-inrow{display:flex;gap:8px;margin-top:12px}.qz-inrow .hw-in{margin-top:0;flex:1;min-width:0;text-align:left;font-size:18px}.qz-check{flex:0 0 auto;padding:0 18px;height:52px;font-weight:700}
+.qz-hintb{display:block;margin-top:8px}.qz-hint{margin-top:8px;font-size:13px;color:var(--muted);background:var(--surface2);border-radius:10px;padding:8px 10px}
+.qz-mist{width:100%;text-align:left;display:flex;flex-direction:column;gap:6px;font-size:14px;margin:10px 0 12px}.qz-mist>div{background:var(--surface2);border-radius:10px;padding:8px 10px}.qz-mist s{color:var(--bad)}
 .hw-in{width:100%;box-sizing:border-box;margin-top:12px;height:52px;border-radius:14px;border:2px solid var(--border);background:var(--bg);color:var(--text);font:inherit;font-size:20px;padding:0 14px;text-align:center}
 .hw-acc{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px;margin-top:8px}
 .hw-acc button{height:38px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font:inherit;font-size:16px;padding:0}
@@ -556,7 +561,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-14-3";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-14-4";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -885,13 +890,13 @@ function hwExample(w){
 const WHY_GN = {ms:"masculine, just one", fs:"feminine, just one", mp:"masculine, more than one", fp:"feminine, more than one"};
 function qTout(pat, n){
   const want = (HW_INFO[pat]||{}).want || [];
-  if (pat==="tout-fixed") return shuffle(TOUT_FIXED.slice()).slice(0, n).map(([s,en])=>({pat, kind:"choice", prompt:s, en, options:["tout","toute","tous","toutes"], answer:"tout",
+  if (pat==="tout-fixed") return shuffle(TOUT_FIXED.slice()).slice(0, n).map(([s,en])=>({pat, kind:"choice", prompt:s, en, options:["tout","toute","tous","toutes"], answer:"tout", hint:"It's a set phrase",
       why:{q:"Why is it tout?", options:["It's a set phrase — it never changes","The next word is masculine","The next word is plural"], answer:0}, say:s.replace("___","tout")}));
   const pool = shuffle(TOUT_BANK.slice());
   const pick = pool.filter(x=>want.includes(x[3])).slice(0, Math.ceil(n*0.7)).concat(pool.filter(x=>!want.includes(x[3]))).slice(0, n);
   return shuffle(pick).map(([s,en,np,g])=>({pat, kind:"choice", prompt:s, en, options:["tout","toute","tous","toutes"], answer:TOUT_FORMS[g],
     why:{q:`Why is it ${TOUT_FORMS[g]}?`, options:shuffle(Object.values(WHY_GN)).map(x=>`${np.replace(/^(les|la|le|l'|mes|tes|ses)\s?/,"")} is ${x}`), answerText:`${np.replace(/^(les|la|le|l'|mes|tes|ses)\s?/,"")} is ${WHY_GN[g]}`},
-    explain:`<i>${esc(np)}</i> ${TOUT_WHY[g]}`, say:s.replace("___", TOUT_FORMS[g])}));
+    explain:`<i>${esc(np)}</i> ${TOUT_WHY[g]}`, hint:`${np} → ${WHY_GN[g]}`, say:s.replace("___", TOUT_FORMS[g])}));
 }
 function qAde(pat, n){
   return buildPrepQs().slice(0, n).map(q=>{
@@ -900,7 +905,7 @@ function qAde(pat, n){
     const why = pat==="ade-prep"
       ? {q:`Why ${q.prep}?`, options:shuffle([q.why.replace(/<[^>]+>/g,""), ...shuffle(Object.values(PREP_BANK).map(b=>b.why.replace(/<[^>]+>/g,"")).filter(w=>w!==q.why.replace(/<[^>]+>/g,""))).slice(0,2)]), answerText:q.why.replace(/<[^>]+>/g,"")}
       : {q:`Why ${right}?`, options:shuffle(Object.entries(PREP_ART).map(([a,t])=>`${q.noun} ${t.replace(/<[^>]+>/g,"")}`)), answerText:`${q.noun} ${PREP_ART[q.art].replace(/<[^>]+>/g,"")}`};
-    return {pat, prep:q.prep, art:q.art, kind:"choice", prompt:`${q.pre} ___ ${q.noun}.`, en:q.en, options:opts, answer:right, why, explain:`${q.why} · <i>${esc(q.art==="l'"?"l'"+q.noun:q.art+" "+q.noun)}</i> ${PREP_ART[q.art]} · ${q.prep} + ${q.art} = <b>${esc(right)}</b>`, say:full};
+    return {pat, prep:q.prep, art:q.art, kind:"choice", prompt:`${q.pre} ___ ${q.noun}.`, en:q.en, options:opts, answer:right, why, hint:`${q.art==="l'"?"l'"+q.noun:q.art+" "+q.noun} ${PREP_ART[q.art].split(" → ")[0]}`, explain:`${q.why} · <i>${esc(q.art==="l'"?"l'"+q.noun:q.art+" "+q.noun)}</i> ${PREP_ART[q.art]} · ${q.prep} + ${q.art} = <b>${esc(right)}</b>`, say:full};
   });
 }
 const GENDER_TIPS = [[/(tion|sion|té|ure|ette|ance|ence|ée|ie|ude)$/, "f", "Words ending in -tion, -té, -ure, -ette, -ance/-ence are usually feminine."],
@@ -928,6 +933,23 @@ function qWords(w, n){
 function qCustom(c, n){
   return shuffle(c.qs.slice()).slice(0, n).map(q=>({pat:"custom:"+c.id, kind:"choice", prompt:q.s, en:q.en||"", options:shuffle([q.a, ...q.wrong]), answer:q.a, explain:q.why ? esc(q.why) : "", say:q.s.replace("___", q.a)}));
 }
+/* "write it in French" phrases for tout (English → French) */
+const TOUT_PHRASES = [["every day","tous les jours","mp","un jour"],["every week","toutes les semaines","fp","une semaine"],["all day","toute la journée","fs","une journée"],
+  ["all night","toute la nuit","fs","une nuit"],["all the time","tout le temps","ms","le temps"],["every morning","tous les matins","mp","un matin"],["all evening","toute la soirée","fs","une soirée"],
+  ["every year","tous les ans","mp","un an"],["every evening","tous les soirs","mp","un soir"],["all the girls","toutes les filles","fp","une fille"],["the whole house","toute la maison","fs","une maison"],
+  ["the whole world","tout le monde","ms","le monde"],["every weekend","tous les week-ends","mp","un week-end"],["all the windows","toutes les fenêtres","fp","une fenêtre"]];
+function qToutSentence(pat, n){
+  const want = (HW_INFO[pat]||{}).want || [];
+  const pool = shuffle(TOUT_PHRASES.slice()), pick = pool.filter(x=>want.includes(x[2])).concat(pool.filter(x=>!want.includes(x[2]))).slice(0, n);
+  return pick.map(([en, fr, g, one])=>({pat, kind:"type", sentence:true, prompt:`Write in French: ${en}`, en:"Use the article too.", answer:fr, hint:`${one} → ${WHY_GN[g].split(",")[0]}`,
+    explain:`<i>${esc(fr.split(" ").slice(1).join(" "))}</i> ${TOUT_WHY[g]}`, say:fr}));
+}
+/* mix the kinds of question: some "tap the right word" become "write the missing word" */
+function mixKinds(qs){
+  let k = 0;
+  qs.forEach(q=>{ if (q.kind==="choice" && q.prompt.includes("___") && !/\//.test(q.answer) && q.answer.length <= 14 && (k++ % 3)===1){ q.kind = "type"; q.gap = true; } });
+  return qs;
+}
 function questionsFor(w, n){
   const p = w.pat;
   if (p.startsWith("custom:")) return qCustom(w.custom || (state.hwCustom||[]).find(c=>"custom:"+c.id===p) || {qs:[]}, n);
@@ -945,7 +967,9 @@ function buildWorksheet(){
   checks.forEach(p=>{ questionsFor({pat:p}, 2).forEach(q=>{ q.checkup = true; qs.push(q); }); });
   const pools = spots.map(w=>questionsFor(w, 10));                       // then take turns between weak spots until there are 10
   while (qs.length < 10 && pools.some(x=>x.length)) pools.forEach(x=>{ if (x.length && qs.length < 10) qs.push(x.shift()); });
-  return shuffle(qs);
+  const tout = spots.find(w=>w.pat.startsWith("tout") && w.pat!=="tout-fixed");     // a couple of "write it in French" for tout
+  if (tout) qToutSentence(tout.pat, 2).forEach((q,i)=>{ const j = qs.findIndex(x=>x.pat===tout.pat && x.kind==="choice"); if (j>=0) qs[j] = q; else if (qs.length < 12) qs.push(q); });
+  return mixKinds(shuffle(qs));
 }
 /* ---------- the pages ---------- */
 let HWV = {view:"list"};
@@ -953,6 +977,7 @@ function renderHomework(){
   const el = $("#hwArea");
   if (HWV.view==="lesson") return renderHwLesson(el);
   if (HWV.view==="practice") return renderHwPractice(el);
+  if (HWV.view==="intro") return renderHwIntro(el);
   const spots = weakSpots(), checks = checkupsDue();
   const nQ = Math.min(10, spots.length*5 + checks.length*2);
   el.innerHTML = `
@@ -970,8 +995,8 @@ function renderHomework(){
         + `<button class="btn" id="hwHard" style="width:100%;margin-top:8px">See all ${hard.length} hard word${hard.length===1?"":"s"}</button>`
         : `<p class="muted small" style="margin:6px 0 2px">No hard words right now 👍</p>`}</section>`; })()}
     <button class="card mistlink" id="hwMist"><span class="hw-ic">📝</span><span style="flex:1;text-align:left"><b>Mistake log</b><br><span class="muted small">All your mistakes</span></span><span class="muted">›</span></button>`;
-  if ($("#hwStart")) $("#hwStart").onclick = ()=>startHwPractice(buildWorksheet(), "Homework");
-  if ($("#hwAny")) $("#hwAny").onclick = ()=>startHwPractice(shuffle(qTout("tout-fem", 5).concat(qAde("ade-prep", 5))), "Practice");
+  if ($("#hwStart")) $("#hwStart").onclick = ()=>openHwIntro({spots:spots.slice(0,4), make:buildWorksheet, label:"Homework"});
+  if ($("#hwAny")) $("#hwAny").onclick = ()=>openHwIntro({spots:[{pat:"tout-fem", list:[]}, {pat:"ade-prep", list:[]}], make:()=>mixKinds(shuffle(qTout("tout-fem", 5).concat(qAde("ade-prep", 4), qToutSentence("tout-fem", 1)))), label:"Practice", practice:true});
   if ($("#hwHard")) $("#hwHard").onclick = ()=>goKey("hard");
   $("#hwMist").onclick = ()=>goKey("mistakes");
 }
@@ -1001,7 +1026,7 @@ function lessonBody(w){
         <p class="small"><b>tout</b> = "very": <i>tout petit</i>, but <i>toute petite</i> before a feminine word starting with a consonant.</p>
         <p class="small">Set phrases never change: <i>tout de suite, à tout à l'heure, pas du tout, c'est tout</i>.</p></section>`;
   }
-  if (p.startsWith("ade")) return `<section class="card">${prepRuleHtml()}</section>`;
+  if (p.startsWith("ade")) return prepRuleHtml().replace('style="margin-top:10px"', 'style="margin-bottom:12px"');
   if (p.startsWith("gym-")) return gymRuleHtml(gymTopic(p.slice(4)));
   if (p==="gender") return `<section class="card"><b>le or la?</b><p class="small">There's no rule for every word, so always learn a noun <b>with</b> its article (la chaise, not chaise). These endings help:</p>
       <ul class="hw-ol"><li><b>Usually feminine:</b> -tion, -sion, -té, -ure, -ette, -ance, -ence, -ée</li><li><b>Usually masculine:</b> -age, -ment, -eau, -isme, -oir</li></ul>
@@ -1014,6 +1039,29 @@ function lessonBody(w){
   if (w.custom) return `<section class="card"><b>${esc(w.custom.title)}</b><p class="small muted">A worksheet from Claude · ${w.custom.qs.length} questions.</p>${w.custom.note ? `<p class="small">${esc(w.custom.note)}</p>` : ""}</section>`;
   return "";
 }
+/* the worksheet's start screen: what you keep getting wrong, the rule, then Start */
+function openHwIntro(o){ const qs = o.make(); if (!qs.length){ toast("Nothing to practise yet"); return; } HWV = {view:"intro", ...o, qs}; renderHomework(); window.scrollTo(0,0); }
+function introLine(w){
+  const r = (w.list||[]).length, info = HW_INFO[w.pat] || {};
+  if (w.custom) return `${w.custom.qs.length} questions from Claude.`;
+  if (w.pat==="tout-fem") return r ? `You picked the masculine form ${r} time${r===1?"":"s"} when the word after it was feminine.` : "tout changes to match the word after it.";
+  if (w.pat==="tout-pl") return `You used the singular ${r} time${r===1?"":"s"} when the word after it was plural.`;
+  return r ? `${info.short || "Mistakes"}: ${r} time${r===1?"":"s"} in the last two weeks.` : (info.short || "");
+}
+function renderHwIntro(el){
+  const H = HWV, sp = H.spots || [], main = sp[0] || {pat:""}, nQ = H.qs.length;
+  const allMist = { list: sp.flatMap(w=>w.list||[]).sort((a,b)=>a.at-b.at) };
+  const seen = new Set(), rules = sp.filter(w=>{ const g = (HW_INFO[w.pat]||{}).group || w.pat; if (seen.has(g)) return false; seen.add(g); return true; }).slice(0, 2);
+  el.innerHTML = `
+    <section class="hw-hero">
+      <div class="hw-kicker">${H.practice ? "PRACTICE" : "TODAY'S WORKSHEET"}</div>
+      <div class="hw-big">${esc(sp.length > 1 && !H.practice ? sp.slice(0,2).map(w=>hwTitle(w.pat)).join(" + ") : H.practice ? "tout & à / de" : hwTitle(main.pat))}</div>
+      <div class="hw-sub">${H.practice ? "No homework today, so here's some extra practice." : esc(introLine(main).replace(/<[^>]+>/g,""))}</div>
+      <button class="btn hw-start" id="hwGo">Start · ${nQ} question${nQ===1?"":"s"}</button></section>
+    ${yourMistakesHtml(allMist)}
+    ${rules.map(w=>lessonBody(w)).join("")}`;
+  $("#hwGo").onclick = ()=>startHwPractice(H.qs, H.label, H);
+}
 function renderHwLesson(el){
   const w = HWV.spot, d = hwDaysDone(w.pat);
   el.innerHTML = `<button class="linkbtn" id="hwBack">← My homework</button>
@@ -1022,11 +1070,11 @@ function renderHwLesson(el){
     ${yourMistakesHtml(w)}${lessonBody(w)}
     <button class="btn primary" id="hwGo" style="width:100%">Practise this · 8 questions</button>`;
   $("#hwBack").onclick = ()=>{ HWV = {view:"list"}; renderHomework(); };
-  $("#hwGo").onclick = ()=>{ const qs = questionsFor(w, 8); if (!qs.length){ toast("Not enough words for this one yet"); return; } startHwPractice(qs, hwTitle(w.pat)); };
+  $("#hwGo").onclick = ()=>{ const qs = mixKinds(questionsFor(w, 8)); if (!qs.length){ toast("Not enough words for this one yet"); return; } startHwPractice(qs, hwTitle(w.pat)); };
 }
-function startHwPractice(qs, label){
+function startHwPractice(qs, label, from){
   if (!qs.length){ toast("Nothing to practise yet"); return; }
-  HWV = {view:"practice", qs, i:0, right:0, label, stage:"answer"}; renderHomework(); window.scrollTo(0,0);
+  HWV = {view:"practice", qs, i:0, right:0, label, stage:"answer", wrongs:[], from}; renderHomework(); window.scrollTo(0,0);
 }
 function hwLog(pat, ok){
   const r = hwRec(pat), k = dayKey(Date.now());
@@ -1041,36 +1089,42 @@ function hwLog(pat, ok){
     if (pat.startsWith("custom:")){ const c = (state.hwCustom||[]).find(x=>"custom:"+x.id===pat); if (c) c.done = true; } }
 }
 /* ---------- one quiz screen shared by Homework and the Grammar gym ---------- */
+const KIND_LABEL = q => q.kind==="type" ? (q.sentence ? "Write it in French" : q.gap ? "Write the missing word" : "Type it in French") : "Tap the right word";
+const cmpAns = t => norm(String(t).replace(/[’`]/g,"'")).replace(/[.!?,;:«»"]+/g,"").replace(/\s+/g," ").trim();
 function renderPractice(el, P, O){
   if (P.i >= P.qs.length){ el.innerHTML = O.endHtml(P); O.wireEnd(P); return; }
   const q = P.qs[P.i];
   const parts = q.prompt.split("___");
+  const hint = q.kind==="type" ? (q.hint || (q.gap || !q.sentence ? `Starts with “${q.answer.split("/")[0].trim()[0]}” · ${q.answer.split("/")[0].trim().length} letters` : "")) : "";
   el.innerHTML = `<div class="row" style="align-items:center;margin-bottom:6px"><button class="linkbtn" id="qzQuit">✕ Stop</button><span style="flex:1"></span><span class="muted small">${P.i+1} / ${P.qs.length}</span></div>
     <div class="progress"><div style="width:${P.i/P.qs.length*100}%"></div></div>
-    <div class="hw-kicker" style="margin:10px 0 6px">${esc(O.kicker(q).toUpperCase())}</div>
-    <section class="card">
-      <div class="prepq${q.big?" hw-bigq":""}${q.sentences?" qz-sent":""}">${parts.length>1 ? `${esc(parts[0])}<span class="gap">___</span>${esc(parts[1])}` : esc(q.prompt)}</div>
+    <section class="card qz-card">
+      <div class="qz-top"><span class="qz-kind">${esc(KIND_LABEL(q).toUpperCase())}</span><span class="qz-topic">${esc(O.kicker(q))}</span></div>
+      <div class="prepq${q.big?" hw-bigq":""}${q.sentences?" qz-sent":""}">${parts.length>1 ? `${esc(parts[0])}<span class="gap qz-gap">${q.kind==="type"?"&nbsp;":"___"}</span>${esc(parts[1])}` : esc(q.prompt)}</div>
       ${q.en ? `<div class="muted small" style="margin-top:4px">${esc(q.en)}</div>` : ""}
-      ${q.kind==="type" ? `<input type="text" id="hwIn" class="hw-in" autocomplete="off" autocapitalize="off" placeholder="Type the French…">${accentBar("hwIn")}<button class="btn primary" id="hwCheck" style="width:100%;margin-top:8px">Check</button>`
+      ${q.kind==="type" ? `<div class="qz-inrow"><input type="text" id="hwIn" class="hw-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${q.sentence ? "Type it in French" : q.gap ? "Type the word" : "Type the French…"}"><button class="btn qz-check" id="hwCheck">Check</button></div>${accentBar("hwIn")}
+        ${hint ? `<button class="linkbtn qz-hintb" id="hwHint">💡 Show a hint</button><div class="qz-hint" id="hwHintBox" hidden>Hint: ${esc(hint)}</div>` : ""}`
         : `<div class="prepopts"><div class="preprow${q.sentences?" qz-col":""}">${q.options.map(o=>`<button class="prepo" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`}
       <div id="hwFb"></div>
     </section>`;
   $("#qzQuit").onclick = ()=>{ if (confirm("Stop here? Your answers so far still count.")) O.quit(); };
+  if ($("#hwHint")) $("#hwHint").onclick = ()=>{ $("#hwHintBox").hidden = false; $("#hwHint").hidden = true; q.hinted = true; };
   if (q.kind==="type"){
     const inp = $("#hwIn"); wireAccentBar("hwIn"); setTimeout(()=>inp.focus(), 50);
-    const check = ()=>{ if (!inp.value.trim() || q.answered) return; const a = inp.value.trim(), alts = q.answer.split("/").map(s=>norm(s.trim()));
-      const ok = alts.includes(norm(a)); quizAnswer(el, P, O, q, a, ok, !ok && alts.some(x=>strip(x)===strip(norm(a)))); inp.readOnly = true; };
+    const check = ()=>{ if (!inp.value.trim() || q.answered) return; const a = inp.value.trim(), alts = q.answer.split("/").map(x=>cmpAns(x));
+      const ok = alts.includes(cmpAns(a)); quizAnswer(el, P, O, q, a, ok, !ok && alts.some(x=>strip(x)===strip(cmpAns(a)))); inp.readOnly = true; $("#hwCheck").disabled = true; };
     $("#hwCheck").onclick = check; inp.onkeydown = e=>{ if (e.key==="Enter") check(); };
   } else el.querySelectorAll(".prepo").forEach(b=>b.onclick = ()=>quizAnswer(el, P, O, q, b.dataset.a, b.dataset.a===q.answer));
 }
 function quizAnswer(el, P, O, q, a, ok, nearAccent){
   if (q.answered) return; q.answered = true;
-  if (ok) P.right++;
+  if (ok) P.right++; else (P.wrongs = P.wrongs || []).push({q, a});
+  if (q.kind==="type" && q.gap){ const g = document.querySelector(".qz-gap"); if (g){ g.textContent = q.answer; g.classList.add(ok ? "okc" : "badc"); } }
   O.onAnswer(q, a, ok, nearAccent);
   save();
   document.querySelectorAll(".prepo").forEach(b=>{ b.disabled = true; if (b.dataset.a===q.answer) b.classList.add("ok"); else if (b.dataset.a===a) b.classList.add("no"); });
   const full = q.say || "";
-  $("#hwFb").innerHTML = `<div class="fb ${ok?"ok":"no"}" style="margin-top:12px">${ok ? "✅ Right!" : `Not quite — it's <b>${esc(q.answer)}</b>`}</div>
+  $("#hwFb").innerHTML = `<div class="fb ${ok?"ok":"no"}" style="margin-top:12px">${ok ? "✅ Right!" : nearAccent ? `Nearly — check the accents: <b>${esc(q.answer)}</b>` : `Not quite — it's <b>${esc(q.answer)}</b>`}${!ok && q.kind==="type" ? `<div class="small" style="font-weight:500;margin-top:4px">You wrote: <s>${esc(a)}</s></div>` : ""}</div>
     ${q.why && ok ? `<div class="hw-why"><div class="hw-kicker" style="color:#c9b6ff">NOW: ${esc(q.why.q.toUpperCase())}</div>
       ${q.why.options.map((o,i)=>`<button class="hw-whyo" data-w="${i}">${esc(o)}</button>`).join("")}</div>` : ""}
     ${!ok || !q.why ? `${q.explain ? `<div class="small" style="margin-top:10px">${q.explain}</div>` : ""}` : ""}
@@ -1098,12 +1152,18 @@ const HW_QUIZ = {
     if (!ok) logMistake({src:"hw", q:q.prompt + (q.en ? ` (${q.en})` : ""), you:a, right:q.answer, pat: patOfAnswer(q, a), word:q.answer, kind: nearAccent ? "accents only" : "wrong"});
     if (q.card){ const c = state.cards.find(c=>c.id===q.card); if (c && !ok){ c.wrong++; registerMiss(c); } }
   },
-  endHtml: P => { const fixed = [...new Set(P.fixed||[])];
-    return `<section class="card center"><h2>${P.right===P.qs.length ? "Perfect! 🌟" : "Homework done ✓"}</h2>
-      <p style="font-size:28px;font-weight:700;margin:4px 0">${P.right} / ${P.qs.length}</p>
-      ${fixed.length ? `<p class="okc"><b>Fixed: ${fixed.map(p=>esc(hwTitle(p))).join(", ")}</b> — it'll come back once next week to check.</p>` : `<p class="muted small">Get ${HW_DAY_RIGHT}+ right on ${HW_DAYS} different days to fix a weak spot.</p>`}
-      <button class="btn primary" id="hwDone" style="width:100%">Back to My homework</button></section>`; },
-  wireEnd: ()=>{ $("#hwDone").onclick = ()=>{ HWV = {view:"list"}; renderHomework(); }; },
+  endHtml: P => { const fixed = [...new Set(P.fixed||[])], W = P.wrongs || [];
+    const line = ({q, a}) => q.prompt.includes("___") ? esc(q.prompt).replace("___", `<s>${esc(a)}</s> <b class="okc">${esc(q.answer)}</b>`) : `${esc(q.prompt)}: <s>${esc(a)}</s> <b class="okc">${esc(q.answer)}</b>`;
+    return `<section class="card center qz-res">
+      <div class="hw-kicker" style="color:var(--accent)">${P.label==="Practice" ? "PRACTICE DONE" : "WORKSHEET DONE"}</div>
+      <p style="font-size:40px;font-weight:700;margin:4px 0">${P.right} / ${P.qs.length}</p>
+      ${fixed.length ? `<p class="okc"><b>Fixed: ${fixed.map(p=>esc(hwTitle(p))).join(", ")}</b> — it'll come back once next week to check.</p>`
+        : `<p class="muted small">${P.right===P.qs.length ? "Perfect! 🌟 " : "Keep going. "}Get ${HW_DAY_RIGHT}+ right on ${HW_DAYS} different days to fix a weak spot.</p>`}
+      ${W.length ? `<div class="qz-mist"><b>Your mistakes today</b>${W.map(x=>`<div>${line(x)}</div>`).join("")}</div>` : ""}
+      ${P.from && P.from.make ? `<button class="btn primary" id="hwAgain" style="width:100%">Try again</button>` : ""}
+      <button class="btn" id="hwDone" style="width:100%;margin-top:8px">Back to homework</button></section>`; },
+  wireEnd: P=>{ $("#hwDone").onclick = ()=>{ HWV = {view:"list"}; renderHomework(); window.scrollTo(0,0); };
+    if ($("#hwAgain")) $("#hwAgain").onclick = ()=>{ const f = P.from, qs = f.make(); startHwPractice(qs, f.label, f); }; },
 };
 function renderHwPractice(el){ renderPractice(el, HWV, HW_QUIZ); }
 /* the mistake "pattern" for a wrong answer */
