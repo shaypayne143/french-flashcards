@@ -561,7 +561,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-14-4";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-14-5";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -990,14 +990,15 @@ function renderHomework(){
       <p class="muted small">When you make the same kind of mistake twice in two weeks, it turns into homework here.</p>
       <button class="btn" id="hwAny">Practise tout & à / de anyway</button></section>`}
     ${(()=>{ const hard = hardList(); return `<section class="card hwhard" style="padding:14px">
-      <div class="secthead" style="margin-bottom:4px"><h2 style="font-size:16px">Hard words <span style="color:var(--bad)">♥ ${hard.length}</span></h2>${hardAfter() ? `<span class="muted small">missed ${hardAfter()} times</span>` : ""}</div>
+      <div class="secthead" style="margin-bottom:4px"><h2 style="font-size:16px">Hard words <span style="color:var(--bad)">♥ ${hard.length}</span></h2>${hard.length ? `<button class="linkbtn" id="hwHard">See all</button>` : ""}</div>
       ${hard.length ? hard.slice(0,3).map(c=>`<div class="hrow"><div class="w"><b>${esc(c.fr)}</b><span class="muted small">${esc(c.en)}</span></div><span class="small" style="color:var(--bad)">${missText(c)}</span></div>`).join("")
-        + `<button class="btn" id="hwHard" style="width:100%;margin-top:8px">See all ${hard.length} hard word${hard.length===1?"":"s"}</button>`
+        + `<button class="btn primary" id="hwHardGo" style="width:100%;margin-top:8px">Practise hard words</button>`
         : `<p class="muted small" style="margin:6px 0 2px">No hard words right now 👍</p>`}</section>`; })()}
     <button class="card mistlink" id="hwMist"><span class="hw-ic">📝</span><span style="flex:1;text-align:left"><b>Mistake log</b><br><span class="muted small">All your mistakes</span></span><span class="muted">›</span></button>`;
   if ($("#hwStart")) $("#hwStart").onclick = ()=>openHwIntro({spots:spots.slice(0,4), make:buildWorksheet, label:"Homework"});
   if ($("#hwAny")) $("#hwAny").onclick = ()=>openHwIntro({spots:[{pat:"tout-fem", list:[]}, {pat:"ade-prep", list:[]}], make:()=>mixKinds(shuffle(qTout("tout-fem", 5).concat(qAde("ade-prep", 4), qToutSentence("tout-fem", 1)))), label:"Practice", practice:true});
   if ($("#hwHard")) $("#hwHard").onclick = ()=>goKey("hard");
+  if ($("#hwHardGo")) $("#hwHardGo").onclick = ()=>startHard();
   $("#hwMist").onclick = ()=>goKey("mistakes");
 }
 function yourMistakesHtml(w){
