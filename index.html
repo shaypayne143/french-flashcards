@@ -296,6 +296,10 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 .wk{display:flex;flex-direction:column;gap:5px;padding:9px 0}
 button.wk{width:100%;background:none;border:0;border-bottom:1px solid var(--border);color:var(--text);font:inherit;text-align:left;cursor:pointer;padding:12px 0}
 .wk-top{display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:600}
+.dcrow{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;border-bottom:1px solid var(--border);color:var(--text);font:inherit;text-align:left;cursor:pointer;padding:11px 0}
+.dcrow:last-child{border-bottom:0}
+.dcn{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.dcc{font-weight:700;font-size:14px;color:var(--accent,#2f6f9e);white-space:nowrap}
 .secthead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.secthead h2{margin:0;font-size:17px}
 .linkbtn{background:none;border:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;padding:6px;min-height:36px}
 .hrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border)}
@@ -548,7 +552,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-14-1";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-14-2";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -1468,6 +1472,7 @@ function allowedNew(p){
   return newOrder(p.filter(isNew)).slice(0, left);
 }
 const dueCards = () => { const p = pool(); return p.filter(c=>!isNew(c) && c.due<=Date.now()).concat(allowedNew(p)); };
+const allDue = () => { const p = state.cards; return p.filter(c=>!isNew(c) && c.due<=Date.now()).concat(allowedNew(p)); };   // every category: the Today card and the top-corner count
 const newWaiting = () => pool().filter(isNew).length - allowedNew(pool()).length;
 function seenPool(p){   // for games: words you've met (plus today's new ones); falls back to everything if that's too few
   const ok = new Set(allowedNew(p).map(c=>c.id));
@@ -1480,7 +1485,7 @@ function pickFrom(p, n){
   const rest = p.filter(c=>c.due>now).sort((a,b)=>a.box-b.box || a.due-b.due);
   return due.concat(rest).slice(0,n);
 }
-function updateDue(){ const n = dueCards().length; $("#duePill").textContent = n + " due"; }
+function updateDue(){ const n = allDue().length; $("#duePill").textContent = n + " due"; }
 
 /* ---------- speech ---------- */
 let frVoice = null;
@@ -1518,7 +1523,7 @@ function say(text, slow, onend){
 let curView = "overview";
 const renderers = {overview:renderOverview, hard:renderHard, weak:renderWeak, mistakes:renderMistakes, homework:renderHomework, gym:renderGym, study:renderStudy, match:startMatch, speak:startSpeak, create:startCreate, words:renderWords, settings:renderSettings};
 const NAV = {overview:["overview"], study:["study"], match:["match"], speak:["speak"], journal:["create","journal"], writing:["create","words"], prep:["create","prep"], words:["words"], settings:["settings"], hard:["hard"], weak:["weak"], mistakes:["mistakes"], homework:["homework"], gym:["gym"]};
-const TITLES = {overview:"Flashcards", study:"Study", match:"Match", speak:"Speak", journal:"Journal", writing:"Writing", prep:"Grammar gym", words:"Words", settings:"Settings", hard:"Hard words", weak:"Weak spots", mistakes:"Mistake log", homework:"Homework", gym:"Grammar gym"};
+const TITLES = {overview:"Flashcards", study:"Study", match:"Match", speak:"Speak", journal:"Journal", writing:"Writing", prep:"Grammar gym", words:"Words", settings:"Settings", hard:"Hard words", weak:"Due by category", mistakes:"Mistake log", homework:"Homework", gym:"Grammar gym"};
 function navKey(){
   if (curView==="create") return (C.mode==="journal" || C.mode==="rewrite") ? "journal" : C.mode==="prep" ? "prep" : "writing";
   return curView;
@@ -1530,25 +1535,46 @@ function paintNav(){
   $("#pageTitle").innerHTML = esc(TITLES[k] || "Flashcards") + (k==="words" ? ` <span style="color:var(--muted);font-weight:500">${state.cards.length}</span>` : "");
   document.querySelectorAll("#drawer [data-go]").forEach(b=>{ const on = b.dataset.go===k; b.classList.toggle("on", on); if (on) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
 }
-function goKey(k){
+/* back: in-app back buttons and the phone's back gesture return to the screen you came from; picking from ☰ starts a fresh path */
+let navStack = [], backArmed = false;
+function pushNav(k){ const cur = navKey(); if (k!==cur){ navStack.push(cur); if (navStack.length>30) navStack.shift(); } }
+function armBack(){ if (!backArmed && (navStack.length || navKey()!=="overview")){ try { history.pushState({ff:1}, ""); backArmed = true; } catch(e){} } }
+function goBack(){
+  if ($("#modalBg").classList.contains("on")){ closeModal(); return true; }
+  if ($("#drawer").classList.contains("open")){ closeDrawer(); return true; }
+  if (curView==="homework" && HWV.view!=="list"){ HWV = {view:"list"}; renderHomework(); window.scrollTo(0,0); return true; }
+  if (curView==="gym" && GV.view!=="hub"){ GV = {view:"hub"}; renderGym(); window.scrollTo(0,0); return true; }
+  if (navStack.length){ goKey(navStack.pop(), {back:true}); return true; }
+  const k = navKey();
+  if (k==="mistakes"){ goKey("homework", {back:true}); return true; }
+  if (k!=="overview"){ goKey("overview", {back:true}); return true; }
+  return false;
+}
+window.addEventListener("popstate", ()=>{ backArmed = false; if (goBack()) armBack(); });
+function goKey(k, o={}){
   const [v, m] = NAV[k] || ["overview"];
+  if (o.fresh || k==="overview") navStack = [];
+  else if (!o.back) pushNav(k);
   closeDrawer();
   if (k==="match" && !canResume("match")) matchChosen = false;
   if (k==="homework" && !(curView==="homework")) HWV = {view:"list"};
   if (k==="gym" && !(curView==="gym")) GV = {view:"hub"};      // opening Match → choose a game (unless one is in progress)
   if (m){ if (curView==="create" && C.mode==="words") { snapDraft(); save(); } if (C.mode!==m || m==="journal") live.create = null; C.mode = m; }
   go(v);
+  armBack();
 }
-function openDrawer(){ $("#drawer").classList.add("open"); $("#drawerBg").hidden = false; $("#menuBtn").setAttribute("aria-expanded","true"); paintNav(); }
+function openDrawer(){ $("#drawer").classList.add("open"); $("#drawerBg").hidden = false; $("#menuBtn").setAttribute("aria-expanded","true"); paintNav(); if (!backArmed){ try { history.pushState({ff:1}, ""); backArmed = true; } catch(e){} } }
 function closeDrawer(){ $("#drawer").classList.remove("open"); $("#drawerBg").hidden = true; $("#menuBtn").setAttribute("aria-expanded","false"); }
 const SUBPAGES = ["hard","weak","mistakes"];
 const ICON_MENU = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>`, ICON_BACK = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>`;
-$("#menuBtn").onclick = ()=> SUBPAGES.includes(navKey()) ? goKey(navKey()==="mistakes" ? "homework" : "overview") : openDrawer(); $("#drawerX").onclick = closeDrawer; $("#drawerBg").onclick = closeDrawer;
-$("#drawer").addEventListener("click", e=>{ const b = e.target.closest("[data-go]"); if (b) goKey(b.dataset.go); });
+$("#menuBtn").onclick = ()=> SUBPAGES.includes(navKey()) ? goBack() : openDrawer(); $("#drawerX").onclick = closeDrawer; $("#drawerBg").onclick = closeDrawer;
+$("#drawer").addEventListener("click", e=>{ const b = e.target.closest("[data-go]"); if (b) goKey(b.dataset.go, {fresh:true}); });
 function go(v){
   curView = v;
   document.querySelectorAll(".view").forEach(el=>el.classList.toggle("on", el.id==="v-"+v));
   $("#catbar").style.display = (["words","settings","speak","overview","hard","weak","mistakes","homework","gym"].includes(v) || (v==="create" && (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep"))) ? "none" : "";
+  $("#hardBtn").style.display = v==="study" ? "none" : "";          // Study has no ♡ Hard only filter (hard words are practised from their own list)
+  if (v==="study" && state.settings.hardOnly){ state.settings.hardOnly = false; save(); refreshCatFilter(); }
   paintNav();
   if (canResume(v)){ if (v==="create") paintCreateSeg(); return; }   // pick up where you left off
   renderers[v]();
@@ -1679,7 +1705,7 @@ function showStudyCard(){
   $("#sBackOv").onclick = ()=>goKey("overview");
   if ($("#lockGo")) $("#lockGo").onclick = ()=>writeWith([c]);
 }
-function writeWith(cards){ C.mode = "words"; C.force = cards; live.create = null; go("create"); }
+function writeWith(cards){ pushNav("writing"); C.mode = "words"; C.force = cards; live.create = null; go("create"); armBack(); }
 const tallyHtml = left => `<div class="tallybox"><div class="secthead"><h2 style="font-size:15px">This session</h2>${left!=null?`<span class="muted small">${left} left</span>`:""}</div><div class="tally"><div><b style="color:var(--bad)">${sess.again}</b><span>again</span></div><div><b style="color:var(--good)">${sess.got}</b><span>got it</span></div><div><b style="color:var(--accent)">${sess.easy}</b><span>easy</span></div></div></div>`;
 
 
@@ -1707,9 +1733,9 @@ function weakSessionCards(){
 function renderOverview(){
   const el = $("#ovArea");
   if (!state.cards.length){ needCards(el,1); return; }
-  const allP = state.cards, due = allP.filter(c=>!isNew(c) && c.due<=Date.now()).concat(allowedNew(allP)), nNew = due.filter(isNew).length, nRev = due.length - nNew, nLock = allP.filter(needsSentence).length;
+  const allP = state.cards, due = allDue(), nNew = due.filter(isNew).length, nRev = due.length - nNew, nLock = allP.filter(needsSentence).length;
   const all = state.cards, learned = all.length ? Math.round(all.reduce((s,c)=>s+c.box,0)/(all.length*(INTERVALS.length-1))*100) : 0;
-  const weak = catScores().filter(x=>x.pct>0).slice(0,4), hard = hardList();
+  const dbc = dueByCat(), hard = hardList();
   el.innerHTML = `
     <section class="ov-today">
       <div><div class="big2">${due.length ? `${due.length} card${due.length===1?"":"s"} to review` : "All caught up 🎉"}</div></div>
@@ -1726,10 +1752,9 @@ function renderOverview(){
       <div class="ov-stat"><b>${learned}%</b><span>learned</span></div>
     </section>
     <section class="card">
-      <div class="secthead"><h2>Weak spots</h2><button class="linkbtn" id="ovWeak">See details</button></div>
-      <p class="muted small" style="margin:0 0 4px">Your categories · weakest first</p>
-      ${weak.length ? "" : `<p class="muted small" style="margin:8px 0">Study a few cards and your weakest categories will show here.</p>`}
-      ${weak.map(w=>`<div class="wk"><div class="wk-top"><span>${esc(w.label)}</span><span style="color:${pctColor(w.pct)}">${w.pct}%</span></div><div class="bar"><div class="${pctClass(w.pct)}" style="width:${Math.max(w.pct,2)}%"></div></div></div>`).join("")}
+      <div class="secthead"><h2>Due by category</h2>${dbc.length ? `<button class="linkbtn" id="ovWeak">See all</button>` : ""}</div>
+      <p class="muted small" style="margin:0 0 4px">${dbc.length ? "Most due first · tap one to practise it" : "Nothing due right now 🎉"}</p>
+      ${dbcRows(dbc.slice(0,4))}
     </section>
     <section class="card">
       <h2 style="margin:0;font-size:17px">Hard words <span style="color:var(--bad)">♥ ${hard.length}</span></h2>
@@ -1739,7 +1764,8 @@ function renderOverview(){
       ${hard.length ? `<div class="row" style="margin-top:10px"><button class="btn" id="ovHardAll">See all ${hard.length}</button><button class="btn primary" id="ovHardGo">Practise</button></div>` : ""}
     </section>`;
   $("#ovStudy").onclick = ()=>{ state.settings.cat = ""; state.settings.hardOnly = false; save(); refreshCatFilter(); live.study = null; goKey("study"); };   // the Today card counts every category, so study them all
-  $("#ovWeak").onclick = ()=>goKey("weak");
+  if ($("#ovWeak")) $("#ovWeak").onclick = ()=>goKey("weak");
+  el.querySelectorAll("[data-dcat]").forEach(b=>b.onclick = ()=>practiseCat(b.dataset.dcat));
   if ($("#ovHw")) $("#ovHw").onclick = ()=>goKey("homework");
   if ($("#ovHardAll")){ $("#ovHardAll").onclick = ()=>goKey("hard"); $("#ovHardGo").onclick = ()=>startCustom(hard, "♥ Hard words"); }
 }
@@ -1769,28 +1795,21 @@ function renderHard(){
   });
   if ($("#hGo")) $("#hGo").onclick = ()=>startCustom(list, "♥ Hard words");
 }
-let weakSort = "weak";
+function dueByCat(){                       // today's due cards (every category, conjugations grouped), most due first; adds up to the Today count
+  const m = new Map();
+  allDue().forEach(c=>{ const k = isConjCat(catOf(c)) ? CONJ_ALL : catOf(c), e = m.get(k) || {cat:k, label:catLabel(k), n:0, rev:0, nw:0}; e.n++; if (isNew(c)) e.nw++; else e.rev++; m.set(k, e); });
+  return [...m.values()].sort((a,b)=>b.n-a.n || a.label.localeCompare(b.label));
+}
+const dbcRows = list => list.map(d=>`<button class="dcrow" data-dcat="${esc(d.cat)}"><span class="dcn"><b>${esc(d.label)}</b><span class="muted small">${[d.rev?`${d.rev} review${d.rev===1?"":"s"}`:"", d.nw?`${d.nw} new`:""].filter(Boolean).join(" · ")}</span></span><span class="dcc">${d.n} due</span><span class="muted">›</span></button>`).join("");
 function renderWeak(){
-  const el = $("#weakArea");
-  const started = catScores().filter(x=>x.pct>0), notStarted = catScores().length - started.length;   // 0% = not started yet → hidden
-  let cats = started;
-  if (weakSort==="mist") cats = cats.slice().sort((a,b)=>b.hard-a.hard || a.pct-b.pct);
-  const top = started[0];
-  const skills = Object.entries(SKILLS).map(([k,name])=>({k, name, ...skillStat(k, 30)}));
-  const shown = skills.filter(s=>s.n>=5).sort((a,b)=>a.pct-b.pct), waiting = skills.filter(s=>s.n<5);
+  const el = $("#weakArea"), dbc = dueByCat(), top = dbc[0], total = dbc.reduce((s,d)=>s+d.n,0);
   el.innerHTML = `
     ${top ? `<section class="ov-today" style="margin-top:4px">
-      <div><div style="font-size:13px;opacity:.9">Weakest right now</div><div style="font-size:24px;font-weight:700;line-height:1.15">${esc(top.label)}</div></div>
-      <div style="font-size:14px;opacity:.9">${top.pct}% known · ${top.n} word${top.n===1?"":"s"}${top.hard?` · ♥ ${top.hard} hard`:""}${top.due?` · ${top.due} due`:""}</div>
-      <button class="btn" id="wTop">Practise this category</button></section>` : ""}
-    <div class="chiprow"><button class="chipb ${weakSort==="weak"?"on":""}" data-ws="weak">Weakest first</button><button class="chipb ${weakSort==="mist"?"on":""}" data-ws="mist">Most hard words</button></div>
-    <section class="card" style="padding:4px 16px">
-      ${cats.map(w=>`<button class="wk" data-cat="${esc(w.cat)}"><div class="wk-top"><span>${esc(w.label)}</span><span style="color:${pctColor(w.pct)}">${w.pct}%</span></div>
-        <div class="bar"><div class="${pctClass(w.pct)}" style="width:${Math.max(w.pct,2)}%"></div></div>
-        <span class="muted small">${w.n} word${w.n===1?"":"s"}${w.hard?` · ♥ ${w.hard} hard`:""}${w.due?` · ${w.due} due`:""}</span></button>`).join("")}
-      ${cats.length ? "" : `<p class="muted small" style="margin:12px 0">Study a few cards and your categories will show here.</p>`}
-    </section>
-    <p class="muted small center" style="margin-top:-6px">Tap a category to practise it.${notStarted ? ` ${notStarted} categor${notStarted===1?"y":"ies"} not started yet ${notStarted===1?"is":"are"} hidden.` : ""}</p>
+      <div><div style="font-size:13px;opacity:.9">Most due right now</div><div style="font-size:24px;font-weight:700;line-height:1.15">${esc(top.label)}</div></div>
+      <div style="font-size:14px;opacity:.9">${top.n} card${top.n===1?"":"s"} due${top.rev&&top.nw?` · ${top.rev} review${top.rev===1?"":"s"} · ${top.nw} new`:""}</div>
+      <button class="btn" id="wTop">Practise this category</button></section>` : `<div class="card center"><p>Nothing due right now 🎉</p></div>`}
+    ${dbc.length ? `<section class="card" style="padding:4px 16px">${dbcRows(dbc)}</section>
+    <p class="muted small center" style="margin-top:-6px">${total} due in ${dbc.length} categor${dbc.length===1?"y":"ies"} · tap one to practise it</p>` : ""}
     <button class="card mistlink" id="wGym"><span class="hw-ic">🏋️</span><span style="flex:1;text-align:left"><b>Grammar skills</b><br><span class="muted small">Now in the Grammar gym, with a score for every topic</span></span><span class="muted">›</span></button>
     <section class="card">
       <h2 style="margin:0 0 4px;font-size:17px">📤 My week for Claude</h2>
@@ -1799,8 +1818,7 @@ function renderWeak(){
     </section>`;
   if ($("#wTop")) $("#wTop").onclick = ()=>practiseCat(top.cat);
   if ($("#wGym")) $("#wGym").onclick = ()=>goKey("gym");
-  el.querySelectorAll("[data-ws]").forEach(b=>b.onclick = ()=>{ weakSort = b.dataset.ws; renderWeak(); });
-  el.querySelectorAll("[data-cat]").forEach(b=>b.onclick = ()=>practiseCat(b.dataset.cat));
+  el.querySelectorAll("[data-dcat]").forEach(b=>b.onclick = ()=>practiseCat(b.dataset.dcat));
   el.querySelectorAll("[data-sk]").forEach(b=>b.onclick = ()=>practiseSkill(b.dataset.sk));
   $("#wSummary").onclick = exportWeekly;
 }
@@ -3549,7 +3567,7 @@ function newCategory(){
 }
 function groupAction(act, cat){
   if (!cat) return;
-  if (act==="practise"){ state.settings.cat = cat; state.settings.hardOnly = false; save(); go("study"); toast("Practising: " + catLabel(cat)); return; }
+  if (act==="practise"){ state.settings.cat = cat; state.settings.hardOnly = false; save(); refreshCatFilter(); live.study = null; goKey("study"); toast("Practising: " + catLabel(cat)); return; }
   if (act!=="menu") return;
   const n = inCat(cat).length;
   openModal(`<h2>${esc(cat)}</h2><p class="muted small" style="margin-top:-6px">${n} word${n===1?"":"s"}</p>
