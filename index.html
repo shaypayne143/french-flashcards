@@ -289,6 +289,7 @@ label.chk{display:flex;align-items:center;gap:8px;margin:8px 0}
 .ov-chips{display:flex;gap:8px;flex-wrap:wrap}.ov-chips span{background:rgba(255,255,255,.18);padding:5px 10px;border-radius:99px;font-size:13px}
 .ov-today .btn{background:#fff;color:#2b46b8;border:0;font-weight:700}
 .ov-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:14px}
+#ovArea .ov-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
 .ov-stat{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:12px}.ov-stat b{display:block;font-size:22px}.ov-stat span{font-size:12px;color:var(--muted)}
 .bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden}.bar>div{height:100%;border-radius:99px}
 .b-lo{background:#f08a4b}.b-mid{background:#e8b23c}.b-hi{background:var(--accent)}
@@ -361,6 +362,8 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 .hw-prog{display:flex;align-items:center;gap:8px;margin-top:10px}.hw-prog .bar{flex:1}.hw-prog .bar>div{background:#6f8cff}
 .hw-open{font-size:13px;color:var(--accent2,#a9b9ff);font-weight:600;margin-top:8px}
 .hw-ic{font-size:22px}.okc{color:var(--good)}
+.mhelp{display:flex;flex-direction:column;gap:6px;padding:10px 4px 0;border-top:1px solid var(--border);margin-top:4px}
+.saybtn{border:0;background:transparent;color:inherit;font:inherit;font-weight:700;font-size:18px;padding:2px 4px;cursor:pointer;border-radius:8px}.saybtn:active{background:var(--surface2)}
 .hw-lt{margin:8px 0 4px;font-size:24px;line-height:1.2}
 .hw-yours{background:#3a2f12;color:#f7dfa6;border-radius:16px;padding:12px 14px;margin-bottom:12px;line-height:1.6}
 :root[data-theme="light"] .hw-yours{background:#fff4d6;color:#5a4410}
@@ -417,16 +420,16 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
   <button data-go="overview"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"></path><path d="M5 10v10h14V10"></path></svg></span>Overview</button>
   <button data-go="study"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="14" height="16" rx="2"></rect><path d="M8 3h11a1 1 0 0 1 1 1v14"></path></svg></span>Study</button>
   <button data-go="match"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg></span>Match</button>
-  <button data-go="speak"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0"></path><line x1="12" y1="18" x2="12" y2="21"></line></svg></span>Speak</button>
+  <button data-go="writing"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg></span>Writing</button>
   <div class="dsep"></div>
-  <button data-go="journal"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg></span>Journal</button>
+  <button data-go="gym"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" y1="8" x2="6" y2="16"></line><line x1="18" y1="8" x2="18" y2="16"></line><line x1="3" y1="10" x2="3" y2="14"></line><line x1="21" y1="10" x2="21" y2="14"></line><line x1="6" y1="12" x2="18" y2="12"></line></svg></span>Grammar gym</button>
   <button data-go="homework"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 4V3h6v1"></path><polyline points="9 12 11 14 15 10"></polyline><line x1="9" y1="17" x2="15" y2="17"></line></svg></span>Homework<span class="dbadge" id="hwBadge" hidden></span></button>
   <div class="dsep"></div>
-  <div class="dhead">Create</div>
-  <button data-go="writing"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"></path><path d="M13.5 6.5l4 4"></path></svg></span>Writing</button>
-  <button data-go="gym"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" y1="8" x2="6" y2="16"></line><line x1="18" y1="8" x2="18" y2="16"></line><line x1="3" y1="10" x2="3" y2="14"></line><line x1="21" y1="10" x2="21" y2="14"></line><line x1="6" y1="12" x2="18" y2="12"></line></svg></span>Grammar gym</button>
-  <div class="dsep"></div>
   <button data-go="words"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"></path><path d="M4 21V5"></path></svg></span>Words</button>
+  <button data-go="journal"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"></path><line x1="9" y1="9" x2="15" y2="9"></line><line x1="9" y1="13" x2="15" y2="13"></line></svg></span>Journal</button>
+  <div class="dsep"></div>
+  <button data-go="speak"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0"></path><line x1="12" y1="18" x2="12" y2="21"></line></svg></span>Speak</button>
+  <div class="dsep"></div>
   <button data-go="settings"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L14 3h-4l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 5 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L10 21h4l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2z"></path></svg></span>Settings</button>
 </aside>
 <div class="catbar" id="catbar">
@@ -545,7 +548,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-11-2";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-14-1";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -759,15 +762,6 @@ function renderMistakes(){
       <div style="font-size:28px;font-weight:700">${list.length}</div>
       <div class="muted small">mistake${list.length===1?"":"s"}${state.mistakesSentAt && mistRange==="sent" ? ` since you last sent them (${d(state.mistakesSentAt)})` : ""}</div>
       ${counts.length ? `<div class="ov-chips" style="margin-top:8px">${counts.map(([k,n])=>`<span>${MIST_SRC[k]} ${n}</span>`).join("")}</div>` : ""}
-      <button class="btn primary" id="mCopy" style="width:100%;margin-top:12px" ${list.length?"":"disabled"}>📋 Copy for Claude</button>
-      ${navigator.share ? `<button class="btn" id="mShare" style="width:100%;margin-top:8px" ${list.length?"":"disabled"}>↗ Share…</button>` : ""}
-      <p class="muted small" style="margin:8px 0 0">Copies a ready-made message with your mistakes. Paste it into your chat with Claude.</p>
-    </section>
-    <section class="card">
-      <b>Got a worksheet from Claude?</b>
-      <p class="muted small" style="margin:4px 0 8px">Paste it here and it becomes homework.</p>
-      <textarea id="mWs" rows="4" placeholder="Paste the worksheet…" style="width:100%;box-sizing:border-box;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:inherit;font-size:14px;padding:10px"></textarea>
-      <button class="btn" id="mWsAdd" style="width:100%;margin-top:8px">Add to my homework</button>
     </section>
     <section class="card" style="padding:4px 16px">
       ${list.length ? list.slice().reverse().slice(0,150).map(m=>`<div class="mrow">
@@ -777,21 +771,31 @@ function renderMistakes(){
           : `<div class="q">${esc(m.q)}</div><div class="small"><span class="you">You: ${esc(m.you)}</span> · <span class="ans">Right: ${esc(m.right)}</span>${m.kind && m.kind!=="wrong" ? ` <span class="muted">(${esc(m.kind)})</span>` : ""}</div>`}
       </div>`).join("") : `<p class="muted" style="margin:14px 0">No mistakes here yet. They're logged from Type it, Write from memory, Tap to match, Study and Grammar gym.</p>`}
     </section>
+    <div class="mhelp">
+      <span class="muted small">Want extra help?</span>
+      <div class="row" style="gap:18px;flex-wrap:wrap;justify-content:flex-start">${list.length ? `<button class="linkbtn" id="mCopy">Send to Claude</button>` : ""}<button class="linkbtn" id="mWsOpen">Paste a worksheet from Claude</button></div>
+      <div id="mWsBox" hidden>
+        <p class="muted small" style="margin:4px 0 8px">Paste it here and it becomes homework. You can paste several worksheets at once.</p>
+        <textarea id="mWs" rows="4" placeholder="Paste the worksheet…" style="width:100%;box-sizing:border-box;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:inherit;font-size:14px;padding:10px"></textarea>
+        <button class="btn" id="mWsAdd" style="width:100%;margin-top:8px">Add to my homework</button>
+      </div>
+    </div>
     ${(state.mistakes||[]).length ? `<button class="linkbtn" id="mClear" style="display:block;margin:4px auto 0;color:var(--bad)">Delete the whole mistake log</button>` : ""}`;
   el.querySelectorAll("[data-mr]").forEach(b=>b.onclick = ()=>{ mistRange = b.dataset.mr; renderMistakes(); });
   el.querySelectorAll(".patrow").forEach(b=>b.onclick = ()=>{ const w = weakSpots().find(x=>x.pat===b.dataset.pat); if (!w){ toast("Not homework yet — it becomes homework after 2 of the same mistake"); return; } HWV = {view:"lesson", spot:w}; goKey("homework"); HWV = {view:"lesson", spot:w}; renderHomework(); });
+  $("#mWsOpen").onclick = ()=>{ $("#mWsBox").hidden = false; $("#mWsOpen").hidden = true; $("#mWs").focus(); };
   $("#mWsAdd").onclick = ()=>{
-    const ws = parseWorksheet($("#mWs").value);
-    if (!ws.qs.length){ toast("I couldn't find any questions — each line needs: sentence | answer | wrong answers"); return; }
-    state.hwCustom = state.hwCustom || []; const id = Date.now().toString(36);
-    state.hwCustom.push({id, title:ws.title, qs:ws.qs, at:Date.now()}); save();
-    toast(`📋 Added “${ws.title}” — ${ws.qs.length} questions in your homework`); $("#mWs").value = "";
+    const sheets = parseWorksheets($("#mWs").value);
+    if (!sheets.length){ toast("I couldn't find any questions — each line needs: sentence | answer | wrong answers"); return; }
+    state.hwCustom = state.hwCustom || []; const base = Date.now();
+    sheets.forEach((ws,k)=>state.hwCustom.push({id:(base+k).toString(36), title:ws.title, qs:ws.qs, at:base})); save();
+    const n = sheets.reduce((t,w)=>t+w.qs.length,0);
+    toast(sheets.length===1 ? `📋 Added “${sheets[0].title}” — ${n} questions in your homework` : `📋 Added ${sheets.length} worksheets — ${n} questions in your homework`); $("#mWs").value = "";
   };
   const sent = ()=>{
     setTimeout(()=>{ if (confirm("Mark these as sent? Next time, “Since I last sent” will only show new mistakes.")){ state.mistakesSentAt = Date.now(); mistRange = "sent"; save(); renderMistakes(); } }, 300);
   };
   if ($("#mCopy")) $("#mCopy").onclick = async ()=>{ const ok = await copyText(mistakesText(list)); toast(ok ? "📋 Copied — paste it into your chat with Claude" : "Couldn't copy — try Share"); if (ok) sent(); };
-  if ($("#mShare")) $("#mShare").onclick = async ()=>{ try { await navigator.share({title:"My French mistakes", text: mistakesText(list)}); sent(); } catch(e){} };
   if ($("#mClear")) $("#mClear").onclick = ()=>{ if (confirm("Delete every logged mistake? This can't be undone.")){ state.mistakes = []; state.mistakesSentAt = 0; save(); renderMistakes(); } };
 }
 /* =====================================================================
@@ -1394,6 +1398,14 @@ function parseWorksheet(text){
   });
   return {title, qs};
 }
+/* several worksheets in one paste: a new one starts at each "WORKSHEET:" line */
+function parseWorksheets(text){
+  const blocks = [], head = /^\s*(?:#+\s*)?worksheet\s*[:\-–]/i;
+  let cur = [];
+  text.split(/\r?\n/).forEach(l=>{ if (head.test(l) && cur.some(x=>x.includes("|"))){ blocks.push(cur); cur = []; } cur.push(l); });
+  blocks.push(cur);
+  return blocks.map(b=>parseWorksheet(b.join("\n"))).filter(w=>w.qs.length);
+}
 const WORKSHEET_HELP = `When you send me a worksheet back, put one question per line like this:\nWORKSHEET: tout / toutes\nJe vois mes parents ___ les semaines. | toutes | tout, toute, tous | semaines is feminine plural`;
 
 function registerMiss(card){
@@ -1695,14 +1707,12 @@ function weakSessionCards(){
 function renderOverview(){
   const el = $("#ovArea");
   if (!state.cards.length){ needCards(el,1); return; }
-  const due = dueCards(), nNew = due.filter(isNew).length, nRev = due.length - nNew, nLock = lockedCards().length;
+  const allP = state.cards, due = allP.filter(c=>!isNew(c) && c.due<=Date.now()).concat(allowedNew(allP)), nNew = due.filter(isNew).length, nRev = due.length - nNew, nLock = allP.filter(needsSentence).length;
   const all = state.cards, learned = all.length ? Math.round(all.reduce((s,c)=>s+c.box,0)/(all.length*(INTERVALS.length-1))*100) : 0;
-  const weekAgo = Date.now() - 7*DAY, sentWeek = (state.journal||[]).filter(j=>j.date>=weekAgo).length;
   const weak = catScores().filter(x=>x.pct>0).slice(0,4), hard = hardList();
   el.innerHTML = `
     <section class="ov-today">
-      <div><div style="font-size:13px;opacity:.9">Today${state.settings.cat?` · ${esc(catLabel(state.settings.cat))}`:""}</div>
-        <div class="big2">${due.length ? `${due.length} card${due.length===1?"":"s"} to review` : "All caught up 🎉"}</div></div>
+      <div><div class="big2">${due.length ? `${due.length} card${due.length===1?"":"s"} to review` : "All caught up 🎉"}</div></div>
       <div class="ov-chips"><span>${nRev} review${nRev===1?"":"s"}</span><span>${nNew} new</span>${nLock?`<span>🔒 ${nLock} locked</span>`:""}</div>
       <button class="btn" id="ovStudy">${due.length ? "Start studying" : "Practise anyway"}</button>
     </section>
@@ -1714,7 +1724,6 @@ function renderOverview(){
     <section class="ov-stats">
       <div class="ov-stat"><b>${all.length}</b><span>words</span></div>
       <div class="ov-stat"><b>${learned}%</b><span>learned</span></div>
-      <div class="ov-stat"><b>${sentWeek}</b><span>sentences this week</span></div>
     </section>
     <section class="card">
       <div class="secthead"><h2>Weak spots</h2><button class="linkbtn" id="ovWeak">See details</button></div>
@@ -1729,7 +1738,7 @@ function renderOverview(){
         : `<p class="muted small">No hard words right now 👍</p>`}
       ${hard.length ? `<div class="row" style="margin-top:10px"><button class="btn" id="ovHardAll">See all ${hard.length}</button><button class="btn primary" id="ovHardGo">Practise</button></div>` : ""}
     </section>`;
-  $("#ovStudy").onclick = ()=>{ live.study = null; goKey("study"); };
+  $("#ovStudy").onclick = ()=>{ state.settings.cat = ""; state.settings.hardOnly = false; save(); refreshCatFilter(); live.study = null; goKey("study"); };   // the Today card counts every category, so study them all
   $("#ovWeak").onclick = ()=>goKey("weak");
   if ($("#ovHw")) $("#ovHw").onclick = ()=>goKey("homework");
   if ($("#ovHardAll")){ $("#ovHardAll").onclick = ()=>goKey("hard"); $("#ovHardGo").onclick = ()=>startCustom(hard, "♥ Hard words"); }
@@ -2010,8 +2019,10 @@ function checkType(){
   }
   inp.classList.add(ok ? "okb" : "nob");
   const msg = verdict==="right" ? "✓ Correct!" : verdict==="accents" ? (ok ? "Nearly — check the accents" : "Check the accents") : verdict==="article" ? "Check le / la" : "Not quite";
-  $("#tFb").innerHTML = `<div class="fb ${ok?(verdict==="right"?"ok":"near"):"no"}" style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="flex:1">${msg}</span>${lvl}</div>
-    ${verdict!=="right" ? `<div class="card" style="margin:8px 0 0;box-shadow:none;padding:10px 12px"><span class="muted small">Answer:</span> <b style="font-size:18px">${esc(c.fr)}</b>${c.pron?` <span class="muted small">· ${esc(c.pron)}</span>`:""}</div>` : ""}`;
+  const sayW = `<button type="button" class="saybtn" data-say="1" aria-label="Hear ${esc(c.fr)}">🔊 ${esc(c.fr)}</button>`;
+  $("#tFb").innerHTML = `<div class="fb ${ok?(verdict==="right"?"ok":"near"):"no"}" style="margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="flex:1">${msg}</span>${verdict==="right"?sayW:""}${lvl}</div>
+    ${verdict!=="right" ? `<div class="card" style="margin:8px 0 0;box-shadow:none;padding:10px 12px"><span class="muted small">Answer:</span> ${sayW}${c.pron?` <span class="muted small">· ${esc(c.pron)}</span>`:""}</div>` : ""}`;
+  $("#tFb").querySelectorAll("[data-say]").forEach(b=>b.onclick = ()=>say(c.fr));
   say(c.fr);
   $("#tGo").textContent = T.queue.length ? "Next word →" : "See my score";
   $("#tHint").disabled = true;
