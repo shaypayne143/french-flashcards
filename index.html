@@ -21,6 +21,7 @@
   --lilac:linear-gradient(135deg,#dcc8fa 0%,#9b73e0 100%); --lilac-ink:#1e0b3d; --lilac-tint:#efe6fd; --lilac-text:#6a45b8;
   --bad-fill:#C90922; --bad-tint:#fdecee; --drawer-bg:rgba(20,23,42,.35);
   --btn-bg:#ffffff; --hbtn-sh:0 2px 8px rgba(20,23,42,.08); --rev-go:rgba(255,255,255,.4); --done-dot:#4fbfac;
+  --hw-ok:#5b37a8; --hw-ok-bg:rgba(155,115,224,.14); --hw-ok-bd:#9b73e0; --hw-ok-fill:#f1e9fd;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -32,6 +33,7 @@
     --lilac:linear-gradient(135deg,#dcc8fa 0%,#9b73e0 100%); --lilac-ink:#1e0b3d; --lilac-tint:rgba(155,115,224,.14); --lilac-text:#d6c6ff;
     --bad-fill:#C90922; --bad-tint:#1d1519; --drawer-bg:rgba(0,0,0,.65);
     --btn-bg:rgba(255,255,255,.06); --hbtn-sh:none; --rev-go:rgba(255,255,255,.18); --done-dot:#9fd8ae;
+    --hw-ok:#9fd8ae; --hw-ok-bg:rgba(159,216,174,.14); --hw-ok-bd:#9fd8ae; --hw-ok-fill:color-mix(in srgb,#9fd8ae 22%,#151827);
   }
 }
 :root[data-theme="dark"]{
@@ -43,6 +45,7 @@
     --lilac:linear-gradient(135deg,#dcc8fa 0%,#9b73e0 100%); --lilac-ink:#1e0b3d; --lilac-tint:rgba(155,115,224,.14); --lilac-text:#d6c6ff;
     --bad-fill:#C90922; --bad-tint:#1d1519; --drawer-bg:rgba(0,0,0,.65);
     --btn-bg:rgba(255,255,255,.06); --hbtn-sh:none; --rev-go:rgba(255,255,255,.18); --done-dot:#9fd8ae;
+    --hw-ok:#9fd8ae; --hw-ok-bg:rgba(159,216,174,.14); --hw-ok-bd:#9fd8ae; --hw-ok-fill:color-mix(in srgb,#9fd8ae 22%,#151827);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%}
@@ -677,18 +680,18 @@ body.imm main{padding-top:16px}
 
 /* homework (build 4) */
 .hwx{position:relative;min-height:calc(100vh - 110px)}
-.hwx-card{display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:26px;background:var(--lilac-tint);border:1px solid rgba(155,115,224,.3)}
-.hwx-top{display:flex;align-items:baseline;justify-content:space-between}.hwx-top span:first-child{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--lilac-text)}.hwx-top span:last-child{font-size:13px;color:var(--muted)}
+.hwx-card{position:relative;display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:26px;background:var(--lilac-tint);border:1px solid rgba(155,115,224,.3)}
+.hwx-top{display:flex;align-items:baseline;justify-content:space-between;padding-right:50px;min-height:22px}.hwx-top span:first-child{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--lilac-text)}.hwx-top span:last-child{font-size:13px;color:var(--muted)}
 .hwx-n{display:flex;align-items:baseline;gap:8px}.hwx-n span:first-child{font-size:56px;font-weight:800;letter-spacing:-2px;line-height:1}.hwx-n span:last-child{font-size:20px;font-weight:700;color:var(--lilac-text)}
 .hwx-rows{display:flex;flex-direction:column}
 .hwx-row{display:flex;align-items:center;gap:10px;height:36px;border-top:1px solid rgba(155,115,224,.18)}
 .hwx-row .dot{width:8px;height:8px;flex:0 0 8px;border-radius:99px}.hwx-row .l{flex:1;font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hwx-row .nt{font-size:12.5px;color:var(--muted);white-space:nowrap}
 .hwx-row .c{min-width:26px;height:24px;padding:0 8px;box-sizing:border-box;border-radius:999px;background:var(--chip);font-size:13px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
 .hwx-go{height:54px;border:0;border-radius:999px;background:var(--lilac);color:var(--lilac-ink);box-shadow:0 10px 26px rgba(155,115,224,.3);font:inherit;font-size:16px;font-weight:800;cursor:pointer}
-.hwx-none h3{margin:0;font-size:22px}.hwx-none p{margin:0;color:var(--muted);font-size:14px}
-.hwx-send{position:fixed;right:18px;bottom:24px;z-index:30;width:52px;height:52px;border-radius:999px;border:1px solid rgba(155,115,224,.35);background:var(--surface);color:var(--lilac-text);box-shadow:0 10px 26px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.hwx-none h3{margin:0;font-size:22px;padding-right:50px}.hwx-none p{margin:0;color:var(--muted);font-size:14px}
+.hwx-send{position:absolute;right:12px;top:10px;z-index:3;width:42px;height:42px;border-radius:999px;border:1px solid rgba(155,115,224,.35);background:var(--surface);color:var(--lilac-text);box-shadow:none;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .hwx-send.on{background:var(--lilac);color:var(--lilac-ink)}
-.hwx-toast{position:fixed;right:18px;bottom:88px;z-index:30;width:250px;box-sizing:border-box;padding:12px 14px;border-radius:18px;background:var(--surface);border:1px solid rgba(155,115,224,.35);box-shadow:0 16px 40px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:6px}
+.hwx-toast{position:absolute;right:12px;top:58px;z-index:4;width:250px;box-sizing:border-box;padding:12px 14px;border-radius:18px;background:var(--surface);border:1px solid rgba(155,115,224,.35);box-shadow:0 16px 40px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:6px}
 .hwx-toast[hidden]{display:none}.hwx-toast b{color:var(--lilac-text);font-size:14px}.hwx-toast span{font-size:12.5px;line-height:1.5}.hwx-toast .m{font-size:11.5px;color:var(--muted)}
 .hwx-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .hwx-tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:14px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--text);font:inherit;text-align:left;cursor:pointer}
@@ -704,6 +707,23 @@ body.imm main{padding-top:16px}
 .hwx-got{margin-top:auto;height:56px;border:0;border-radius:999px;background:linear-gradient(135deg,#8aa2ff 0%,#3d5bdb 100%);box-shadow:0 10px 26px rgba(85,115,255,.35);color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:pointer}
 .hwx .stx-head{grid-template-columns:44px 1fr 44px}
 .qzx{border-radius:24px}.qzx .prepo{border-radius:999px}
+.qzx .prepo.ok{background:var(--hw-ok-fill);border:2px solid var(--hw-ok-bd);color:var(--hw-ok);font-weight:700}.qzx .fb.ok{background:var(--hw-ok-bg);color:var(--hw-ok)}
+/* build 5 */
+body:has(.view.on .stx-hi) #pageTitle{visibility:hidden}
+.s-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
+.lvlp{height:28px;display:inline-flex;align-items:center;padding:0 11px;border-radius:999px;border:0;background:var(--chip);color:var(--muted);font:inherit;font-size:12.5px;font-weight:700;white-space:nowrap}
+.lvlp.lk{background:rgba(155,115,224,.16);color:var(--lilac-text);cursor:pointer}
+.ch-top{position:sticky;top:0;z-index:6;background:var(--bg);margin:-16px -16px 0;padding:16px 16px 0;display:flex;flex-direction:column;gap:10px}
+.wov-card{display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:26px;background:color-mix(in srgb,var(--sel) 12%,transparent);border:1px solid color-mix(in srgb,var(--sel) 32%,transparent)}
+.wov-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}.wov-top span:first-child{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent)}.wov-top span:last-child{font-size:13px;color:var(--muted);text-align:right}
+.wov-n{display:flex;align-items:baseline;gap:8px}.wov-n span:first-child{font-size:56px;font-weight:800;letter-spacing:-2px;line-height:1}.wov-n span:last-child{font-size:20px;font-weight:700;color:var(--accent)}
+.wov-cb{display:flex;align-items:center;gap:8px;height:34px;padding:0;border:0;border-top:1px solid color-mix(in srgb,var(--sel) 22%,transparent);background:none;color:var(--muted);font:inherit;font-size:13px;font-weight:600;cursor:pointer;text-align:left}.wov-cb span:first-child{flex:1}
+.wov-rows{display:flex;flex-direction:column;margin-top:-8px}.wov-rows[hidden]{display:none}
+.wov-r{display:flex;align-items:center;gap:10px;height:34px;border-top:1px solid color-mix(in srgb,var(--sel) 22%,transparent)}.wov-r .l{flex:1;min-width:0;font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wov-r .nt{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.wov-r .c{min-width:26px;height:24px;padding:0 8px;box-sizing:border-box;border-radius:999px;background:var(--chip);font-size:13px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+.wov-go{height:54px;border:0;border-radius:999px;background:var(--grad);color:var(--grad-ink);box-shadow:var(--glow);font:inherit;font-size:16px;font-weight:800;cursor:pointer}
+.wov-done{background:var(--good-fill);color:var(--good-ink);padding:1px 7px;border-radius:999px;font-weight:700}
+.wov-all .nm{gap:3px}
 .hwx-lesson .card{border-radius:22px}
 </style>
 </head>
@@ -847,7 +867,7 @@ body.imm main{padding-top:16px}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-22-4";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-22-5";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -1363,18 +1383,18 @@ function hwClaudeText(){
 }
 function renderHwHub(el){
   const {T, rows} = hwBreakdown(), nQ = T.qs.length, sent = !!HWV.sent;
+  const SEND = `<button class="hwx-send ${sent?"on":""}" id="hwSend" aria-label="Send to Claude" title="Send to Claude"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"></path></svg></button>
+    <div class="hwx-toast" role="status" ${sent?"":"hidden"}><b>✓ Copied for Claude</b><span>${HWV.sentInfo || ""}</span><span class="m">Paste into Claude for better chat replies and a new worksheet.</span></div>`;
   el.innerHTML = `<div class="stx hwx">
     <div class="stx-hi"><h2>Homework</h2></div>
     ${nQ ? `<section class="hwx-card">
       <div class="hwx-top"><span>Today’s worksheet</span><span>about ${Math.max(2, Math.round(nQ/2))} min</span></div>
       <div class="hwx-n"><span>${nQ}</span><span>question${nQ===1?"":"s"}</span></div>
       <div class="hwx-rows">${rows.map(r=>`<div class="hwx-row"><span class="dot" style="background:${r.dot}"></span><span class="l">${esc(r.label)}</span><span class="nt">${esc(r.note)}</span><span class="c">${r.n}</span></div>`).join("")}</div>
-      <button class="hwx-go" id="hwStart">Start homework</button></section>`
-    : `<section class="hwx-card hwx-none"><h3>Nothing to fix today 🎉</h3><p>Homework is built each morning from yesterday’s mistakes in Match it, Type it and your chats, plus your hard words.</p><button class="hwx-go" id="hwChat">Have a chat</button></section>`}
+      <button class="hwx-go" id="hwStart">Start homework</button>${SEND}</section>`
+    : `<section class="hwx-card hwx-none"><h3>Nothing to fix today 🎉</h3><p>Homework is built each morning from yesterday’s mistakes in Match it, Type it and your chats, plus your hard words.</p><button class="hwx-go" id="hwChat">Have a chat</button>${SEND}</section>`}
     ${state.book ? `<div class="stx-lbl">📘 ${esc(state.book.title || "Your book")}</div><div class="stx-rows">${state.book.units.map(u=>`<button class="stx-row ch-row" data-bu="${u.n}"><span class="nm"><span>Unité ${u.n}</span><span class="ch-sub">${esc(u.title)}</span></span><span class="ar">${ARROW}</span></button>`).join("")}</div>` : ""}
     <button class="linkbtn" id="hwPaste" style="align-self:center">Paste a worksheet from Claude</button>
-    <button class="hwx-send ${sent?"on":""}" id="hwSend" aria-label="Send to Claude" title="Send to Claude"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"></path></svg></button>
-    <div class="hwx-toast" role="status" ${sent?"":"hidden"}><b>✓ Copied for Claude</b><span>${HWV.sentInfo || ""}</span><span class="m">Paste into Claude for better chat replies and a new worksheet.</span></div>
   </div>`;
   if ($("#hwStart")) $("#hwStart").onclick = ()=>{ const t = hwToday(); if (t.spot){ HWV = {view:"spot", spot:t.spot, qs:t.qs, sel:null}; renderHomework(); window.scrollTo(0,0); } else startHwPractice(t.qs, "Homework", {make:()=>hwToday().qs, label:"Homework"}); };
   if ($("#hwChat")) $("#hwChat").onclick = ()=>{ CHV.view = "pick"; goKey("writing"); };
@@ -1443,7 +1463,7 @@ function yourMistakesHtml(w){
   const list = (w.list||[]).slice(-4).reverse();
   if (!list.length) return "";
   return `<section class="hw-yours"><div class="hw-kicker" style="color:var(--warn)">YOUR MISTAKES</div>
-    ${list.map(m=>`<div>${m.src==="tout"||m.src==="ade"||m.src==="hw"||m.src==="gym" ? esc((m.q||"").replace(/\s*\(.*\)\s*$/,"")).replace("___", `<s>${esc(m.you)}</s> <b class="okc">${esc(m.right)}</b>`) : `${esc(m.q)}: <s>${esc(m.you||"—")}</s> <b class="okc">${esc(m.right)}</b>`}</div>`).join("")}</section>`;
+    ${list.map(m=>`<div class="${m.src==="tout"||m.src==="ade"||m.src==="hw"||m.src==="gym" ? "frx" : ""}">${m.src==="tout"||m.src==="ade"||m.src==="hw"||m.src==="gym" ? esc((m.q||"").replace(/\s*\(.*\)\s*$/,"")).replace("___", `<s>${esc(m.you)}</s> <b class="okc">${esc(m.right)}</b>`) : `${esc(m.q)}: <s>${esc(m.you||"—")}</s> <b class="okc">${esc(m.right)}</b>`}</div>`).join("")}</section>`;
 }
 const bookRuleHtml = t => `<section class="card bookcard"><div class="hw-kicker" style="color:var(--accent)">📘 FROM YOUR BOOK · UNITÉ ${t.unit.n}</div>
   <b>${esc(t.title)}</b><ul class="hw-ol">${(t.rule||[]).map(r=>`<li>${esc(r)}</li>`).join("")}</ul>${t.ref ? `<div class="muted small" style="margin-top:6px">${esc(t.ref)}</div>` : ""}</section>`;
@@ -1457,7 +1477,7 @@ function lessonBodyApp(w){
   const p = w.pat;
   if (p.startsWith("tout")){
     const want = new Set((weakSpots().filter(x=>x.pat.startsWith("tout")).flatMap(x=>(HW_INFO[x.pat]||{}).want||[])));
-    const cell = (g, txt) => `<td class="${want.has(g)?"hl":""}">${txt}</td>`;
+    const cell = (g, txt) => `<td class="frx ${want.has(g)?"hl":""}">${txt}</td>`;
     return `<section class="card"><b>tout matches the word after it</b>
       <table class="preptab hw-tab"><tr><th></th><th>one</th><th>more than one</th></tr>
         <tr><th>masculine</th>${cell("ms","<b>tout</b> le temps")}${cell("mp","<b>tous</b> les jours")}</tr>
@@ -1561,7 +1581,7 @@ function renderPractice(el, P, O){
     <div class="progress"><div style="width:${P.i/P.qs.length*100}%"></div></div>`) + `
     <section class="card qz-card${O.seg?" qzx":""}">
       <div class="qz-top"><span class="qz-kind">${esc(KIND_LABEL(q).toUpperCase())}</span><span class="qz-topic">${esc(O.kicker(q))}</span></div>
-      <div class="prepq${q.big?" hw-bigq":""}${q.sentences?" qz-sent":""}">${parts.length>1 ? `${esc(parts[0])}<span class="gap qz-gap">${q.kind==="type"?"&nbsp;":"___"}</span>${esc(parts[1])}` : esc(q.prompt)}</div>
+      <div class="prepq${q.big?" hw-bigq":""}${q.sentences?" qz-sent":""}${q.pat!=="words"?" frx":""}">${parts.length>1 ? `${esc(parts[0])}<span class="gap qz-gap">${q.kind==="type"?"&nbsp;":"___"}</span>${esc(parts[1])}` : esc(q.prompt)}</div>
       ${q.en ? `<div class="muted small" style="margin-top:4px">${esc(q.en)}</div>` : ""}
       ${q.kind==="type" ? `<div class="qz-inrow"><input type="text" id="hwIn" class="hw-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${q.sentence ? "Type it in French" : q.gap ? "Type the word" : "Type the French…"}"><button class="btn qz-check" id="hwCheck">Check</button></div>${accentBar("hwIn")}
         ${hint ? `<button class="linkbtn qz-hintb" id="hwHint">💡 Show a hint</button><div class="qz-hint" id="hwHintBox" hidden>Hint: ${esc(hint)}</div>` : ""}`
@@ -1586,11 +1606,11 @@ function quizAnswer(el, P, O, q, a, ok, nearAccent){
   save();
   document.querySelectorAll(".prepo").forEach(b=>{ b.disabled = true; if (b.dataset.a===q.answer) b.classList.add("ok"); else if (b.dataset.a===a) b.classList.add("no"); });
   const full = q.say || "";
-  $("#hwFb").innerHTML = `<div class="fb ${ok?"ok":"no"}" style="margin-top:12px">${ok ? "✅ Right!" : nearAccent ? `Nearly — check the accents: <b>${esc(q.answer)}</b>` : `Not quite — it's <b>${esc(q.answer)}</b>`}${!ok && q.kind==="type" ? `<div class="small" style="font-weight:500;margin-top:4px">You wrote: <s>${esc(a)}</s></div>` : ""}</div>
+  $("#hwFb").innerHTML = `<div class="fb ${ok?"ok":"no"}" style="margin-top:12px">${ok ? "✅ Right!" : nearAccent ? `Nearly — check the accents: <b class="frx">${esc(q.answer)}</b>` : `Not quite — it's <b class="frx">${esc(q.answer)}</b>`}${!ok && q.kind==="type" ? `<div class="small" style="font-weight:500;margin-top:4px">You wrote: <s>${esc(a)}</s></div>` : ""}</div>
     ${q.why && ok ? `<div class="hw-why"><div class="hw-kicker" style="color:#c9b6ff">NOW: ${esc(q.why.q.toUpperCase())}</div>
       ${q.why.options.map((o,i)=>`<button class="hw-whyo" data-w="${i}">${esc(o)}</button>`).join("")}</div>` : ""}
     ${!ok || !q.why ? `${q.explain ? `<div class="small" style="margin-top:10px">${q.explain}</div>` : ""}` : ""}
-    ${full ? `<div class="prepfull"><span style="flex:1">${esc(full)}</span><button class="jicon sm" id="hwSay" aria-label="Hear it">🔊</button></div>` : ""}
+    ${full ? `<div class="prepfull"><span class="frx" style="flex:1">${esc(full)}</span><button class="jicon sm" id="hwSay" aria-label="Hear it">🔊</button></div>` : ""}
     ${O.after ? O.after(P, q, ok) : ""}
     <button class="btn primary" id="hwNext" style="width:100%;margin-top:10px" ${q.why && ok ? "hidden" : ""}>${P.i+1<P.qs.length ? "Next →" : "See my score"}</button>`;
   if ($("#hwSay")) $("#hwSay").onclick = ()=>say(full);
@@ -1624,7 +1644,7 @@ const HW_QUIZ = {
       <div class="mx-score"><h2>${P.label==="Practice" ? "Practice done" : "Homework done"}</h2><div><span class="n">${P.right}</span><span class="o">/ ${P.qs.length}</span></div>
         <span class="tm">${P.right===P.qs.length ? "Perfect! 🌟" : W.length ? `${W.length} back tomorrow` : "Nice work"}</span></div>
       ${fixed.length ? `<section class="mx-up"><span class="mx-upb">✓ Fixed: ${fixed.map(p=>esc(hwTitle(p))).join(", ")}</span><span class="small muted">It comes back once next week to check.</span></section>` : ""}
-      ${W.length ? `<section class="mx-miss"><div class="stx-lbl">Comes back tomorrow</div>${W.map(x=>`<div class="mx-mr"><span class="dot"></span><span class="tx"><span>${line(x)}</span></span></div>`).join("")}</section>` : ""}
+      ${W.length ? `<section class="mx-miss"><div class="stx-lbl">Comes back tomorrow</div>${W.map(x=>`<div class="mx-mr"><span class="dot"></span><span class="tx"><span class="frx">${line(x)}</span></span></div>`).join("")}</section>` : ""}
       ${P.from && P.from.make && P.label==="Practice" ? `<button class="btn primary" id="hwAgain" style="width:100%">Try again</button>` : ""}
       <button class="stx-go" id="hwDone"><span>Back to homework</span><span class="pl">${ARROW}</span></button></div>`; },
   wireEnd: P=>{ $("#hwDone").onclick = ()=>{ HWV = {view:"list"}; renderHomework(); window.scrollTo(0,0); };
@@ -2199,6 +2219,7 @@ function goBack(){
   if (curView==="gym" && GV.view!=="hub"){ GV = {view:"hub"}; renderGym(); window.scrollTo(0,0); return true; }
   if (curView==="study" && !hardSess && SV.view==="card"){ backToStudy(); return true; }
   if (curView==="match" && M.screen!=="pick"){ matchBack(); return true; }
+  if (curView==="create" && C.mode==="chat" && CHV.view!=="home"){ CHV.view = "home"; startChat(); window.scrollTo(0,0); return true; }
   if (navStack.length){ goKey(navStack.pop(), {back:true}); return true; }
   const k = navKey();
   if (k==="mistakes" || k==="hard"){ goKey("homework", {back:true}); return true; }
@@ -2215,7 +2236,7 @@ function goKey(k, o={}){
   closeDrawer();
   if (k==="match" && !canResume("match")){ M.screen = "pick"; stopTimer(); }
   if (k==="study" && o.fresh){ SV.view = "home"; live.study = null; }
-  if (k==="writing" && o.fresh && CHV.view==="summary") CHV.view = "chat";
+  if (k==="writing" && o.fresh) CHV.view = "home";
   if (k==="homework" && !(curView==="homework")) HWV = {view:"list"};
   if (k==="gym" && !(curView==="gym")) GV = {view:"hub"};      // opening Match → choose a game (unless one is in progress)
   if (m){ if (curView==="create" && C.mode==="words") { snapDraft(); save(); } if (C.mode!==m || m==="journal") live.create = null; C.mode = m; }
@@ -2366,14 +2387,14 @@ function showStudyCard(){
          <div class="w">${esc(c.fr)}</div>
          <div class="pr">${c.pron ? `/${esc(c.pron)}/` : ""} <span class="spk" id="sSay" role="button" aria-label="Hear it">${SPK}</span></div>
          <div style="flex:1"></div>
-         <div class="tf">Tap to flip ›</div></div>
+         <div class="s-foot">${lvPill(c)}<span class="tf">Tap to flip ›</span></div></div>
        <div class="face back">
          <div class="w sm">${esc(c.fr)}</div>
          <div class="pr">${c.pron ? `/${esc(c.pron)}/` : ""} <span class="spk" id="sSay2" role="button" aria-label="Hear it again">${SPK}</span></div>
          <div class="en">${esc(c.en)} <span>· ${esc(TYPE_INFO[wordType(c)])}</span></div>
          ${c.ex ? `<div class="ex"><span class="frx">${esc(c.ex)}</span><br><span>${esc(c.exEn)}</span></div>` : ""}
          <div style="flex:1"></div>
-         <div class="tf">${esc(catLabel(catOf(c)))} · level ${c.box}/${INTERVALS.length-1}</div></div>
+         <div class="s-foot">${lvPill(c)}<span class="tf">${esc(catLabel(catOf(c)))}</span></div></div>
      </div>
      <button class="sheart ${c.hard?"on":""}" data-heart="${c.id}" aria-label="Add to hard words" aria-pressed="${c.hard}">${c.hard?"♥":"♡"}</button>
    </div>
@@ -2382,7 +2403,6 @@ function showStudyCard(){
      <button class="gb gg" id="gotit">Got it<span>${esc(nextLabels(c).got)}</span></button>
      <button class="gb ge" id="easy">Easy<span>${esc(nextLabels(c).easy)}</span></button>
    </div>
-   ${isLocked(c)?`<div class="lockbar"><span>🔒 Level ${c.box}: use it in a sentence to level up</span><button class="btn sm" id="lockGo">✍️ Write one</button></div>`:""}
    <button class="linkbtn" id="sBackOv2" style="display:block;margin:2px auto 0">${hardSess ? "← Back to Hard words" : "← Back to categories"}</button></div>`;
   const flip = $("#flip");
   flip.onclick = e=>{ if (e.target.closest(".spk,.sheart")) return; flip.classList.toggle("flipped"); $("#sGrades").hidden = false; };
@@ -2392,9 +2412,10 @@ function showStudyCard(){
   $("#gotit").onclick = ()=>{ c.seenAt = Date.now(); grade(c,true); sess.got++; nextStudy(); };
   $("#easy").onclick = ()=>{ c.seenAt = Date.now(); gradeEasy(c); sess.easy++; nextStudy(); };
   $("#sBackOv").onclick = backToStudy; $("#sBackOv2").onclick = backToStudy;
-  if ($("#lockGo")) $("#lockGo").onclick = ()=>writeWith([c]);
+  document.querySelectorAll("#flip [data-lvw]").forEach(b=>b.onclick = e=>{ e.stopPropagation(); writeWith([c]); });
   setTimeout(()=>{ if (studyCard===c && curView==="study") say(c.fr); }, 250);     // read each new card aloud
 }
+const lvPill = c => isNew(c) ? `<span class="lvlp">New</span>` : isLocked(c) ? `<button class="lvlp lk" data-lvw="1" aria-label="Level ${c.box}, locked. Write a sentence to level up">Level ${c.box} 🔒</button>` : `<span class="lvlp">Level ${c.box}</span>`;
 function writeWith(cards){ pushNav("writing"); C.mode = "words"; C.force = cards; live.create = null; go("create"); armBack(); }
 const tallyHtml = left => `<div class="tallybox"><div class="secthead"><h2 style="font-size:15px">This session</h2>${left!=null?`<span class="muted small">${left} left</span>`:""}</div><div class="tally"><div><b style="color:var(--bad)">${sess.again}</b><span>again</span></div><div><b style="color:var(--good)">${sess.got}</b><span>got it</span></div><div><b style="color:var(--accent)">${sess.easy}</b><span>easy</span></div></div></div>`;
 
@@ -2455,7 +2476,7 @@ function renderHard(){
   el.innerHTML = `
     <p class="muted small center" style="margin:0 0 10px">${hardAfter()?`Words you got wrong ${hardAfter()} times, plus any you marked ♥.`:"Words you marked ♥."} They leave this list once you know them well.</p>
     ${all.length ? `<div class="card" style="padding:4px 16px">${all.map(c=>`<div class="hrow" style="border-top:0;border-bottom:1px solid var(--border);padding:11px 0">
-        <div class="w" style="flex:1;min-width:0;display:flex;flex-direction:column"><b>${esc(c.fr)}</b><span class="muted small">${esc(c.en)} · ${esc(catLabel(catOf(c)))}</span></div>
+        <div class="w" style="flex:1;min-width:0;display:flex;flex-direction:column"><b class="frx">${esc(c.fr)}</b><span class="muted small">${esc(c.en)} · ${esc(catLabel(catOf(c)))}</span></div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${typeTag(c)}<span class="small" style="color:var(--bad)">${missText(c)}</span></div></div>`).join("")}</div>
     <button class="btn primary" id="hGo" style="width:100%">Practise all ${all.length}</button>`
     : `<div class="card center"><p>No hard words right now 👍</p></div>`}`;
@@ -2679,7 +2700,7 @@ function mType(){
       <span class="mx-lvl" ${lv?"":"hidden"}>${UPI}Level ${c.box}</span>
       <button class="mx-spk" id="tSay" aria-label="Hear it" ${ans && ok?"":"hidden"}>${SPK}</button></div>
     <input type="text" id="tIn" class="mx-in ${ans ? ok ? "ok" : "no" : ""}" placeholder="en français…" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(M.typed)}" ${ans?"readonly":""}>
-    ${ans && !ok ? `<div class="mx-fix" role="status"><span><span>${M.verdict==="accents" ? "Check the accents. The answer is" : M.verdict==="article" ? "Check le / la. The answer is" : "The answer is"}</span><b>${esc(c.fr)}</b></span><button class="mx-spk2" id="tSay2" aria-label="Hear ${esc(c.fr)}">${SPK}</button></div>` : ""}
+    ${ans && !ok ? `<div class="mx-fix" role="status"><span><span>${M.verdict==="accents" ? "Check the accents. The answer is" : M.verdict==="article" ? "Check le / la. The answer is" : "The answer is"}</span><b class="frx">${esc(c.fr)}</b></span><button class="mx-spk2" id="tSay2" aria-label="Hear ${esc(c.fr)}">${SPK}</button></div>` : ""}
     ${ans ? "" : `<div class="mx-acc" id="tAcc">${ACC8.map(a=>`<button type="button">${a}</button>`).join("")}</div>`}
     <div id="tFb" class="muted small center"></div>
     <div class="mx-btns ${ans?"one":""}">${ans ? "" : `<button class="btn" id="tHint">Hint</button>`}<button class="btn primary" id="tGo">${ans ? (M.i+1<M.set.length ? "Next word" : "See results") : "Check"}</button></div>`);
@@ -3079,11 +3100,12 @@ function chatStatus(ch){
   if (!chatWords(ch).length) return "hidden";
   return chatCats(ch).some(c=>studied.has(c)) ? "new" : "hidden";
 }
-let CHV = {view:"chat", doneOpen:false};
+let CHV = {view:"home", doneOpen:false, catsOpen:false};
 function startChat(){
   const st = chatSt(), A = st.active, el = $("#createArea"); imm(true);
   $("#cModeSeg").style.display = "none";
   if (CHV.view==="summary" && st.last) return chatSummary();
+  if (CHV.view==="home") return chatHome();
   if (!A || CHV.view==="pick") return chatPicker();
   chatRender();
 }
@@ -3096,8 +3118,38 @@ function chatOpen(id){
   st.active = {id, turn:0, msgs:[{who:"bot", fr:ch.turns[0].bot.fr, en:ch.turns[0].bot.en}], goals:goals.map(c=>c.id), usedNow:[], twist:false, lvl:[], fixes:[], replies:0, busy:false, done:false};
   save(); CHV.view = "chat"; startChat();
 }
+function chatHome(){
+  const el = $("#createArea"), st = chatSt(); imm(false);
+  const locked = state.cards.filter(c=>isLocked(c)), byCat = {};
+  locked.forEach(c=>{ const k = catOf(c); byCat[k] = (byCat[k]||0) + 1; });
+  const cats = Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([k,n])=>({k, n, ch: CHATS.find(ch=>chatCats(ch).map(norm).includes(norm(k)))}));
+  const all = CHATS.map(ch=>({ch, s:chatStatus(ch), left:chatLeft(ch).length, r:chatRec(ch.id)}));
+  const act = st.active ? st.active.id : null;
+  const prog = all.filter(x=>x.s==="progress").sort((a,b)=>(b.ch.id===act)-(a.ch.id===act) || (b.r.at||0)-(a.r.at||0));
+  const nNew = all.filter(x=>x.s==="new").length, nDone = all.filter(x=>x.s==="done").length, firstNew = all.find(x=>x.s==="new");
+  const next = prog[0] ? {id:prog[0].ch.id, label:"Continue · " + prog[0].ch.title} : firstNew ? {id:firstNew.ch.id, label:"Start · " + firstNew.ch.title} : null;
+  const row = x => { const rounds = Math.max(1, Math.ceil(x.left/3)), cur = x.ch.id===act;
+    return `<button class="stx-row ch-row ${cur?"cur":""}" data-chat="${x.ch.id}"><span class="nm"><span>${esc(x.ch.title)}</span><span class="ch-sub">Round ${x.r.rounds+1} of ${x.r.rounds+rounds} · <u>${x.left} word${x.left===1?"":"s"} left</u></span></span><span class="ch-tag">In progress</span><span class="ar">${ARROW}</span></button>`; };
+  el.innerHTML = `<div class="stx">
+    <div class="stx-hi"><h2>Writing</h2></div>
+    <section class="wov-card">
+      <div class="wov-top"><span>Words to unlock</span><span>${locked.length ? "🔒 use them to level up" : "All caught up"}</span></div>
+      <div class="wov-n"><span>${locked.length}</span><span>word${locked.length===1?"":"s"}</span></div>
+      ${cats.length ? `<button class="wov-cb" id="wovCats" aria-expanded="${CHV.catsOpen}"><span>By category</span><span style="display:inline-flex;transform:${CHV.catsOpen?"rotate(180deg)":"none"}">⌄</span></button>
+      <div class="wov-rows" ${CHV.catsOpen?"":"hidden"}>${cats.map(x=>`<div class="wov-r"><span class="l">${esc(catLabel(x.k))}</span><span class="nt">${x.ch ? esc(x.ch.title) : "Write a sentence"}</span><span class="c">${x.n}</span></div>`).join("")}</div>` : ""}
+      <button class="wov-go" id="wovGo">${esc(next ? next.label : "Pick a chat")}</button>
+    </section>
+    <div class="stx-lbl">Chats</div>
+    <div class="stx-rows">${prog.map(row).join("")}
+      <button class="stx-row ch-row wov-all" id="wovAll"><span class="nm"><span>All chats</span><span class="ch-sub">${nNew} new · <span class="wov-done">${nDone} done</span></span></span><span class="ar">${ARROW}</span></button></div>
+  </div>`;
+  if ($("#wovCats")) $("#wovCats").onclick = ()=>{ CHV.catsOpen = !CHV.catsOpen; chatHome(); };
+  $("#wovGo").onclick = ()=>{ if (next) chatOpen(next.id); else { CHV.view = "pick"; startChat(); } };
+  $("#wovAll").onclick = ()=>{ CHV.view = "pick"; startChat(); };
+  el.querySelectorAll("[data-chat]").forEach(b=>b.onclick = ()=>chatOpen(b.dataset.chat));
+}
 function chatPicker(){
-  const el = $("#createArea"), st = chatSt();
+  const el = $("#createArea"), st = chatSt(); imm(true);
   const all = CHATS.map(ch=>({ch, s:chatStatus(ch), left:chatLeft(ch).length, r:chatRec(ch.id)})).filter(x=>x.s!=="hidden");
   const prog = all.filter(x=>x.s==="progress"), nw = all.filter(x=>x.s==="new"), dn = all.filter(x=>x.s==="done");
   const row = (x, kind) => { const rounds = Math.max(1, Math.ceil(x.left/3)), cur = st.active && st.active.id===x.ch.id;
@@ -3111,7 +3163,7 @@ function chatPicker(){
     ${dn.length ? `<button class="ch-dh" id="chDone" aria-expanded="${CHV.doneOpen}"><span>Completed</span><span class="ch-cnt">${dn.length}</span><span style="flex:1"></span><span style="transform:${CHV.doneOpen?"rotate(180deg)":"none"};display:inline-flex">⌄</span></button>
       <div class="stx-rows" ${CHV.doneOpen?"":"hidden"}>${dn.map(x=>`<div class="ch-drow"><span class="nm"><b>${esc(x.ch.title)}</b><span class="ch-sub">${esc(x.ch.category)} · all ${chatWords(x.ch).length} words used</span></span><span class="ch-ok">✓ Done</span></div>`).join("")}</div>` : ""}
   </div>`;
-  $("#chpX").onclick = ()=>{ if (st.active){ CHV.view = "chat"; startChat(); } else goKey("overview"); };
+  $("#chpX").onclick = ()=>{ CHV.view = "home"; startChat(); };
   if ($("#chpStudy")) $("#chpStudy").onclick = ()=>goKey("study");
   if ($("#chDone")) $("#chDone").onclick = ()=>{ CHV.doneOpen = !CHV.doneOpen; chatPicker(); };
   el.querySelectorAll("[data-chat]").forEach(b=>b.onclick = ()=>chatOpen(b.dataset.chat));
@@ -3120,9 +3172,9 @@ function chatRender(){
   const el = $("#createArea"), A = chatSt().active, ch = CHATS.find(x=>x.id===A.id);
   const goals = A.goals.map(id=>state.cards.find(c=>c.id===id)).filter(Boolean);
   const helpOpen = !!A.help, turn = ch.turns[A.turn];
-  el.innerHTML = `<div class="ch">
+  el.innerHTML = `<div class="ch"><div class="ch-top">
     <div class="ch-head"><span class="ch-who">${CHAT_AV}<span><b>Camille</b><span>your chat partner</span></span></span><button class="ch-title" id="chPick">${esc(ch.title)} ▾</button><button class="hbtn" id="chX" aria-label="Close">${XICON}</button></div>
-    <div class="ch-goals"><span class="ch-use">Use these:</span>${goals.map(c=>`<span class="ch-chip ${A.usedNow.includes(c.id)?"on":""}">${A.usedNow.includes(c.id)?"✓ ":""}${esc(c.fr)}</span>`).join("")}${ch.twist ? `<span class="ch-chip tw ${A.twist?"on":""}" title="${esc(ch.twist.text)}">★ ${esc(ch.twist.match[0])}</span>` : ""}</div>
+    <div class="ch-goals"><span class="ch-use">Use these:</span>${goals.map(c=>`<span class="ch-chip frx ${A.usedNow.includes(c.id)?"on":""}">${A.usedNow.includes(c.id)?"✓ ":""}${esc(c.fr)}</span>`).join("")}${ch.twist ? `<span class="ch-chip tw ${A.twist?"on":""}" title="${esc(ch.twist.text)}">★ ${esc(ch.twist.match[0])}</span>` : ""}</div></div>
     <div class="ch-msgs" id="chMsgs">${A.msgs.map((m,k)=>chatBubble(m,k)).join("")}${A.busy?`<div class="ch-typing">•••</div>`:""}</div>
     ${A.done ? `<button class="mx-ready" id="chSum"><span><b>Chat complete · see summary</b></span><span class="pl">${ARROW}</span></button>` : `
     <div class="ch-help" ${helpOpen?"":"hidden"}>${(turn.starters||[]).map(x=>`<button class="ch-st" data-st="${esc(x)}">${esc(x)}</button>`).join("")}</div>
@@ -3131,7 +3183,7 @@ function chatRender(){
   </div>`;
   const box = $("#chMsgs"); box.scrollTop = box.scrollHeight; window.scrollTo(0, document.body.scrollHeight);
   $("#chPick").onclick = ()=>{ CHV.view = "pick"; chatPicker(); };
-  $("#chX").onclick = ()=>{ CHV.view = "pick"; chatPicker(); };
+  $("#chX").onclick = ()=>{ CHV.view = "home"; startChat(); };
   el.querySelectorAll("[data-en]").forEach(b=>b.onclick = e=>{ e.stopPropagation(); const m = A.msgs[+b.dataset.en]; m.open = !m.open; chatRender(); });
   if (A.done){ $("#chSum").onclick = chatFinish; return; }
   const inp = $("#chIn");
@@ -3195,10 +3247,10 @@ function chatSummary(){
   el.innerHTML = `<div class="stx">
     <div class="stx-head"><span></span><b>${esc(ch.title)}</b><button class="hbtn" id="csX" aria-label="Close">${XICON}</button></div>
     <div class="mx-score"><h2>Chat complete</h2><div><span class="n">${L.used.length}</span><span class="o">/ ${L.goals.length} words</span></div><span class="tm">${L.twist?"★ Twist done · ":""}${L.replies} replies</span></div>
-    ${L.lvl.length ? `<section class="mx-up"><span class="mx-upb">${UPI}${L.lvl.length} word${L.lvl.length===1?"":"s"} levelled up</span><div class="mx-pills">${L.lvl.map(card).filter(Boolean).map(c=>`<span class="mx-pill">${esc(c.fr)}</span>`).join("")}</div></section>` : ""}
-    ${L.fixes.length ? `<section class="mx-miss"><div class="ch-fh"><span class="stx-lbl">${L.fixes.length} fix${L.fixes.length===1?"":"es"}</span><button class="ch-hw" id="csHw">✓ Added to Homework ›</button></div>${L.fixes.map(f=>`<div class="mx-mr"><span class="dot"></span><span class="tx"><span><s style="color:var(--bad)">${esc(f.you)}</s> → <b style="color:var(--good)">${esc(f.fix||"?")}</b></span>${f.why?`<span class="yt">${esc(f.why)}</span>`:""}</span></div>`).join("")}</section>` : ""}
-    <button class="stx-go" id="csNext" style="margin-top:6px"><span>Pick next chat</span><span class="pl">${ARROW}</span></button></div>`;
-  $("#csX").onclick = $("#csNext").onclick = ()=>{ CHV.view = "pick"; chatPicker(); };
+    ${L.lvl.length ? `<section class="mx-up"><span class="mx-upb">${UPI}${L.lvl.length} word${L.lvl.length===1?"":"s"} levelled up</span><div class="mx-pills">${L.lvl.map(card).filter(Boolean).map(c=>`<span class="mx-pill frx">${esc(c.fr)}</span>`).join("")}</div></section>` : ""}
+    ${L.fixes.length ? `<section class="mx-miss"><div class="ch-fh"><span class="stx-lbl">${L.fixes.length} fix${L.fixes.length===1?"":"es"}</span><button class="ch-hw" id="csHw">✓ Added to Homework ›</button></div>${L.fixes.map(f=>`<div class="mx-mr"><span class="dot"></span><span class="tx"><span class="frx"><s style="color:var(--bad)">${esc(f.you)}</s> → <b style="color:var(--good)">${esc(f.fix||"?")}</b></span>${f.why?`<span class="yt">${esc(f.why)}</span>`:""}</span></div>`).join("")}</section>` : ""}
+    <button class="stx-go" id="csNext" style="margin-top:6px"><span>Back to Writing</span><span class="pl">${ARROW}</span></button></div>`;
+  $("#csX").onclick = $("#csNext").onclick = ()=>{ CHV.view = "home"; startChat(); };
   if ($("#csHw")) $("#csHw").onclick = ()=>goKey("homework");
 }
 
@@ -3410,7 +3462,7 @@ function answerPrep(a){
       <li class="${bad2?"bad":""}"><i>${esc(nounWithArt)}</i> ${PREP_ART[q.art]}${bad2?` <span class="why">(you chose <b>${gotArt}</b>)</span>`:""}</li>
       <li>${q.prep} + ${q.art} = <b>${esc(right)}</b>${q.art==="la"||q.art==="l'" ? " (no change)" : ""}</li>
     </ol>
-    <div class="prepfull"><span style="flex:1">${esc(full)}</span><button class="jicon sm" id="prepSay" aria-label="Hear it">🔊</button></div>
+    <div class="prepfull"><span class="frx" style="flex:1">${esc(full)}</span><button class="jicon sm" id="prepSay" aria-label="Hear it">🔊</button></div>
     <button class="btn primary" id="prepNext" style="width:100%;margin-top:10px">${PR.i+1<PR.q.length ? "Next →" : "See my score"}</button>`;
   $("#prepSay").onclick = ()=>say(full);
   $("#prepNext").onclick = ()=>{ PR.i++; renderPrep(); };
@@ -3526,7 +3578,7 @@ function newChallenge(fresh){
      <div class="muted small">Write 1 or 2 sentences using <b>all ${C.words.length}</b> of these:</div>
      <div class="reqs" id="reqs">${C.words.map(c=>`<button class="req" data-id="${c.id}"><b>${isLocked(c)?"🔒 ":""}${esc(c.fr)}${(c.added||0) >= Date.now()-7*DAY ? ` <span class="newb">NEW</span>` : ""}</b><span>${esc(c.en)}</span></button>`).join("")}</div>
      <div class="twist" id="twist"><div style="flex:1"><div class="tw-h">TWIST</div><b>${esc(tw.label)}</b><div class="muted small">${esc(tw.hint)}</div></div><span class="tw-s" id="twState">not yet</span></div>
-     ${q ? `<div class="qopt"><div style="flex:1"><div class="muted small">💡 Optional idea</div><b>${esc(q.fr)}</b><div class="muted small">${esc(q.en)}</div></div><button class="jicon sm" id="qSay" aria-label="Hear the question">🔊</button></div>` : ""}
+     ${q ? `<div class="qopt"><div style="flex:1"><div class="muted small">💡 Optional idea</div><b class="frx">${esc(q.fr)}</b><div class="muted small">${esc(q.en)}</div></div><button class="jicon sm" id="qSay" aria-label="Hear the question">🔊</button></div>` : ""}
      <textarea id="cText" class="cin" placeholder="Écris 1 ou 2 phrases…" autocapitalize="sentences" spellcheck="false"></textarea>
      <div class="accents" id="cAcc">${ACCENTS.map(a=>`<button type="button">${a}</button>`).join("")}</div>
      <div id="simBox"></div>
@@ -3752,7 +3804,7 @@ function showWordHelp(c){
   openModal(`<div class="row" style="align-items:center"><h2 style="margin:0;flex:1">${esc(c.fr)}</h2><button class="icon-btn" id="hX" aria-label="Close">✕</button></div>
     ${c.pron?`<div style="color:var(--accent);font-weight:600;margin-top:4px">${esc(c.pron)}</div>`:""}
     <div class="muted" style="margin:4px 0 12px">${esc(c.en)} · ${esc(catOf(c))}</div>
-    ${c.ex?`<div class="card" style="box-shadow:none;margin-bottom:10px"><div class="muted small">Example</div><i>${esc(c.ex)}</i><div class="muted small">${esc(c.exEn)}</div></div>`:""}
+    ${c.ex?`<div class="card" style="box-shadow:none;margin-bottom:10px"><div class="muted small">Example</div><i class="frx">${esc(c.ex)}</i><div class="muted small">${esc(c.exEn)}</div></div>`:""}
     ${(()=>{ const inf = infinitiveOf(c); if (inf && conjugate(inf)) return conjTableHtml(inf);
        const forms = state.cards.filter(x=>norm(catOf(x))===norm("Conjugation – "+c.fr));
        return forms.length?`<div class="card" style="box-shadow:none;margin-bottom:10px"><div class="muted small">Present tense</div>${forms.map(x=>esc(x.fr)).join("<br>")}</div>`:""; })()}
@@ -4280,7 +4332,7 @@ function normType(v){
 function liHtml(c, showCat){
   return `<li data-id="${c.id}" class="${selected.has(c.id)?"on":""}">
     ${selectMode ? `<input type="checkbox" tabindex="-1" ${selected.has(c.id)?"checked":""}>` : `<button class="icon-btn" data-act="edit" aria-label="Edit">✏️</button>`}
-    <div class="w"><b>${esc(c.fr)}</b><span class="muted small">${typeTag(c)} ${c.pron?`<span class="pr">${esc(c.pron)}</span> · `:""}${esc(c.en)}${c.ex?" · 💬":""}${showCat?" · "+esc(catOf(c)):""}</span></div>
+    <div class="w"><b class="frx">${esc(c.fr)}</b><span class="muted small">${typeTag(c)} ${c.pron?`<span class="pr">${esc(c.pron)}</span> · `:""}${esc(c.en)}${c.ex?" · 💬":""}${showCat?" · "+esc(catOf(c)):""}</span></div>
     <span class="lvl l${c.box}">${isLocked(c)?"🔒 ":""}lvl ${c.box}</span>
     ${selectMode ? (c.hard?'<span class="heart on">♥</span>':"") : heartBtn(c)+`<button class="icon-btn" data-act="say" aria-label="Play">🔊</button>`}</li>`;
 }
@@ -4587,6 +4639,7 @@ document.addEventListener("click", e=>{
   const host = e.target.closest(".frx");
   if (!host){ closeTapWord(); return; }
   if (e.target.closest("button:not(.frx),a,input,textarea,select")) return;
+  if (selectMode && e.target.closest("#v-words")) return;                // picking words to move: a tap selects
   const w = wordAt(e.clientX, e.clientY);
   if (!w || w.length < 2){ closeTapWord(); return; }
   e.stopPropagation(); e.preventDefault();
