@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#000000">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -707,13 +707,43 @@ body.imm main{padding-top:16px}
 .hwx-got{margin-top:auto;height:56px;border:0;border-radius:999px;background:linear-gradient(135deg,#8aa2ff 0%,#3d5bdb 100%);box-shadow:0 10px 26px rgba(85,115,255,.35);color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:pointer}
 .hwx .stx-head{grid-template-columns:44px 1fr 44px}
 .qzx{border-radius:24px}.qzx .prepo{border-radius:999px}
+/* category bottom sheet */
+.catbtn{width:100%;height:48px;display:flex;align-items:center;gap:10px;padding:0 6px 0 16px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-size:16px;font-weight:600;text-align:left;cursor:pointer}
+.catbtn .cb-l{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.catbtn .cb-c{width:34px;height:34px;flex:0 0 34px;border-radius:999px;background:var(--chip);display:flex;align-items:center;justify-content:center}
+#catSheet{position:fixed;inset:0;z-index:80}
+#catSheet .cs-dim{position:absolute;inset:0;background:var(--drawer-bg)}
+#catSheet .cs{position:absolute;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;max-height:82vh;max-height:82dvh;display:flex;flex-direction:column;gap:10px;padding:10px 16px calc(18px + env(safe-area-inset-bottom));background:var(--surface);border-top:1px solid var(--border);border-radius:30px 30px 0 0;box-shadow:0 -20px 50px rgba(0,0,0,.45);transform:translateY(100%);transition:transform .22s ease}
+#catSheet.on .cs{transform:none}
+.cs-grab{align-self:center;width:40px;height:5px;border-radius:99px;background:var(--border)}
+.cs-head{display:flex;align-items:center;justify-content:space-between}.cs-head h2{margin:0;font-size:24px;font-weight:800;letter-spacing:-.4px}
+.cs-x{width:40px;height:40px;border-radius:999px;border:0;background:var(--chip)}
+.cs-q{height:46px;display:flex;align-items:center;gap:10px;padding:0 16px;border-radius:999px;border:1px solid var(--border);background:var(--bg);color:var(--muted)}
+.cs-q input{flex:1;min-width:0;border:0;background:none;color:var(--text);font:inherit;font-size:16px;outline:none;padding:0;height:100%}
+.cs-sug{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.cs-sug>span{font-size:12px;font-weight:700;color:var(--muted)}
+.cs-pill{height:32px;padding:0 12px;border-radius:999px;border:1px solid color-mix(in srgb,var(--good) 40%,transparent);background:var(--good-fill);color:var(--good-ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.cs-list{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin:0 -4px;padding:3px 4px 4px}
+.cs-row{flex:0 0 auto;display:flex;align-items:center;gap:12px;min-height:52px;padding:6px 10px 6px 18px;border-radius:999px;border:1px solid var(--border);background:var(--bg);color:var(--text);font:inherit;font-size:15.5px;font-weight:600;text-align:left;cursor:pointer}
+.cs-row[hidden]{display:none}
+.cs-row .l{flex:1;min-width:0;display:flex;flex-direction:column;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs-row .l small{font-size:12px;font-weight:600;color:var(--muted)}
+.cs-row .n{font-size:12.5px;font-weight:700;color:var(--muted);padding:0 4px}
+.cs-row.on{background:color-mix(in srgb,var(--sel) 14%,var(--bg));border:1.5px solid var(--sel);box-shadow:0 0 0 3px color-mix(in srgb,var(--sel) 12%,transparent)}
+.cs-t{width:30px;height:30px;flex:0 0 30px;border-radius:999px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800}
+.cs-t.on{border:0;background:var(--grad);color:var(--grad-ink)}
+.cs-cv{width:30px;height:30px;flex:0 0 30px;border-radius:999px;background:var(--chip);display:flex;align-items:center;justify-content:center;transition:transform .15s}
+.cs-grp[aria-expanded="true"] .cs-cv{transform:rotate(180deg)}
+.cs-grp.on[aria-expanded="true"]{background:var(--bg);border:1px solid var(--border);box-shadow:none}
+.cs-sublist{display:flex;flex-direction:column;gap:6px;margin-left:18px;padding-left:16px;border-left:2px solid var(--border)}.cs-sublist[hidden]{display:none}
+.cs-row.sub{min-height:46px;font-size:15px}
+.cs-new{flex:0 0 auto;height:50px;border-radius:999px;border:1.5px dashed var(--border);background:none;color:var(--text);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
 .qzx .prepo.ok{background:var(--hw-ok-fill);border:2px solid var(--hw-ok-bd);color:var(--hw-ok);font-weight:700}.qzx .fb.ok{background:var(--hw-ok-bg);color:var(--hw-ok)}
 /* build 5 */
 body:has(.view.on .stx-hi) #pageTitle{visibility:hidden}
 .s-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
 .lvlp{height:28px;display:inline-flex;align-items:center;padding:0 11px;border-radius:999px;border:0;background:var(--chip);color:var(--muted);font:inherit;font-size:12.5px;font-weight:700;white-space:nowrap}
 .lvlp.lk{background:rgba(155,115,224,.16);color:var(--lilac-text);cursor:pointer}
-.ch-top{position:sticky;top:0;z-index:6;background:var(--bg);margin:-16px -16px 0;padding:16px 16px 0;display:flex;flex-direction:column;gap:10px}
+.ch-top{position:sticky;top:0;z-index:6;background:var(--bg);margin:-16px -18px 0;padding:16px 18px 0;display:flex;flex-direction:column;gap:10px}
 .wov-card{display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:26px;background:color-mix(in srgb,var(--sel) 12%,transparent);border:1px solid color-mix(in srgb,var(--sel) 32%,transparent)}
 .wov-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}.wov-top span:first-child{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent)}.wov-top span:last-child{font-size:13px;color:var(--muted);text-align:right}
 .wov-n{display:flex;align-items:baseline;gap:8px}.wov-n span:first-child{font-size:56px;font-weight:800;letter-spacing:-2px;line-height:1}.wov-n span:last-child{font-size:20px;font-weight:700;color:var(--accent)}
@@ -867,7 +897,7 @@ body:has(.view.on .stx-hi) #pageTitle{visibility:hidden}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-22-5";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-23-1";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -1038,9 +1068,13 @@ let mistRange = "sent";
 /* group mistakes by pattern: "chose tous instead of toutes (4×)" */
 function mistakePatterns(list){
   const by = new Map();
-  list.forEach(m=>{ const p = mistakePattern(m); if (!p || p.startsWith("word:")) return; by.set(p, (by.get(p)||[]).concat(m)); });
+  list.forEach(m=>{ let p = mistakePattern(m); if (!p || p.startsWith("word:")) return;
+    if (p==="gender" && [m.you, m.right].some(x=>/^(les|des)$/i.test(String(x||"").trim()))) p = "gender-number";   // l' vs les is singular/plural, not gender
+    by.set(p, (by.get(p)||[]).concat(m)); });
   const label = (p, ms) => {
     const last = ms[ms.length-1];
+    if (p==="gender-number") return `Singular or plural: le / la / l' vs les (e.g. “${last.you}” instead of “${last.right}”)`;
+    if (p.startsWith("book:")){ const m = p.match(/^book:u(\d+)-(.+)$/); return `Book exercise${m ? ` (Unité ${m[1]}: ${m[2].replace(/-/g," ")})` : ""} (e.g. “${last.you}” instead of “${last.right}”)`; }
     if (p.startsWith("tout") && p!=="tout-fixed" && HW_INFO[p]) return `tout: ${HW_INFO[p].short.replace(/^You /,"you ")} (e.g. chose ${last.you} instead of ${last.right})`;
     return `${(HW_INFO[p]||{}).short || p} (e.g. ${last.you ? `“${last.you}” instead of “${last.right}”` : last.right})`;
   };
@@ -2213,6 +2247,7 @@ let navStack = [], backArmed = false;
 function pushNav(k){ const cur = navKey(); if (k!==cur){ navStack.push(cur); if (navStack.length>30) navStack.shift(); } }
 function armBack(){ if (!backArmed && (navStack.length || navKey()!=="overview")){ try { history.pushState({ff:1}, ""); backArmed = true; } catch(e){} } }
 function goBack(){
+  if ($("#catSheet")){ closeCatSheet(); return true; }
   if ($("#modalBg").classList.contains("on")){ closeModal(); return true; }
   if ($("#drawer").classList.contains("open")){ closeDrawer(); return true; }
   if (curView==="homework" && HWV.view!=="list"){ HWV = {view:"list"}; renderHomework(); window.scrollTo(0,0); return true; }
@@ -3076,8 +3111,8 @@ function startCreate(){
 }
 
 
-const CHATS = [{"id":"chez-moi","title":"Chez moi","category":"Furniture & household","alsoUses":["Rooms & building"],"targets":["le canapé","l'étagère","la chambre"],"twist":{"text":"Say why: use parce que","match":["parce que","parce qu'"]},"turns":[{"bot":{"fr":"Salut ! Ça va ?","en":"Hi! How are you?","tatoeba":true},"starters":["Ça va bien, merci.","Ça va, et toi ?"],"followups":[{"default":{"fr":"Super ! Tu habites où ?","en":"Great! Where do you live?","tatoeba":true}}]},{"bot":{"fr":"Ta maison est grande ?","en":"Is your house big?","tatoeba":true},"starters":["Non, ma maison est petite.","Oui, j'ai trois chambres."],"followups":[{"ifUses":"la chambre","bot":{"fr":"Ta chambre est grande ?","en":"Is your room big?","tatoeba":true}},{"default":{"fr":"Et ta chambre, elle est comment ?","en":"And your room, what's it like?","tatoeba":false}}]},{"bot":{"fr":"Qu'est-ce qu'il y a dans ton salon ?","en":"What's in your living room?","tatoeba":false},"starters":["Il y a un canapé et…","Dans mon salon, il y a…"],"followups":[{"ifUses":"le canapé","bot":{"fr":"Ah, tu regardes la télé sur le canapé ?","en":"Ah, do you watch TV on the sofa?","tatoeba":false}},{"ifUses":"l'étagère","bot":{"fr":"Ton étagère est pleine de livres ?","en":"Is your shelf full of books?","tatoeba":true}},{"default":{"fr":"Tu as un canapé ?","en":"Do you have a sofa?","tatoeba":false}}]},{"bot":{"fr":"Quelle est ta pièce préférée ? Pourquoi ?","en":"What's your favourite room? Why?","tatoeba":false},"starters":["Ma pièce préférée, c'est… parce que…"],"followups":[{"ifTwist":true,"bot":{"fr":"C'est vrai ! Moi aussi.","en":"That's true! Me too.","tatoeba":true}},{"default":{"fr":"Ah bon ? Pourquoi ?","en":"Really? Why?","tatoeba":true}}]}],"wrap":{"fr":"J'aime ta maison ! À bientôt.","en":"I love your house! See you soon.","tatoeba":true}},{"id":"mon-voisin","title":"Mon voisin","category":"Describing things","targets":["le voisin","bruyant","ennuyeux"],"twist":{"text":"Say why: use parce que","match":["parce que","parce qu'"]},"turns":[{"bot":{"fr":"Tu connais tes voisins ?","en":"Do you know your neighbours?","tatoeba":false},"starters":["Oui, j'ai un voisin…","Non, je ne connais pas mes voisins."],"followups":[{"default":{"fr":"J'ai un voisin bizarre, moi !","en":"I have a weird neighbour!","tatoeba":true}}]},{"bot":{"fr":"Il est comment, ton voisin ?","en":"What's your neighbour like?","tatoeba":false},"starters":["Mon voisin est sympa.","Il est un peu bruyant."],"followups":[{"ifUses":"bruyant","bot":{"fr":"Oh non ! C'est bruyant le soir ?","en":"Oh no! Is it noisy in the evening?","tatoeba":false}},{"default":{"fr":"Il est bruyant ou calme ?","en":"Is he noisy or quiet?","tatoeba":false}}]},{"bot":{"fr":"Il fait quoi, le soir ?","en":"What does he do in the evening?","tatoeba":false},"starters":["Il écoute de la musique…","Il regarde des films…"],"followups":[{"ifTwist":true,"bot":{"fr":"Je vois ce que tu veux dire.","en":"I see what you mean.","tatoeba":true}},{"default":{"fr":"Pourquoi ? Il fait la fête ?","en":"Why? Is he partying?","tatoeba":false}}]},{"bot":{"fr":"Et toi, tu es une bonne voisine ?","en":"And you, are you a good neighbour?","tatoeba":false},"starters":["Oui, parce que je suis calme.","Je ne suis pas ennuyeuse !"],"followups":[{"ifUses":"ennuyeux","bot":{"fr":"Ha ha, ce n'est pas ennuyeux, c'est calme !","en":"Ha ha, that's not boring, it's peaceful!","tatoeba":false}},{"default":{"fr":"Tu as raison.","en":"You're right.","tatoeba":true}}]}],"wrap":{"fr":"Bon courage avec ton voisin !","en":"Good luck with your neighbour!","tatoeba":false}},{"id":"ma-journee","title":"Ma journée","category":"Daily routine","alsoUses":["Time"],"targets":["je me lève","le petit-déjeuner","à quelle heure"],"twist":{"text":"Give a time: à … heures","match":["heure"]},"turns":[{"bot":{"fr":"Tu te lèves à six heures ?","en":"Do you get up at six?","tatoeba":true},"starters":["Non, je me lève à sept heures.","Oui, je me lève tôt."],"followups":[{"ifTwist":true,"bot":{"fr":"C'est tôt ! Moi, je suis lent le matin.","en":"That's early! I'm slow in the morning.","tatoeba":false}},{"default":{"fr":"À quelle heure tu te lèves, alors ?","en":"What time do you get up, then?","tatoeba":false}}]},{"bot":{"fr":"Qu'est-ce que tu prends au petit-déjeuner ?","en":"What do you have for breakfast?","tatoeba":false},"starters":["Je prends du pain et…","Je bois un café."],"followups":[{"ifUses":"le petit-déjeuner","bot":{"fr":"J'ai pris mon petit-déjeuner à huit heures.","en":"I ate breakfast at eight.","tatoeba":true}},{"default":{"fr":"Le café, ça réveille !","en":"Coffee wakes you up!","tatoeba":false}}]},{"bot":{"fr":"Tu travailles aujourd'hui ?","en":"Are you working today?","tatoeba":false},"starters":["Oui, je vais au travail à…","Non, je suis libre aujourd'hui."],"followups":[{"default":{"fr":"Comment va le travail ?","en":"How's work?","tatoeba":true}}]},{"bot":{"fr":"Et le soir, tu fais quoi ?","en":"And in the evening, what do you do?","tatoeba":false},"starters":["Le soir, je regarde un film.","Je me couche à onze heures."],"followups":[{"default":{"fr":"Pas mal ! C'est normal d'être fatiguée.","en":"Not bad! It's normal to be tired.","tatoeba":false}}]}],"wrap":{"fr":"Bonne soirée ! À demain.","en":"Have a nice evening! See you tomorrow.","tatoeba":false}},{"id":"le-week-end","title":"Le week-end","category":"Films & hobbies","targets":["nager","les dessins animés","la randonnée"],"twist":{"text":"Say what you did last weekend (j'ai…)","match":["j'ai ","je suis allé"]},"turns":[{"bot":{"fr":"Quels sont tes projets pour le week-end ?","en":"What are your weekend plans?","tatoeba":true},"starters":["Ce week-end, je vais…","Je ne sais pas encore."],"followups":[{"ifUses":"la randonnée","bot":{"fr":"Partons en randonnée ce week-end !","en":"Let's go hiking this weekend!","tatoeba":true}},{"default":{"fr":"Es-tu libre ce week-end ?","en":"Are you free this weekend?","tatoeba":true}}]},{"bot":{"fr":"Sais-tu nager ?","en":"Can you swim?","tatoeba":true},"starters":["Oui, je sais nager.","Non, je ne sais pas nager."],"followups":[{"ifUses":"nager","bot":{"fr":"Génial ! On va à la piscine ?","en":"Great! Shall we go to the pool?","tatoeba":false}},{"default":{"fr":"Tu aimes le sport ?","en":"Do you like sport?","tatoeba":true}}]},{"bot":{"fr":"Quel est ton film préféré ?","en":"What's your favourite film?","tatoeba":true},"starters":["Mon film préféré, c'est…","J'adore les dessins animés."],"followups":[{"ifUses":"les dessins animés","bot":{"fr":"Moi aussi ! Tu regardes des dessins animés le samedi ?","en":"Me too! Do you watch cartoons on Saturdays?","tatoeba":false}},{"default":{"fr":"Tu as vu ce film, n'est-ce pas ?","en":"You saw that film, didn't you?","tatoeba":true}}]},{"bot":{"fr":"Et le week-end dernier, qu'est-ce que tu as fait ?","en":"And last weekend, what did you do?","tatoeba":false},"starters":["Le week-end dernier, j'ai…"],"followups":[{"ifTwist":true,"bot":{"fr":"Ça a l'air génial !","en":"That sounds great!","tatoeba":true}},{"default":{"fr":"Tu peux le dire au passé ? « J'ai… »","en":"Can you say it in the past? « J'ai… »","tatoeba":false}}]}],"wrap":{"fr":"Bon week-end !","en":"Have a good weekend!","tatoeba":false}},{"id":"pres-de-chez-moi","title":"Près de chez moi","category":"Places","alsoUses":["Position & direction"],"targets":["près de","loin de","la gare"],"twist":{"text":"Use à côté de","match":["à côté de","à côté du"]},"turns":[{"bot":{"fr":"Tu habites où ?","en":"Where do you live?","tatoeba":true},"starters":["J'habite à…","J'habite près de…"],"followups":[{"default":{"fr":"C'est loin d'ici ?","en":"Is it far from here?","tatoeba":true}}]},{"bot":{"fr":"La gare est loin de chez toi ?","en":"Is the station far from your home?","tatoeba":false},"starters":["Non, la gare est près de chez moi.","Oui, c'est loin."],"followups":[{"ifUses":"près de","bot":{"fr":"C'est pratique !","en":"That's handy!","tatoeba":false}},{"default":{"fr":"Ce n'est pas très loin d'ici ?","en":"It's not very far from here?","tatoeba":true}}]},{"bot":{"fr":"Il y a un parc près de chez toi ?","en":"Is there a park near your home?","tatoeba":false},"starters":["Oui, il y a un parc à côté de…","Non, mais il y a…"],"followups":[{"ifTwist":true,"bot":{"fr":"J'aime ta ville !","en":"I love your city!","tatoeba":true}},{"default":{"fr":"Et à côté de ta maison, il y a quoi ?","en":"And next to your house, what is there?","tatoeba":false}}]},{"bot":{"fr":"Où est-ce que tu fais tes courses ?","en":"Where do you do your shopping?","tatoeba":false},"starters":["Je vais au supermarché…","Au marché, le samedi."],"followups":[{"default":{"fr":"Où est le marché ?","en":"Where is the market?","tatoeba":true}}]}],"wrap":{"fr":"Merci ! À bientôt.","en":"Thanks! See you soon.","tatoeba":false}}];
-const CHAT_REACT = [{"fr":"Ah bon ?","en":"Really?","tatoeba":true},{"fr":"Super !","en":"Great!","tatoeba":true},{"fr":"Moi aussi.","en":"Me too.","tatoeba":true},{"fr":"C'est vrai ?","en":"Is that true?","tatoeba":true},{"fr":"Génial !","en":"Terrific!","tatoeba":true},{"fr":"Tu as raison.","en":"You're right.","tatoeba":true},{"fr":"Pas mal !","en":"Well done!","tatoeba":true}];
+const CHATS = [{"id":"chez-moi","title":"Chez moi","category":"Furniture & household","alsoUses":["Rooms & building"],"targets":["le canapé","l'étagère","la chambre"],"twist":{"text":"Say why: use parce que","match":["parce que","parce qu'"]},"turns":[{"bot":{"fr":"Salut ! Ça va ?","en":"Hi! How are you?","tatoeba":true},"starters":["Ça va bien, merci.","Ça va, et toi ?"],"followups":[{"ifHas":["et toi"],"bot":{"fr":"Très bien, merci ! Tu habites où ?","en":"Very well, thanks! Where do you live?","tatoeba":false},"reacts":[{"ifHas":["londres"],"fr":"Londres ! J'adore Londres.","en":"London! I love London.","tatoeba":false},{"ifHas":["angleterre"],"fr":"Ah, en Angleterre ! C'est joli.","en":"Ah, in England! It's pretty.","tatoeba":false},{"ifHas":["paris","france"],"fr":"Comme moi !","en":"Like me!","tatoeba":false},{"default":true,"fr":"Ah, d'accord ! C'est sympa.","en":"Ah, OK! That's nice.","tatoeba":false}]},{"ifNo":true,"bot":{"fr":"Oh, désolée. Tu habites où ?","en":"Oh, I'm sorry. Where do you live?","tatoeba":false},"reacts":[{"ifHas":["londres"],"fr":"Londres ! J'adore Londres.","en":"London! I love London.","tatoeba":false},{"ifHas":["angleterre"],"fr":"Ah, en Angleterre ! C'est joli.","en":"Ah, in England! It's pretty.","tatoeba":false},{"ifHas":["paris","france"],"fr":"Comme moi !","en":"Like me!","tatoeba":false},{"default":true,"fr":"Ah, d'accord ! C'est sympa.","en":"Ah, OK! That's nice.","tatoeba":false}]},{"default":{"fr":"Super ! Tu habites où ?","en":"Great! Where do you live?","tatoeba":false},"reacts":[{"ifHas":["londres"],"fr":"Londres ! J'adore Londres.","en":"London! I love London.","tatoeba":false},{"ifHas":["angleterre"],"fr":"Ah, en Angleterre ! C'est joli.","en":"Ah, in England! It's pretty.","tatoeba":false},{"ifHas":["paris","france"],"fr":"Comme moi !","en":"Like me!","tatoeba":false},{"default":true,"fr":"Ah, d'accord ! C'est sympa.","en":"Ah, OK! That's nice.","tatoeba":false}]}]},{"bot":{"fr":"Ta maison est grande ?","en":"Is your house big?","tatoeba":true},"starters":["Non, ma maison est petite.","Oui, j'ai trois chambres."],"followups":[{"ifUses":"la chambre","bot":{"fr":"Ta chambre est grande ?","en":"Is your room big?","tatoeba":true},"reacts":[{"ifHas":["petite"],"fr":"Une petite chambre, c'est mignon !","en":"A small room, that's cute!","tatoeba":false},{"ifHas":["grande"],"fr":"Une grande chambre ! Tu as de la chance.","en":"A big room! You're lucky.","tatoeba":false},{"ifHas":["calme"],"fr":"C'est bien, une chambre calme.","en":"That's nice, a quiet room.","tatoeba":false},{"ifNo":true,"fr":"Ah, d'accord.","en":"Ah, OK.","tatoeba":false},{"default":true,"fr":"Elle a l'air sympa !","en":"It sounds nice!","tatoeba":false}]},{"default":{"fr":"Et ta chambre, elle est comment ?","en":"And your room, what's it like?","tatoeba":false},"reacts":[{"ifHas":["petite"],"fr":"Une petite chambre, c'est mignon !","en":"A small room, that's cute!","tatoeba":false},{"ifHas":["grande"],"fr":"Une grande chambre ! Tu as de la chance.","en":"A big room! You're lucky.","tatoeba":false},{"ifHas":["calme"],"fr":"C'est bien, une chambre calme.","en":"That's nice, a quiet room.","tatoeba":false},{"ifNo":true,"fr":"Ah, d'accord.","en":"Ah, OK.","tatoeba":false},{"default":true,"fr":"Elle a l'air sympa !","en":"It sounds nice!","tatoeba":false}]}]},{"bot":{"fr":"Qu'est-ce qu'il y a dans ton salon ?","en":"What's in your living room?","tatoeba":false},"starters":["Il y a un canapé et…","Dans mon salon, il y a…"],"followups":[{"ifUses":"le canapé","bot":{"fr":"Ah, tu regardes la télé sur le canapé ?","en":"Ah, do you watch TV on the sofa?","tatoeba":false},"reacts":[{"ifHas":["désolé","désolée","pardon"],"fr":"Pas de problème !","en":"No problem!","tatoeba":false},{"ifNo":true,"fr":"Ah, d'accord. Moi, je regarde la télé tous les soirs !","en":"Ah, OK. I watch TV every evening!","tatoeba":false},{"ifYes":true,"fr":"Moi aussi ! C'est confortable.","en":"Me too! It's comfy.","tatoeba":false},{"default":true,"fr":"Ah, d'accord !","en":"Ah, OK!","tatoeba":false}]},{"ifUses":"l'étagère","bot":{"fr":"Ton étagère est pleine de livres ?","en":"Is your shelf full of books?","tatoeba":true},"reacts":[{"ifNo":true,"fr":"Ah, d'accord. Moi, j'ai trop de livres !","en":"Ah, OK. I have too many books!","tatoeba":false},{"ifYes":true,"fr":"Super ! Tu aimes lire, alors.","en":"Great! You like reading, then.","tatoeba":false},{"default":true,"fr":"Ah, cool !","en":"Ah, cool!","tatoeba":false}]},{"default":{"fr":"Tu as un canapé ?","en":"Do you have a sofa?","tatoeba":false},"reacts":[{"ifNo":true,"fr":"Pas de canapé ? C'est original !","en":"No sofa? That's unusual!","tatoeba":false},{"ifYes":true,"fr":"Super ! Il est confortable, j'espère.","en":"Great! It's comfy, I hope.","tatoeba":false},{"default":true,"fr":"Ah, d'accord !","en":"Ah, OK!","tatoeba":false}]}]},{"bot":{"fr":"Quelle est ta pièce préférée ? Pourquoi ?","en":"What's your favourite room? Why?","tatoeba":false},"starters":["Ma pièce préférée, c'est… parce que…"],"followups":[{"ifTwist":true,"bot":{"fr":"Je comprends ! Moi aussi, j'aime ma chambre.","en":"I get it! I like my room too.","tatoeba":false}},{"default":{"fr":"Ah bon ? Pourquoi ?","en":"Really? Why?","tatoeba":false},"reacts":[{"ifHas":["parce que","parce qu'"],"fr":"Ah, je comprends !","en":"Ah, I get it!","tatoeba":false},{"default":true,"fr":"D'accord, je comprends.","en":"OK, I understand.","tatoeba":false}]}]}],"wrap":{"fr":"J'aime ta maison ! À bientôt.","en":"I love your house! See you soon.","tatoeba":true}},{"id":"mon-voisin","title":"Mon voisin","category":"Describing things","targets":["le voisin","bruyant","ennuyeux"],"twist":{"text":"Say why: use parce que","match":["parce que","parce qu'"]},"turns":[{"bot":{"fr":"Tu connais tes voisins ?","en":"Do you know your neighbours?","tatoeba":false},"starters":["Oui, j'ai un voisin…","Non, je ne connais pas mes voisins."],"followups":[{"ifNo":true,"bot":{"fr":"Moi, je connais un voisin… et il est bizarre !","en":"I know one neighbour… and he's weird!","tatoeba":false}},{"default":{"fr":"Moi aussi ! J'ai un voisin bizarre.","en":"Me too! I have a weird neighbour.","tatoeba":false}}]},{"bot":{"fr":"Il est comment, ton voisin ?","en":"What's your neighbour like?","tatoeba":false},"starters":["Mon voisin est sympa.","Il est un peu bruyant."],"followups":[{"ifUses":"bruyant","bot":{"fr":"Oh non ! Il est bruyant le soir ?","en":"Oh no! Is he noisy in the evening?","tatoeba":false},"reacts":[{"ifYes":true,"fr":"Oh là là ! C'est pénible.","en":"Oh dear! That's annoying.","tatoeba":false},{"ifNo":true,"fr":"Ah, tant mieux !","en":"Ah, good!","tatoeba":false},{"default":true,"fr":"Je vois.","en":"I see.","tatoeba":false}]},{"default":{"fr":"Il est bruyant ou calme ?","en":"Is he noisy or quiet?","tatoeba":false},"reacts":[{"ifHas":["bruyant"],"fr":"Oh non, ce n'est pas drôle !","en":"Oh no, that's not fun!","tatoeba":false},{"ifHas":["calme"],"fr":"Tant mieux ! C'est important.","en":"Good! That matters.","tatoeba":false},{"default":true,"fr":"Je vois.","en":"I see.","tatoeba":false}]}]},{"bot":{"fr":"Il fait quoi, le soir ?","en":"What does he do in the evening?","tatoeba":false},"starters":["Il écoute de la musique…","Il regarde des films…"],"followups":[{"ifTwist":true,"bot":{"fr":"Ah, je vois ce que tu veux dire !","en":"Ah, I see what you mean!","tatoeba":false}},{"default":{"fr":"Pourquoi ? Il fait la fête ?","en":"Why? Does he party?","tatoeba":false},"reacts":[{"ifYes":true,"fr":"Oh là là ! Pas facile.","en":"Oh dear! Not easy.","tatoeba":false},{"ifNo":true,"fr":"Ah, d'accord.","en":"Ah, OK.","tatoeba":false},{"default":true,"fr":"Je comprends.","en":"I understand.","tatoeba":false}]}]},{"bot":{"fr":"Et toi, tu es une bonne voisine ?","en":"And you, are you a good neighbour?","tatoeba":false},"starters":["Oui, parce que je suis calme.","Je ne suis pas ennuyeuse !"],"followups":[{"ifUses":"ennuyeux","bot":{"fr":"Ha ha ! Pas ennuyeuse, calme !","en":"Ha ha! Not boring, calm!","tatoeba":false}},{"ifNo":true,"bot":{"fr":"Ha ha ! Je ne te crois pas.","en":"Ha ha! I don't believe you.","tatoeba":false}},{"default":{"fr":"Ha ha, j'en suis sûre !","en":"Ha ha, I'm sure you are!","tatoeba":false}}]}],"wrap":{"fr":"Bon courage avec ton voisin !","en":"Good luck with your neighbour!","tatoeba":false}},{"id":"ma-journee","title":"Ma journée","category":"Daily routine","alsoUses":["Time"],"targets":["je me lève","le petit-déjeuner","à quelle heure"],"twist":{"text":"Give a time: à … heures","match":["heure"]},"turns":[{"bot":{"fr":"Tu te lèves à six heures ?","en":"Do you get up at six?","tatoeba":true},"starters":["Non, je me lève à sept heures.","Oui, je me lève tôt."],"followups":[{"ifTwist":true,"bot":{"fr":"C'est tôt ! Moi, je suis lente le matin.","en":"That's early! I'm slow in the morning.","tatoeba":false}},{"ifYes":true,"bot":{"fr":"C'est tôt ! Moi, je me lève à huit heures.","en":"That's early! I get up at eight.","tatoeba":false}},{"default":{"fr":"À quelle heure tu te lèves, alors ?","en":"What time do you get up, then?","tatoeba":false},"reacts":[{"ifHas":["heure","heures"],"fr":"Ah, d'accord ! Moi, je me lève à huit heures.","en":"Ah, OK! I get up at eight.","tatoeba":false},{"default":true,"fr":"D'accord !","en":"OK!","tatoeba":false}]}]},{"bot":{"fr":"Qu'est-ce que tu prends au petit-déjeuner ?","en":"What do you have for breakfast?","tatoeba":false},"starters":["Je prends du pain et…","Je bois un café."],"followups":[{"ifHas":["café"],"bot":{"fr":"Le café, ça réveille !","en":"Coffee wakes you up!","tatoeba":false}},{"ifHas":["thé"],"bot":{"fr":"Moi aussi, j'adore le thé !","en":"Me too, I love tea!","tatoeba":false}},{"ifNo":true,"bot":{"fr":"Pas de petit-déjeuner ? Oh là là !","en":"No breakfast? Oh dear!","tatoeba":false}},{"default":{"fr":"Miam ! Moi, je prends des tartines.","en":"Yum! I have bread and butter.","tatoeba":false}}]},{"bot":{"fr":"Tu travailles aujourd'hui ?","en":"Are you working today?","tatoeba":false},"starters":["Oui, je vais au travail à…","Non, je suis libre aujourd'hui."],"followups":[{"ifNo":true,"bot":{"fr":"Super, une journée tranquille !","en":"Great, a quiet day!","tatoeba":false}},{"default":{"fr":"Comment va le travail ?","en":"How's work going?","tatoeba":false},"reacts":[{"ifHas":["fatigué","fatiguée"],"fr":"Oh, courage !","en":"Oh, hang in there!","tatoeba":false},{"ifNo":true,"fr":"Oh, courage !","en":"Oh, hang in there!","tatoeba":false},{"ifHas":["bien"],"fr":"Tant mieux !","en":"Good!","tatoeba":false},{"default":true,"fr":"Je vois.","en":"I see.","tatoeba":false}]}]},{"bot":{"fr":"Et le soir, tu fais quoi ?","en":"And in the evening, what do you do?","tatoeba":false},"starters":["Le soir, je regarde un film.","Je me couche à onze heures."],"followups":[{"ifHas":["fatigué","fatiguée"],"bot":{"fr":"C'est normal d'être fatiguée le soir !","en":"It's normal to be tired in the evening!","tatoeba":false}},{"ifHas":["regarde","télé"],"bot":{"fr":"Moi aussi, je regarde la télé le soir.","en":"Me too, I watch TV in the evening.","tatoeba":false}},{"default":{"fr":"Ça a l'air sympa !","en":"That sounds nice!","tatoeba":false}}]}],"wrap":{"fr":"Bonne soirée ! À demain.","en":"Have a nice evening! See you tomorrow.","tatoeba":false}},{"id":"le-week-end","title":"Le week-end","category":"Films & hobbies","targets":["nager","les dessins animés","la randonnée"],"twist":{"text":"Say what you did last weekend (j'ai…)","match":["j'ai ","je suis allé"]},"turns":[{"bot":{"fr":"Quels sont tes projets pour le week-end ?","en":"What are your weekend plans?","tatoeba":true},"starters":["Ce week-end, je vais…","Je ne sais pas encore."],"followups":[{"ifUses":"la randonnée","bot":{"fr":"Super ! J'adore la randonnée.","en":"Great! I love hiking.","tatoeba":false}},{"ifHas":["rien"],"bot":{"fr":"Un week-end tranquille, c'est bien aussi !","en":"A quiet weekend is nice too!","tatoeba":false}},{"default":{"fr":"Ça a l'air sympa !","en":"That sounds nice!","tatoeba":false}}]},{"bot":{"fr":"Sais-tu nager ?","en":"Can you swim?","tatoeba":true},"starters":["Oui, je sais nager.","Non, je ne sais pas nager."],"followups":[{"ifNo":true,"bot":{"fr":"Pas de problème ! Tu aimes le sport ?","en":"No problem! Do you like sport?","tatoeba":false},"reacts":[{"ifYes":true,"fr":"Super ! Moi aussi.","en":"Great! Me too.","tatoeba":false},{"ifNo":true,"fr":"Moi non plus, ha ha !","en":"Me neither, ha ha!","tatoeba":false},{"default":true,"fr":"Ah, d'accord.","en":"Ah, OK.","tatoeba":false}]},{"ifUses":"nager","bot":{"fr":"Génial ! On va à la piscine ?","en":"Brilliant! Shall we go to the pool?","tatoeba":false},"reacts":[{"ifYes":true,"fr":"Super ! Samedi, alors !","en":"Great! Saturday, then!","tatoeba":false},{"ifNo":true,"fr":"D'accord, pas de problème.","en":"OK, no problem.","tatoeba":false},{"default":true,"fr":"D'accord !","en":"OK!","tatoeba":false}]},{"default":{"fr":"Tu aimes le sport ?","en":"Do you like sport?","tatoeba":false},"reacts":[{"ifYes":true,"fr":"Super ! Moi aussi.","en":"Great! Me too.","tatoeba":false},{"ifNo":true,"fr":"Moi non plus, ha ha !","en":"Me neither, ha ha!","tatoeba":false},{"default":true,"fr":"Ah, d'accord.","en":"Ah, OK.","tatoeba":false}]}]},{"bot":{"fr":"Quel est ton film préféré ?","en":"What's your favourite film?","tatoeba":true},"starters":["Mon film préféré, c'est…","J'adore les dessins animés."],"followups":[{"ifUses":"les dessins animés","bot":{"fr":"Moi aussi, j'adore les dessins animés !","en":"Me too, I love cartoons!","tatoeba":false}},{"default":{"fr":"Ah, je ne connais pas. C'est bien ?","en":"Ah, I don't know it. Is it good?","tatoeba":false},"reacts":[{"ifYes":true,"fr":"Je vais le regarder, alors !","en":"I'll watch it, then!","tatoeba":false},{"ifNo":true,"fr":"Ha ha, d'accord !","en":"Ha ha, OK!","tatoeba":false},{"default":true,"fr":"Je vais le regarder !","en":"I'll watch it!","tatoeba":false}]}]},{"bot":{"fr":"Et le week-end dernier, qu'est-ce que tu as fait ?","en":"And last weekend, what did you do?","tatoeba":false},"starters":["Le week-end dernier, j'ai…"],"followups":[{"ifTwist":true,"bot":{"fr":"Ça a l'air génial !","en":"That sounds great!","tatoeba":false}},{"default":{"fr":"Tu peux le dire au passé ? « J'ai… »","en":"Can you say it in the past? “J'ai…”","tatoeba":false},"reacts":[{"ifHas":["j'ai","je suis"],"fr":"Parfait ! C'est bien au passé.","en":"Perfect! That's the past tense.","tatoeba":false},{"default":true,"fr":"Pas grave, c'est difficile !","en":"Never mind, it's hard!","tatoeba":false}]}]}],"wrap":{"fr":"Bon week-end !","en":"Have a good weekend!","tatoeba":false}},{"id":"pres-de-chez-moi","title":"Près de chez moi","category":"Places","alsoUses":["Position & direction"],"targets":["près de","loin de","la gare"],"twist":{"text":"Use à côté de","match":["à côté de","à côté du"]},"turns":[{"bot":{"fr":"Tu habites où ?","en":"Where do you live?","tatoeba":true},"starters":["J'habite à…","J'habite près de…"],"followups":[{"ifHas":["londres"],"bot":{"fr":"À Londres ? J'adore Londres !","en":"In London? I love London!","tatoeba":false}},{"default":{"fr":"Ah, d'accord ! C'est joli ?","en":"Ah, OK! Is it pretty?","tatoeba":false},"reacts":[{"ifYes":true,"fr":"Super ! J'aimerais bien visiter.","en":"Great! I'd love to visit.","tatoeba":false},{"ifNo":true,"fr":"Ha ha, d'accord !","en":"Ha ha, OK!","tatoeba":false},{"default":true,"fr":"J'aimerais bien visiter !","en":"I'd love to visit!","tatoeba":false}]}]},{"bot":{"fr":"La gare est loin de chez toi ?","en":"Is the station far from your home?","tatoeba":false},"starters":["Non, la gare est près de chez moi.","Oui, c'est loin."],"followups":[{"ifUses":"près de","bot":{"fr":"C'est pratique !","en":"That's handy!","tatoeba":false}},{"ifUses":"loin de","bot":{"fr":"Oh, c'est loin ! Tu y vas à pied ?","en":"Oh, it's far! Do you walk there?","tatoeba":false},"reacts":[{"ifYes":true,"fr":"Bravo, c'est bon pour la santé !","en":"Well done, it's good for you!","tatoeba":false},{"ifNo":true,"fr":"Ah, en bus, alors.","en":"Ah, by bus, then.","tatoeba":false},{"default":true,"fr":"D'accord !","en":"OK!","tatoeba":false}]},{"ifNo":true,"bot":{"fr":"C'est pratique !","en":"That's handy!","tatoeba":false}},{"default":{"fr":"D'accord !","en":"OK!","tatoeba":false}}]},{"bot":{"fr":"Il y a un parc près de chez toi ?","en":"Is there a park near your home?","tatoeba":false},"starters":["Oui, il y a un parc à côté de…","Non, mais il y a…"],"followups":[{"ifTwist":true,"bot":{"fr":"J'aime ta ville !","en":"I like your town!","tatoeba":false}},{"ifNo":true,"bot":{"fr":"Dommage ! Et à côté de ta maison, il y a quoi ?","en":"Shame! And next to your house, what is there?","tatoeba":false},"reacts":[{"ifHas":["rien"],"fr":"Ha ha, c'est calme alors !","en":"Ha ha, it's quiet then!","tatoeba":false},{"default":true,"fr":"Ah, d'accord !","en":"Ah, OK!","tatoeba":false}]},{"default":{"fr":"Super ! Et à côté de ta maison, il y a quoi ?","en":"Great! And next to your house, what is there?","tatoeba":false},"reacts":[{"ifHas":["rien"],"fr":"Ha ha, c'est calme alors !","en":"Ha ha, it's quiet then!","tatoeba":false},{"default":true,"fr":"Ah, d'accord !","en":"Ah, OK!","tatoeba":false}]}]},{"bot":{"fr":"Où est-ce que tu fais tes courses ?","en":"Where do you do your shopping?","tatoeba":false},"starters":["Je vais au supermarché…","Au marché, le samedi."],"followups":[{"ifHas":["supermarché"],"bot":{"fr":"Le supermarché, c'est pratique.","en":"The supermarket is handy.","tatoeba":false}},{"ifHas":["marché"],"bot":{"fr":"J'adore le marché !","en":"I love the market!","tatoeba":false}},{"default":{"fr":"C'est près de chez toi ?","en":"Is it near your place?","tatoeba":false},"reacts":[{"ifYes":true,"fr":"C'est pratique !","en":"That's handy!","tatoeba":false},{"ifNo":true,"fr":"Oh, c'est loin !","en":"Oh, that's far!","tatoeba":false},{"default":true,"fr":"D'accord !","en":"OK!","tatoeba":false}]}]}],"wrap":{"fr":"Merci ! À bientôt.","en":"Thanks! See you soon.","tatoeba":false}}];
+const CHAT_REACT = {"yes":[{"fr":"Super !","en":"Great!","tatoeba":false},{"fr":"Ah, cool !","en":"Ah, cool!","tatoeba":false},{"fr":"Génial !","en":"Brilliant!","tatoeba":false}],"no":[{"fr":"Ah, d'accord.","en":"Ah, OK.","tatoeba":false},{"fr":"Je vois.","en":"I see.","tatoeba":false}],"sorry":[{"fr":"Pas de problème !","en":"No problem!","tatoeba":false},{"fr":"Ce n'est pas grave !","en":"It doesn't matter!","tatoeba":false}],"any":[{"fr":"Ah, d'accord !","en":"Ah, OK!","tatoeba":false},{"fr":"Je vois.","en":"I see.","tatoeba":false},{"fr":"Cool !","en":"Cool!","tatoeba":false}]};
 /* ---------- ✍️ WRITING CHAT (build 3): scripted chats with Camille, 3 of your words per round ---------- */
 const CHAT_AV = `<span class="ch-av" aria-hidden="true">C</span>`;
 const chatCats = ch => [ch.category].concat(ch.alsoUses||[]);
@@ -3228,10 +3263,33 @@ function chatSend(raw){
   const advance = ()=>{ A.turn++; A.wait = "turn";
     if (A.turn < ch.turns.length) A.msgs.push({who:"bot", fr:ch.turns[A.turn].bot.fr, en:ch.turns[A.turn].bot.en});
     else { if (ch.wrap) A.msgs.push({who:"bot", fr:ch.wrap.fr, en:ch.wrap.en}); A.done = true; } };
-  if (A.wait==="follow"){ step(()=>{ const r = CHAT_REACT[Math.floor(Math.random()*CHAT_REACT.length)]; if (r) A.msgs.push({who:"bot", fr:r.fr, en:r.en}); advance(); }, 900); return; }
-  const f = (turn.followups||[]).find(x=> x.ifUses ? chatHas(text, x.ifUses) : x.ifTwist ? A.twist : false) || (turn.followups||[]).find(x=>x.default) || {};
+  if (A.wait==="follow"){ step(()=>{ const r = chatReact(text, A.reacts); if (r) A.msgs.push({who:"bot", fr:r.fr, en:r.en}); A.reacts = null; advance(); }, 900); return; }
+  const f = (turn.followups||[]).find(x=>!x.default && chatCond(x, text, A)) || (turn.followups||[]).find(x=>x.default) || {};
   const next = f.bot || f.default;
-  step(()=>{ if (next){ A.msgs.push({who:"bot", fr:next.fr, en:next.en}); if (/\?\s*$/.test(next.fr) && A.turn < ch.turns.length-1){ A.wait = "follow"; return; } } advance(); }, 900);
+  step(()=>{ if (next){ A.msgs.push({who:"bot", fr:next.fr, en:next.en}); if (/\?\s*$/.test(next.fr) && A.turn < ch.turns.length-1){ A.wait = "follow"; A.reacts = f.reacts || null; return; } } advance(); }, 900);
+}
+/* does your reply say yes / no / sorry?  Camille's answer depends on it */
+function chatMood(text){
+  const t = " " + strip(norm(text)) + " ";
+  if (/ (desole|desolee|pardon) /.test(t)) return "sorry";
+  if (/^ non\b| pas | jamais | rien | personne |n'/.test(t)) return "no";
+  if (/^ (oui|si|bien sur|ouais)\b| d'accord /.test(t)) return "yes";
+  return "any";
+}
+function chatCond(x, text, A){
+  const conds = [];
+  if (x.ifUses) conds.push(chatHas(text, x.ifUses));
+  if (x.ifHas) conds.push(x.ifHas.some(w=>chatHas(text, w)));
+  if (x.ifTwist) conds.push(!!A.twist);
+  if (x.ifYes) conds.push(chatMood(text)==="yes");
+  if (x.ifNo) conds.push(chatMood(text)==="no");
+  return conds.length>0 && conds.every(Boolean);
+}
+function chatReact(text, reacts){
+  const own = (reacts||[]).find(r=>!r.default && chatCond(r, text, {})) || (reacts||[]).find(r=>r.default);
+  if (own) return own;
+  const pool = CHAT_REACT[chatMood(text)] || CHAT_REACT.any;
+  return pool[Math.floor(Math.random()*pool.length)];
 }
 function chatFinish(){
   const st = chatSt(), A = st.active, ch = CHATS.find(x=>x.id===A.id), r = chatRec(A.id);
@@ -4085,7 +4143,7 @@ function skillsFromCorrection(j){
 }
 /* ---------- ONLINE: free grammar check (LanguageTool) ---------- */
 const LT_URL = "https://api.languagetool.org/v2/check";
-const LT_SKIP = /WHITESPACE|ESPACE|TYPO|APOS_TYP|DASH|GUILLEMET|QUOTE|ELLIPSIS/i;   // French typography rules = noise for learners
+const LT_SKIP = /WHITESPACE|ESPACE|TYPO|APOS_TYP|DASH|GUILLEMET|QUOTE|ELLIPSIS|PUNCT|PONCT|UPPERCASE|MAJUSCULE|FINAL_STOP/i;   // French typography rules = noise for learners
 const checkOn = () => state.settings.ltCheck !== false;
 let ltBusy = false;
 async function ltCheck(text){
@@ -4096,8 +4154,33 @@ async function ltCheck(text){
   const data = await r.json();
   return (data.matches||[])
     .filter(m=>!LT_SKIP.test((m.rule&&m.rule.id)||"") && !LT_SKIP.test((m.rule&&m.rule.category&&m.rule.category.id)||""))
-    .map(m=>({o:m.offset, l:m.length, msg:m.message||m.shortMessage||"", fix:(m.replacements&&m.replacements[0]&&m.replacements[0].value)||"",
-      alt:(m.replacements||[]).slice(1,3).map(x=>x.value), kind:(m.rule&&m.rule.category&&m.rule.category.name)||""}));
+    .map(m=>{ const fix = ltBestFix(text.slice(m.offset, m.offset+m.length), (m.replacements||[]).slice(0,6).map(x=>x.value));
+      return fix===null ? null : {o:m.offset, l:m.length, msg:m.message||m.shortMessage||"", fix,
+      alt:(m.replacements||[]).map(x=>x.value).filter(v=>v!==fix).slice(0,2), kind:(m.rule&&m.rule.category&&m.rule.category.name)||""}; })
+    .filter(Boolean);
+}
+/* LanguageTool's first suggestion is often wrong for learners ("mon chambre" → "mon chambré").
+   Pick the suggestion that keeps your nouns and word order and only changes small words (le/la/mon/ma…);
+   if no suggestion is safe, show nothing. */
+const LT_SMALL = new Set("le la les l' un une des du de d' au aux mon ma mes ton ta tes son sa ses notre nos votre vos leur leurs ce cet cette ces que qu' je j' il elle on ils elles ne n' se s'".split(" "));
+function ltBestFix(orig, reps){
+  const letters = x => strip(String(x).toLowerCase()).replace(/[^a-z]/g,"");
+  const words = x => String(x).toLowerCase().replace(/[’]/g,"'").replace(/(\w')/g,"$1 ").split(/\s+/).filter(Boolean);
+  const ow = words(orig);
+  let best = null, bestScore = -1;
+  reps.forEach(r=>{
+    if (!r || letters(r)===letters(orig)) return;                                      // only punctuation / spacing changed
+    const rw = words(r); let same = 0, smallOnly = true;
+    rw.forEach((w,i)=>{ if (ow[i]===w) same++; else if (!LT_SMALL.has(w) && !LT_SMALL.has(ow[i])) smallOnly = false; });
+    if (ow.length>1 && same===0) return;                                               // reordered or rewrote everything: not trusted
+    const reorder = rw.length===ow.length && rw.slice().sort().join(" ")===ow.slice().sort().join(" ") && rw.join(" ")!==ow.join(" ");
+    if (reorder) return;
+    // a word that only gains or loses an accent (chambre → chambré) is a spelling guess, not a grammar fix
+    const risky = rw.some((w,i)=>ow[i] && w!==ow[i] && !LT_SMALL.has(w) && letters(w)===letters(ow[i]));
+    const score = same + (smallOnly ? 2 : 0) - (risky ? 3 : 0);
+    if (score > bestScore){ best = r; bestScore = score; }
+  });
+  return bestScore < 0 ? null : best;
 }
 /* LanguageTool only explains in French — translate the common notes */
 const Q = "(?:«\\s*|\"|“)(.+?)(?:\\s*»|\"|”)";
@@ -4564,16 +4647,24 @@ function catPicker(id, value, emptyLabel){
   value = (value||"").trim(); if (value===UNCAT) value = "";
   const isNew = !!value && !cats.includes(value);
   return `<div class="catpick">
-    <select id="${id}_sel" aria-label="Category">
+    <button type="button" class="catbtn" id="${id}_btn" aria-haspopup="dialog"><span class="cb-l">${esc(value || emptyLabel || UNCAT)}</span><span class="cb-c" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
+    <select id="${id}_sel" aria-label="Category" hidden>
       <option value="">${esc(emptyLabel||UNCAT)}</option>
       ${cats.map(c=>`<option value="${esc(c)}" ${c===value?"selected":""}>${esc(c)}</option>`).join("")}
       <option value="__new" ${isNew?"selected":""}>＋ New category…</option>
     </select>
-    <input type="text" id="${id}" value="${esc(value)}" placeholder="Type the new category name" autocomplete="off" ${isNew?"":"hidden"}>
+    <input type="text" id="${id}" value="${esc(value)}" placeholder="Type the new category name" autocomplete="off" hidden>
   </div>`;
+}
+function syncCatBtn(id){
+  const sel = $("#"+id+"_sel"), inp = $("#"+id), b = $("#"+id+"_btn"); if (!sel || !b) return;
+  const v = sel.value==="__new" ? inp.value.trim() : sel.value;
+  b.querySelector(".cb-l").textContent = v ? (sel.value==="__new" ? v + " (new)" : catLabel(v)) : sel.options[0].textContent;
 }
 function wireCatPicker(id){
   const sel = $("#"+id+"_sel"), inp = $("#"+id); if (!sel) return;
+  $("#"+id+"_btn").onclick = ()=>openCatSheet(id);
+  sel.addEventListener("change", ()=>syncCatBtn(id));
   sel.addEventListener("change", ()=>{
     if (sel.value==="__new"){ inp.hidden = false; inp.value = ""; inp.focus(); }
     else { inp.hidden = true; inp.value = sel.value; }
@@ -4587,8 +4678,56 @@ function setCatPicker(id, value){
   if (has){ sel.value = value; inp.hidden = true; }
   else if (value){ sel.value = "__new"; inp.hidden = false; }
   else { sel.value = ""; inp.hidden = true; }
-  inp.value = value;
+  inp.value = value; inp.hidden = true; syncCatBtn(id);
 }
+/* the category list: a bottom sheet in the app's style instead of the phone's own pop-up list */
+function openCatSheet(id){
+  const sel = $("#"+id+"_sel"), inp = $("#"+id); if (!sel) return;
+  closeCatSheet();
+  const cur = sel.value==="__new" ? inp.value.trim() : sel.value;
+  const opts = [...sel.options].filter(o=>o.value!=="__new");
+  const count = v => v ? state.cards.filter(c=>catOf(c)===v).length : state.cards.filter(c=>catOf(c)===UNCAT).length;
+  const plain = opts.filter(o=>!isConjCat(o.value)), conj = opts.filter(o=>isConjCat(o.value));
+  const sug = [...document.querySelectorAll("#modal .chip[data-cat]")].map(b=>b.dataset.cat).filter(c=>c && c!==cur).slice(0,2);
+  let conjOpen = isConjCat(cur);
+  const tick = on => `<span class="cs-t ${on?"on":""}" aria-hidden="true">${on?"✓":""}</span>`;
+  const row = (o, sub) => `<button class="cs-row ${o.value===cur?"on":""} ${sub?"sub":""}" data-v="${esc(o.value)}" data-q="${esc(norm(o.textContent))}"><span class="l">${esc(sub ? o.value.replace(/^conjugation\s*[–-]\s*/i,"") : o.textContent)}</span><span class="n">${count(o.value)}</span>${tick(o.value===cur)}</button>`;
+  const wrap = document.createElement("div"); wrap.id = "catSheet";
+  wrap.innerHTML = `<div class="cs-dim"></div><section class="cs" role="dialog" aria-label="Choose a category">
+    <span class="cs-grab" aria-hidden="true"></span>
+    <div class="cs-head"><h2>Category</h2><button class="hbtn cs-x" aria-label="Close">${XICON}</button></div>
+    <label class="cs-q"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input type="text" placeholder="Search or type a new one" autocomplete="off" aria-label="Search categories"></label>
+    ${sug.length ? `<div class="cs-sug"><span>Suggested</span>${sug.map(c=>`<button class="cs-pill" data-v="${esc(c)}">${esc(c)}</button>`).join("")}</div>` : ""}
+    <div class="cs-list">${plain.map(o=>row(o)).join("")}
+      ${conj.length ? `<button class="cs-row cs-grp ${isConjCat(cur)?"on":""}" aria-expanded="${conjOpen}"><span class="l">Conjugation<small>${isConjCat(cur) ? "✓ " + esc(cur.replace(/^conjugation\s*[–-]\s*/i,"")) : conj.length + " verb" + (conj.length===1?"":"s")}</small></span><span class="n">${conj.reduce((a,o)=>a+count(o.value),0)}</span><span class="cs-cv" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></span></button>
+      <div class="cs-sublist" ${conjOpen?"":"hidden"}>${conj.map(o=>row(o, true)).join("")}</div>` : ""}
+      <p class="cs-none muted small" hidden>No category with that name yet.</p></div>
+    <button class="cs-new">＋ New category</button>
+  </section>`;
+  document.body.appendChild(wrap);
+  const q = wrap.querySelector(".cs-q input"), grp = wrap.querySelector(".cs-grp"), subl = wrap.querySelector(".cs-sublist"), nb = wrap.querySelector(".cs-new");
+  const setOpen = o => { conjOpen = o; if (grp){ grp.setAttribute("aria-expanded", o); subl.hidden = !o; } };
+  const pick = v => {
+    v = (v||"").trim();
+    if (!v || opts.some(o=>o.value===v)){ sel.value = v; inp.value = v; }
+    else { sel.value = "__new"; inp.value = cleanCat(v); }
+    inp.hidden = true; syncCatBtn(id); inp.dispatchEvent(new Event("input", {bubbles:true})); closeCatSheet();
+  };
+  wrap.querySelectorAll("[data-v]").forEach(b=>b.onclick = ()=>pick(b.dataset.v));
+  if (grp) grp.onclick = ()=>setOpen(!conjOpen);
+  wrap.querySelector(".cs-dim").onclick = wrap.querySelector(".cs-x").onclick = closeCatSheet;
+  q.oninput = ()=>{
+    const t = norm(q.value); let any = false;
+    wrap.querySelectorAll(".cs-row[data-v]").forEach(b=>{ const hit = !t || b.dataset.q.includes(t) || norm(b.dataset.v).includes(t); b.hidden = !hit; if (hit) any = true; });
+    if (grp){ const subHit = [...subl.querySelectorAll(".cs-row")].some(b=>!b.hidden); grp.hidden = !!t && !subHit && !"conjugation".includes(t); if (t) setOpen(subHit); }
+    wrap.querySelector(".cs-none").hidden = any || !t;
+    const exact = opts.some(o=>norm(o.value)===t);
+    nb.textContent = t && !exact ? `＋ Make “${q.value.trim()}”` : "＋ New category";
+  };
+  nb.onclick = ()=>{ const t = q.value.trim(); if (t) pick(t); else { q.focus(); q.placeholder = "Type the new category name"; } };
+  requestAnimationFrame(()=>{ wrap.classList.add("on"); const on = wrap.querySelector(".cs-row.on:not(.cs-grp)"); if (on && !on.closest("[hidden]")) on.scrollIntoView({block:"nearest"}); });
+}
+function closeCatSheet(){ const w = $("#catSheet"); if (w) w.remove(); }
 function catOptions(selected, extra){
   const cats = categories().filter(c=>c!==UNCAT);
   (extra||[]).forEach(x=>{ if (x && x!==UNCAT && !cats.includes(x)) cats.push(x); });
@@ -5298,7 +5437,7 @@ setTimeout(processPending, 2500);   // check anything written while offline
     const dup = state.cards.find(c=>norm(c.fr)===norm($("#aFr").value) || norm(c.fr).replace(/^(le|la|les|l')\s?/,"")===norm($("#aFr").value));
     if (dup) toast(`“${dup.fr}” is already in your list (${dup.en})`);
     else if (!m) autoFillForm(false);
-    (m ? $("#aCat_sel") : $("#aEn")).focus();
+    (m ? $("#aCat_btn") : $("#aEn")).focus();
   }, 120);
 })();
 if (IS_WEB && "serviceWorker" in navigator){
@@ -5329,6 +5468,13 @@ function askName(){                         // first open: "What should we call 
   $("#askNameSkip").onclick = ()=>done("");
 }
 
+if (!state.fixClean1){                         // one-time: drop old chat "corrections" that were wrong (mon chambré, ma lite…)
+  const bad = (you, right) => right==null || ltBestFix(you||"", [right])===null;
+  state.mistakes = (state.mistakes||[]).filter(m=>!(m.src==="chat" && bad(m.you, m.right)));
+  ((state.chat||{}).logs||[]).forEach(l=>(l.msgs||[]).forEach(m=>{ if (m.fixes) m.fixes = m.fixes.filter(f=>!bad(f.you, f.fix)); }));
+  if (state.hwDaily && state.hwDaily.items) state.hwDaily.items = state.hwDaily.items.filter(it=>!(it.src==="chat" && bad(it.you, it.right)));
+  state.fixClean1 = true; save();
+}
 refreshCatFilter();
 updateDue();
 applyTheme();
