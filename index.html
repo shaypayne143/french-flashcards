@@ -451,7 +451,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 .btn.primary{background:var(--strong);border-color:var(--strong);color:#fff}
 .tool.big1{background:var(--strong);color:#fff}
 
-/* ===== New look (build ff-2026-11-22-3): black + capsules + gradient; light = off-white + yellow ===== */
+/* ===== New look (build ff-2026-11-22-4): black + capsules + gradient; light = off-white + yellow ===== */
 body{-webkit-font-smoothing:antialiased}
 header{padding:16px 18px 8px}
 header h1{font-size:16px;font-weight:700}
@@ -508,7 +508,7 @@ input.switch:checked{background:var(--grad);border-color:transparent}
 .ovx-rev .go{display:flex;align-items:center;justify-content:center;height:52px;border-radius:999px;background:var(--rev-go);font-size:16px;font-weight:700}
 .ovx-cap{display:flex;align-items:center;gap:12px;height:64px;padding:0 10px 0 20px;border-radius:999px;border:1px solid rgba(155,115,224,.32);background:var(--lilac-tint);color:var(--text);font:inherit;cursor:pointer;width:100%;text-align:left}
 .ovx-cap .t{flex:1;display:flex;align-items:baseline;gap:8px;min-width:0}
-.ovx-cap .t b{font-size:16px;font-weight:800}.ovx-cap .t span{font-size:13.5px;font-weight:600;color:var(--lilac-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ovx-cap .t b{font-size:16px;font-weight:800;white-space:nowrap}.ovx-cap .t span{font-size:13.5px;font-weight:600;color:var(--lilac-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ovx-cap .ar{width:44px;height:44px;flex:0 0 44px;border-radius:999px;background:var(--lilac);color:var(--lilac-ink);display:flex;align-items:center;justify-content:center}
 .ovx-cap.lv{border-color:color-mix(in srgb,var(--good-fill) 45%,transparent);background:color-mix(in srgb,var(--good-fill) 12%,transparent)}
 .ovx-cap.lv .t span{color:var(--good)}.ovx-cap.lv .ar{background:var(--good-fill);color:var(--good-ink)}
@@ -674,6 +674,37 @@ body.imm main{padding-top:16px}
 .tp-en{font-size:15px;margin-top:2px}.tp-n{font-size:11.5px;color:var(--muted)}
 .tp-btn{height:36px;margin-top:8px;border:0;border-radius:999px;background:var(--grad);color:var(--grad-ink);font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
 .tp-btn.have{background:color-mix(in srgb,var(--good-fill) 16%,transparent);color:var(--good);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--good-fill) 45%,transparent)}
+
+/* homework (build 4) */
+.hwx{position:relative;min-height:calc(100vh - 110px)}
+.hwx-card{display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:26px;background:var(--lilac-tint);border:1px solid rgba(155,115,224,.3)}
+.hwx-top{display:flex;align-items:baseline;justify-content:space-between}.hwx-top span:first-child{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--lilac-text)}.hwx-top span:last-child{font-size:13px;color:var(--muted)}
+.hwx-n{display:flex;align-items:baseline;gap:8px}.hwx-n span:first-child{font-size:56px;font-weight:800;letter-spacing:-2px;line-height:1}.hwx-n span:last-child{font-size:20px;font-weight:700;color:var(--lilac-text)}
+.hwx-rows{display:flex;flex-direction:column}
+.hwx-row{display:flex;align-items:center;gap:10px;height:36px;border-top:1px solid rgba(155,115,224,.18)}
+.hwx-row .dot{width:8px;height:8px;flex:0 0 8px;border-radius:99px}.hwx-row .l{flex:1;font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hwx-row .nt{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.hwx-row .c{min-width:26px;height:24px;padding:0 8px;box-sizing:border-box;border-radius:999px;background:var(--chip);font-size:13px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+.hwx-go{height:54px;border:0;border-radius:999px;background:var(--lilac);color:var(--lilac-ink);box-shadow:0 10px 26px rgba(155,115,224,.3);font:inherit;font-size:16px;font-weight:800;cursor:pointer}
+.hwx-none h3{margin:0;font-size:22px}.hwx-none p{margin:0;color:var(--muted);font-size:14px}
+.hwx-send{position:fixed;right:18px;bottom:24px;z-index:30;width:52px;height:52px;border-radius:999px;border:1px solid rgba(155,115,224,.35);background:var(--surface);color:var(--lilac-text);box-shadow:0 10px 26px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.hwx-send.on{background:var(--lilac);color:var(--lilac-ink)}
+.hwx-toast{position:fixed;right:18px;bottom:88px;z-index:30;width:250px;box-sizing:border-box;padding:12px 14px;border-radius:18px;background:var(--surface);border:1px solid rgba(155,115,224,.35);box-shadow:0 16px 40px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:6px}
+.hwx-toast[hidden]{display:none}.hwx-toast b{color:var(--lilac-text);font-size:14px}.hwx-toast span{font-size:12.5px;line-height:1.5}.hwx-toast .m{font-size:11.5px;color:var(--muted)}
+.hwx-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hwx-tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:14px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.hwx-tile b{font-size:24px;font-weight:800;letter-spacing:-.4px}.hwx-tile>span:not(.wp){font-size:13px;color:var(--muted)}.hwx-tile i{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.hwx-tile.hl{background:rgba(155,115,224,.14);border:1.5px solid #9b73e0}.hwx-tile.hl i{color:var(--lilac-text)}
+.hwx-tile.sel{border:2px solid #3d6bff;box-shadow:0 0 0 4px rgba(61,107,255,.18)}
+.hwx-tile .wp{position:absolute;top:10px;right:10px;height:17px;display:inline-flex;align-items:center;padding:0 7px;border-radius:999px;background:var(--lilac);color:var(--lilac-ink);font-size:9px;font-weight:800}
+.hwx-slip{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:999px;background:var(--bad-tint);border:1px solid rgba(201,9,34,.14);font-size:14px}
+.hwx-slip .dot{width:7px;height:7px;flex:0 0 7px;border-radius:99px;background:#ff5a6a}.hwx-slip s{color:var(--bad)}.hwx-slip b{color:var(--good)}
+.hwx-hint{display:flex;align-items:center;justify-content:center;padding:14px;border-radius:20px;border:1.5px dashed var(--border);color:var(--muted);font-size:13.5px}
+.hwx-info{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:22px;background:var(--surface);border:1px solid var(--border)}.hwx-info b{font-size:18px}
+.hwx-ex{display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid var(--border);font-size:14px}
+.hwx-got{margin-top:auto;height:56px;border:0;border-radius:999px;background:linear-gradient(135deg,#8aa2ff 0%,#3d5bdb 100%);box-shadow:0 10px 26px rgba(85,115,255,.35);color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:pointer}
+.hwx .stx-head{grid-template-columns:44px 1fr 44px}
+.qzx{border-radius:24px}.qzx .prepo{border-radius:999px}
+.hwx-lesson .card{border-radius:22px}
 </style>
 </head>
 <body>
@@ -816,7 +847,7 @@ body.imm main{padding-top:16px}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-22-3";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-22-4";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -1265,36 +1296,148 @@ function buildWorksheet(){
 }
 /* ---------- the pages ---------- */
 let HWV = {view:"list"};
+/* ---------- 📋 daily worksheet (build 4): built each morning from yesterday's mistakes ---------- */
+const HW_SRC = {chat:{label:"Chat fixes", note:"Writing", dot:"#c3a6f2"}, match:{label:"Missed 3× in Match it", note:"now typed", dot:"#8aa2ff"},
+  type:{label:"Missed 3× in Type it", note:"now matched", dot:"#ffe28a"}, hard:{label:"Hard words", note:"", dot:"#ff8a95"}, spot:{label:"Weak spot", note:"", dot:"#9fd8ae"}};
+const dayStart = t => { const d = new Date(t); return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); };
+function hwDaily(){
+  const today = dayKey(Date.now()), D = state.hwDaily;
+  if (D && D.day===today) return D;
+  const t0 = dayStart(Date.now()), from = D && D.at ? dayStart(D.at) : t0 - 2*DAY;
+  const items = [], keys = new Set(), add = it => { if (!it || keys.has(it.key)) return; keys.add(it.key); items.push(it); };
+  (D && D.items || []).filter(it=>!it.done).forEach(it=>add({...it, carried:true, tries:0}));        // wrong (or not reached) yesterday → back today
+  const ms = (state.mistakes||[]).filter(m=>m.at >= from && m.at < t0).sort((a,b)=>b.at-a.at);
+  const card = w => state.cards.find(c=>norm(c.fr)===norm(w||""));
+  const cap = {chat:3, match:3, type:3, hard:3}, n = s => items.filter(x=>x.src===s).length;
+  ms.forEach(m=>{
+    if (m.src==="chat" && m.right && n("chat") < cap.chat) add({src:"chat", key:"chat:"+norm(m.you)+">"+norm(m.right), you:m.you, right:m.right, text:m.q, why:m.kind});
+    const c = card(m.word);
+    if (c && c.misses >= 3 && (m.src==="match" || m.src==="type")){
+      if (m.src==="match" && n("match") < cap.match) add({src:"match", key:"w:"+c.id, card:c.id});
+      if (m.src==="type" && n("type") < cap.type) add({src:"type", key:"w:"+c.id, card:c.id});
+    }
+  });
+  shuffle(hardList().slice()).forEach(c=>{ if (n("hard") < cap.hard) add({src:"hard", key:"w:"+c.id, card:c.id}); });
+  state.hwDaily = {day:today, at:Date.now(), items:items.slice(0, 12)};
+  save(); return state.hwDaily;
+}
+const hwOpen = () => hwDaily().items.filter(it=>!it.done);
+function hwSpot(){ return weakSpots().filter(w=>w.pat!=="words")[0] || null; }     // tout / à-de / le-la / accents / Claude worksheets
+function hwItemQ(it){
+  const c = it.card ? state.cards.find(x=>x.id===it.card) : null, L = HW_SRC[it.src].label;
+  if (it.src==="chat"){
+    const i = (it.text||"").indexOf(it.you), prompt = i>=0 ? it.text.slice(0,i) + "___" + it.text.slice(i+it.you.length) : `___  (you wrote “${it.you}”)`;
+    return {pat:"chat", label:L, kind:"type", gap:true, prompt, en:`Fix it: you wrote “${it.you}”`, answer:it.right, say: i>=0 ? it.text.slice(0,i)+it.right+it.text.slice(i+it.you.length) : it.right, explain: it.why ? esc(it.why) : "", item:it.key};
+  }
+  if (!c) return null;
+  const asType = it.src==="match" || (it.src==="hard" && typeable(c) && Math.random() < .5);
+  if (asType && typeable(c)) return {pat:"words", label:L, kind:"type", prompt:c.en, en:"", answer:typeAnswers(c).join(" / "), say:c.fr, card:c.id, item:it.key};
+  const others = shuffle(state.cards.filter(x=>x.id!==c.id && norm(x.fr)!==norm(c.fr) && wordType(x)===wordType(c))).slice(0,2).map(x=>x.fr);
+  while (others.length < 2){ const x = state.cards[Math.floor(Math.random()*state.cards.length)]; if (x && x.id!==c.id && !others.includes(x.fr)) others.push(x.fr); else break; }
+  return {pat:"words", label:L, kind:"choice", prompt:c.en, en:"", options:shuffle([c.fr, ...others]), answer:c.fr, say:c.fr, card:c.id, item:it.key};
+}
+function hwToday(){                          // [questions], spot
+  const spot = hwSpot(), qs = [];
+  if (spot) questionsFor(spot, 3).forEach(q=>{ q.label = HW_SRC.spot.label + " · " + hwTitle(spot.pat); qs.push(q); });
+  hwOpen().forEach(it=>{ if (qs.length < 10){ const q = hwItemQ(it); if (q) qs.push(q); } });
+  return {qs, spot};
+}
+function hwBreakdown(){
+  const T = hwToday(), rows = [];
+  if (T.spot) rows.push({...HW_SRC.spot, note:hwTitle(T.spot.pat), n:T.qs.filter(q=>!q.item).length});
+  ["chat","match","type","hard"].forEach(s=>{ const k = T.qs.filter(q=>q.item && hwOpen().find(it=>it.key===q.item && it.src===s)).length; if (k) rows.push({...HW_SRC[s], note: s==="hard" ? `♥ ${hardList().length} in list` : HW_SRC[s].note, n:k}); });
+  return {T, rows};
+}
+function hwClaudeText(){
+  const since = state.mistakesSentAt || 0, list = (state.mistakes||[]).filter(m=>m.at >= since);
+  const logs = ((state.chat||{}).logs||[]).filter(l=>l.at >= since);
+  const out = [mistakesText(list)];
+  if (logs.length){
+    out.push("", "— My finished chats with Camille (scripted, A1–A2). Please suggest more natural replies and questions she could ask, and new lines in the same JSON style if you can. —");
+    logs.forEach(l=>{ out.push("", `CHAT: ${l.title} (${new Date(l.at).toLocaleDateString("en-GB")})`);
+      l.msgs.forEach(m=>out.push(`${m.who==="bot"?"Camille":"Me"}: ${m.fr}${m.fixes && m.fixes.length ? `   [fixes: ${m.fixes.map(f=>`${f.you} → ${f.fix}`).join("; ")}]` : ""}`)); });
+  }
+  const T = hwToday();
+  if (T.qs.length){ out.push("", "— Today's worksheet in the app —"); T.qs.forEach(q=>out.push(`- ${q.prompt}${q.en ? ` (${q.en})` : ""} → ${q.answer}`)); }
+  return out.join("\n");
+}
+function renderHwHub(el){
+  const {T, rows} = hwBreakdown(), nQ = T.qs.length, sent = !!HWV.sent;
+  el.innerHTML = `<div class="stx hwx">
+    <div class="stx-hi"><h2>Homework</h2></div>
+    ${nQ ? `<section class="hwx-card">
+      <div class="hwx-top"><span>Today’s worksheet</span><span>about ${Math.max(2, Math.round(nQ/2))} min</span></div>
+      <div class="hwx-n"><span>${nQ}</span><span>question${nQ===1?"":"s"}</span></div>
+      <div class="hwx-rows">${rows.map(r=>`<div class="hwx-row"><span class="dot" style="background:${r.dot}"></span><span class="l">${esc(r.label)}</span><span class="nt">${esc(r.note)}</span><span class="c">${r.n}</span></div>`).join("")}</div>
+      <button class="hwx-go" id="hwStart">Start homework</button></section>`
+    : `<section class="hwx-card hwx-none"><h3>Nothing to fix today 🎉</h3><p>Homework is built each morning from yesterday’s mistakes in Match it, Type it and your chats, plus your hard words.</p><button class="hwx-go" id="hwChat">Have a chat</button></section>`}
+    ${state.book ? `<div class="stx-lbl">📘 ${esc(state.book.title || "Your book")}</div><div class="stx-rows">${state.book.units.map(u=>`<button class="stx-row ch-row" data-bu="${u.n}"><span class="nm"><span>Unité ${u.n}</span><span class="ch-sub">${esc(u.title)}</span></span><span class="ar">${ARROW}</span></button>`).join("")}</div>` : ""}
+    <button class="linkbtn" id="hwPaste" style="align-self:center">Paste a worksheet from Claude</button>
+    <button class="hwx-send ${sent?"on":""}" id="hwSend" aria-label="Send to Claude" title="Send to Claude"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"></path></svg></button>
+    <div class="hwx-toast" role="status" ${sent?"":"hidden"}><b>✓ Copied for Claude</b><span>${HWV.sentInfo || ""}</span><span class="m">Paste into Claude for better chat replies and a new worksheet.</span></div>
+  </div>`;
+  if ($("#hwStart")) $("#hwStart").onclick = ()=>{ const t = hwToday(); if (t.spot){ HWV = {view:"spot", spot:t.spot, qs:t.qs, sel:null}; renderHomework(); window.scrollTo(0,0); } else startHwPractice(t.qs, "Homework", {make:()=>hwToday().qs, label:"Homework"}); };
+  if ($("#hwChat")) $("#hwChat").onclick = ()=>{ CHV.view = "pick"; goKey("writing"); };
+  el.querySelectorAll("[data-bu]").forEach(b=>b.onclick = ()=>openBookUnit(+b.dataset.bu));
+  $("#hwPaste").onclick = hwPasteModal;
+  $("#hwSend").onclick = async ()=>{
+    if (HWV.sent){ HWV.sent = false; renderHwHub(el); return; }
+    const since = state.mistakesSentAt || 0, nm = (state.mistakes||[]).filter(m=>m.at>=since).length, nc = (((state.chat||{}).logs)||[]).filter(l=>l.at>=since).length;
+    const ok = await copyText(hwClaudeText());
+    if (!ok){ toast("Couldn't copy, try again"); return; }
+    state.mistakesSentAt = Date.now(); save();
+    HWV.sent = true; HWV.sentInfo = `${nc} finished chat${nc===1?"":"s"}<br>${nm} mistake${nm===1?"":"s"}${weakSpots().length ? ` + ${weakSpots().length} weak spot${weakSpots().length===1?"":"s"}` : ""}<br>Today’s worksheet`; renderHwHub(el);
+  };
+}
+function hwPasteModal(){
+  openModal(`<div class="row" style="align-items:center"><h2 style="margin:0;flex:1">Worksheet from Claude</h2><button class="icon-btn" id="pX" aria-label="Close">✕</button></div>
+    <p class="muted small">Paste it here and it becomes homework. You can paste several at once.</p>
+    <textarea id="mWs" rows="6" placeholder="Paste the worksheet…" style="width:100%;box-sizing:border-box"></textarea>
+    <button class="btn primary" id="mWsAdd" style="width:100%;margin-top:8px">Add to my homework</button>`);
+  $("#pX").onclick = closeModal;
+  $("#mWsAdd").onclick = ()=>{
+    const sheets = parseWorksheets($("#mWs").value);
+    if (!sheets.length){ toast("I couldn't find any questions — each line needs: sentence | answer | wrong answers"); return; }
+    state.hwCustom = state.hwCustom || []; const base = Date.now();
+    sheets.forEach((ws,k)=>state.hwCustom.push({id:(base+k).toString(36), title:ws.title, qs:ws.qs, at:base})); save();
+    closeModal(); toast(`📋 Added ${sheets.length===1 ? `“${sheets[0].title}”` : sheets.length + " worksheets"} to your homework`); renderHomework();
+  };
+}
+/* the weak spot card: shows first, before those questions */
+const TOUT_TILES = [{w:"tout", ex:"le temps", tag:"masculine · one", g:"ms", say:"too", when:"Before one masculine noun (le).", exs:[["tout le temps","all the time"],["tout le monde","everyone"]]},
+  {w:"tous", ex:"les jours", tag:"masculine · more", g:"mp", say:"too", when:"Before more than one masculine noun, or a mixed group (les).", exs:[["tous les jours","every day"],["tous mes amis","all my friends"]], tip:"On its own it means “all of them” and you say the s: Ils sont tous là (“toos”)."},
+  {w:"toute", ex:"la nuit", tag:"feminine · one", g:"fs", say:"toot", when:"Before one feminine noun (la).", exs:[["toute la nuit","all night"],["toute la journée","all day"]]},
+  {w:"toutes", ex:"les semaines", tag:"feminine · more", g:"fp", say:"toot", when:"Before more than one feminine noun (les + a la-word).", exs:[["toutes les semaines","every week"],["toutes les fois","every time"]]}];
+function renderHwSpot(el){
+  const H = HWV, w = H.spot, isTout = w.pat.startsWith("tout") && w.pat!=="tout-fixed";
+  const want = new Set(weakSpots().filter(x=>x.pat.startsWith("tout")).flatMap(x=>(HW_INFO[x.pat]||{}).want||[]));
+  const last = (w.list||[]).slice(-1)[0], n = (w.list||[]).length;
+  const slip = last && last.you ? `<div class="hwx-slip"><span class="dot"></span><span style="flex:1">You wrote ${last.q && last.q.includes("___") ? esc(last.q.replace(/\s*\(.*\)\s*$/,"")).replace("___", `<s>${esc(last.you)}</s> <b>${esc(last.right)}</b>`) : `<s>${esc(last.you)}</s> <b>${esc(last.right)}</b>`}</span>${n>1?`<span class="muted small">${n}×</span>`:""}</div>` : "";
+  const T = isTout ? TOUT_TILES.map((t,k)=>({...t, hl:want.has(t.g), k})) : [];
+  const S = H.sel!=null ? T[H.sel] : null;
+  el.innerHTML = `<div class="stx hwx">
+    <div class="stx-head"><button class="hbtn" id="spX" aria-label="Close homework">${XICON}</button><span></span><span></span></div>
+    <div class="stx-hi"><h2>${isTout ? "tout or toute?" : esc(hwTitle(w.pat))}</h2><div>${isTout ? "It matches the word after it." : esc((HW_INFO[w.pat]||{}).short || "")}</div></div>
+    ${isTout ? `<div class="hwx-tiles">${T.map(t=>`<button class="hwx-tile ${t.hl?"hl":""} ${H.sel===t.k?"sel":""}" data-tile="${t.k}" aria-pressed="${H.sel===t.k}">${t.hl?`<span class="wp">Weak spot</span>`:""}<b>${t.w}</b><span>${t.ex}</span><i>${t.tag}</i></button>`).join("")}</div>
+      ${slip}
+      ${S ? `<section class="hwx-info"><div><b>${S.w}</b> <span class="muted small">sounds like <b>${S.say}</b></span></div><div class="small">${S.when}</div>
+        <div class="hwx-ex">${S.exs.map(([f,e])=>`<div><span class="frx">${f}</span> <span class="muted">· ${e}</span></div>`).join("")}</div>
+        ${S.hl && last ? `<div class="small" style="color:var(--lilac-text)">You wrote “${esc(last.you)}” – check the noun: la = feminine.</div>` : S.tip ? `<div class="small" style="color:var(--lilac-text)">${S.tip}</div>` : ""}</section>`
+        : `<div class="hwx-hint">Tap a word to see when to use it</div>`}`
+      : `${slip}<div class="hwx-lesson">${lessonBody(w)}</div>`}
+    <button class="hwx-got" id="spGo">Got It !</button></div>`;
+  $("#spX").onclick = ()=>{ HWV = {view:"list"}; renderHomework(); };
+  el.querySelectorAll("[data-tile]").forEach(b=>b.onclick = ()=>{ const k = +b.dataset.tile; H.sel = H.sel===k ? null : k; if (H.sel!=null) say(T[k].w); renderHwSpot(el); });
+  $("#spGo").onclick = ()=>startHwPractice(H.qs, "Homework", {make:()=>hwToday().qs, label:"Homework"});
+}
 function renderHomework(){
   const el = $("#hwArea");
+  imm(HWV.view==="spot" || HWV.view==="practice");
   if (HWV.view==="lesson") return renderHwLesson(el);
   if (HWV.view==="practice") return renderHwPractice(el);
   if (HWV.view==="intro") return renderHwIntro(el);
-  const spots = weakSpots(), checks = checkupsDue();
-  const nQ = Math.min(10, spots.length*5 + checks.length*2);
-  el.innerHTML = `
-    ${spots.length || checks.length ? `<section class="hw-hero">
-      <div class="hw-kicker">TODAY'S WORKSHEET</div>
-      <div class="hw-big">${Math.max(nQ, 4)} questions · about ${Math.max(2, Math.round(Math.max(nQ,4)/2))} min</div>
-      <div class="hw-sub">Made from ${spots.length ? `your ${spots.length} weak spot${spots.length===1?"":"s"}` : ""}${spots.length && checks.length ? " + " : ""}${checks.length ? `${checks.length} check-up${checks.length===1?"":"s"}` : ""}</div>
-      <button class="btn hw-start" id="hwStart">Start homework</button></section>`
-    : `<section class="card center"><h2 style="margin:6px 0">No homework today 🎉</h2>
-      <p class="muted small">When you make the same kind of mistake twice in two weeks, it turns into homework here.</p>
-      <button class="btn" id="hwAny">Practise tout & à / de anyway</button></section>`}
-    ${(()=>{ const hard = hardList(); return `<section class="card hwhard" style="padding:14px">
-      <div class="secthead" style="margin-bottom:4px"><h2 style="font-size:16px">Hard words <span style="color:var(--bad)">♥ ${hard.length}</span></h2>${hard.length ? `<button class="linkbtn" id="hwHard">See all</button>` : ""}</div>
-      ${hard.length ? hard.slice(0,3).map(c=>`<div class="hrow"><div class="w"><b>${esc(c.fr)}</b><span class="muted small">${esc(c.en)}</span></div><span class="small" style="color:var(--bad)">${missText(c)}</span></div>`).join("")
-        + `<button class="btn primary" id="hwHardGo" style="width:100%;margin-top:8px">Practise hard words</button>`
-        : `<p class="muted small" style="margin:6px 0 2px">No hard words right now 👍</p>`}</section>`; })()}
-    ${state.book ? `<section class="card" style="padding:14px"><div class="secthead" style="margin-bottom:4px"><h2 style="font-size:16px">📘 ${esc(state.book.title || "Your book")}</h2><span class="muted small">practise a unit</span></div>
-      ${state.book.units.map(u=>`<button class="dcrow ov" data-bu="${u.n}"><span class="dcn"><b>Unité ${u.n}</b><span class="muted small">${esc(u.title)}</span></span><span class="muted">›</span></button>`).join("")}</section>` : ""}
-    <button class="card mistlink" id="hwMist"><span class="hw-ic">📝</span><span style="flex:1;text-align:left"><b>Mistake log</b><br><span class="muted small">All your mistakes</span></span><span class="muted">›</span></button>`;
-  if ($("#hwStart")) $("#hwStart").onclick = ()=>openHwIntro({spots:spots.slice(0,4), make:buildWorksheet, label:"Homework"});
-  if ($("#hwAny")) $("#hwAny").onclick = ()=>openHwIntro({spots:[{pat:"tout-fem", list:[]}, {pat:"ade-prep", list:[]}], make:()=>mixKinds(shuffle(qTout("tout-fem", 5).concat(qAde("ade-prep", 4), qToutSentence("tout-fem", 1)))), label:"Practice", practice:true});
-  if ($("#hwHard")) $("#hwHard").onclick = ()=>goKey("hard");
-  if ($("#hwHardGo")) $("#hwHardGo").onclick = ()=>startHard();
-  el.querySelectorAll("[data-bu]").forEach(b=>b.onclick = ()=>openBookUnit(+b.dataset.bu));
-  $("#hwMist").onclick = ()=>goKey("mistakes");
+  if (HWV.view==="spot") return renderHwSpot(el);
+  return renderHwHub(el);
 }
 function yourMistakesHtml(w){
   const list = (w.list||[]).slice(-4).reverse();
@@ -1412,9 +1555,11 @@ function renderPractice(el, P, O){
   const q = P.qs[P.i];
   const parts = q.prompt.split("___");
   const hint = q.kind==="type" ? (q.hint || (q.gap || !q.sentence ? `Starts with “${q.answer.split("/")[0].trim()[0]}” · ${q.answer.split("/")[0].trim().length} letters` : "")) : "";
-  el.innerHTML = `<div class="row" style="align-items:center;margin-bottom:6px"><button class="linkbtn" id="qzQuit">✕ Stop</button><span style="flex:1"></span><span class="muted small">${P.i+1} / ${P.qs.length}</span></div>
-    <div class="progress"><div style="width:${P.i/P.qs.length*100}%"></div></div>
-    <section class="card qz-card">
+  el.innerHTML = (O.seg ? `<div class="stx-head" style="margin-bottom:10px"><button class="hbtn" id="qzQuit" aria-label="Stop">${XICON}</button><b>${esc(O.seg)}</b><span class="muted small" style="justify-self:end">${P.i+1} / ${P.qs.length}</span></div>
+    <div class="segs" style="margin-bottom:12px">${P.qs.map((x,k)=>`<span class="${k<P.i ? (P.res&&P.res[k]===false?"bad":"on") : ""}"></span>`).join("")}</div>`
+    : `<div class="row" style="align-items:center;margin-bottom:6px"><button class="linkbtn" id="qzQuit">✕ Stop</button><span style="flex:1"></span><span class="muted small">${P.i+1} / ${P.qs.length}</span></div>
+    <div class="progress"><div style="width:${P.i/P.qs.length*100}%"></div></div>`) + `
+    <section class="card qz-card${O.seg?" qzx":""}">
       <div class="qz-top"><span class="qz-kind">${esc(KIND_LABEL(q).toUpperCase())}</span><span class="qz-topic">${esc(O.kicker(q))}</span></div>
       <div class="prepq${q.big?" hw-bigq":""}${q.sentences?" qz-sent":""}">${parts.length>1 ? `${esc(parts[0])}<span class="gap qz-gap">${q.kind==="type"?"&nbsp;":"___"}</span>${esc(parts[1])}` : esc(q.prompt)}</div>
       ${q.en ? `<div class="muted small" style="margin-top:4px">${esc(q.en)}</div>` : ""}
@@ -1435,6 +1580,7 @@ function renderPractice(el, P, O){
 function quizAnswer(el, P, O, q, a, ok, nearAccent){
   if (q.answered) return; q.answered = true;
   if (ok) P.right++; else (P.wrongs = P.wrongs || []).push({q, a});
+  (P.res = P.res || [])[P.i] = ok;
   if (q.kind==="type" && q.gap){ const g = document.querySelector(".qz-gap"); if (g){ g.textContent = q.answer; g.classList.add(ok ? "okc" : "badc"); } }
   O.onAnswer(q, a, ok, nearAccent);
   save();
@@ -1458,10 +1604,14 @@ function quizAnswer(el, P, O, q, a, ok, nearAccent){
   if (full) say(full);
 }
 const HW_QUIZ = {
-  kicker: q => (q.checkup ? "Check-up · " : "") + (q.book ? q.book : q.pat.startsWith("custom:") || q.pat.startsWith("gym-") ? hwTitle(q.pat) : (HW_INFO[q.pat]||{}).short || hwTitle(q.pat)),
+  seg: "Homework",
+  kicker: q => q.label ? q.label : (q.checkup ? "Check-up · " : "") + (q.book ? q.book : q.pat.startsWith("custom:") || q.pat.startsWith("gym-") ? hwTitle(q.pat) : (HW_INFO[q.pat]||{}).short || hwTitle(q.pat)),
   quit: ()=>{ HWV = {view:"list"}; renderHomework(); },
   rerender: ()=>renderHomework(),
   onAnswer: (q, a, ok, nearAccent)=>{
+    if (q.item){ const it = hwDaily().items.find(x=>x.key===q.item); if (it){ it.tries = (it.tries||0) + 1; it.done = ok; } }
+    if (q.card && ok){ const c = state.cards.find(c=>c.id===q.card); if (c) hardRight(c); }
+    if (q.item && !ok) return;                                    // wrong → back in tomorrow's homework
     hwLog(q.pat, ok);
     const t = gymTopicOfPat(q.pat); if (t) gymLog(t, ok);
     if (q.pat==="accents") logSkill("accents", ok);
@@ -1469,15 +1619,14 @@ const HW_QUIZ = {
     if (q.card){ const c = state.cards.find(c=>c.id===q.card); if (c && !ok){ c.wrong++; registerMiss(c); } }
   },
   endHtml: P => { const fixed = [...new Set(P.fixed||[])], W = P.wrongs || [];
-    const line = ({q, a}) => q.prompt.includes("___") ? esc(q.prompt).replace("___", `<s>${esc(a)}</s> <b class="okc">${esc(q.answer)}</b>`) : `${esc(q.prompt)}: <s>${esc(a)}</s> <b class="okc">${esc(q.answer)}</b>`;
-    return `<section class="card center qz-res">
-      <div class="hw-kicker" style="color:var(--accent)">${P.label==="Practice" ? "PRACTICE DONE" : "WORKSHEET DONE"}</div>
-      <p style="font-size:40px;font-weight:700;margin:4px 0">${P.right} / ${P.qs.length}</p>
-      ${fixed.length ? `<p class="okc"><b>Fixed: ${fixed.map(p=>esc(hwTitle(p))).join(", ")}</b> — it'll come back once next week to check.</p>`
-        : `<p class="muted small">${P.right===P.qs.length ? "Perfect! 🌟 " : "Keep going. "}Get ${HW_DAY_RIGHT}+ right on ${HW_DAYS} different days to fix a weak spot.</p>`}
-      ${W.length ? `<div class="qz-mist"><b>Your mistakes today</b>${W.map(x=>`<div>${line(x)}</div>`).join("")}</div>` : ""}
-      ${P.from && P.from.make ? `<button class="btn primary" id="hwAgain" style="width:100%">Try again</button>` : ""}
-      <button class="btn" id="hwDone" style="width:100%;margin-top:8px">Back to homework</button></section>`; },
+    const line = ({q, a}) => q.prompt.includes("___") ? esc(q.prompt).replace("___", `<s>${esc(a)}</s> <b>${esc(q.answer)}</b>`) : `${esc(q.prompt)}: <s>${esc(a)}</s> <b>${esc(q.answer)}</b>`;
+    return `<div class="stx">
+      <div class="mx-score"><h2>${P.label==="Practice" ? "Practice done" : "Homework done"}</h2><div><span class="n">${P.right}</span><span class="o">/ ${P.qs.length}</span></div>
+        <span class="tm">${P.right===P.qs.length ? "Perfect! 🌟" : W.length ? `${W.length} back tomorrow` : "Nice work"}</span></div>
+      ${fixed.length ? `<section class="mx-up"><span class="mx-upb">✓ Fixed: ${fixed.map(p=>esc(hwTitle(p))).join(", ")}</span><span class="small muted">It comes back once next week to check.</span></section>` : ""}
+      ${W.length ? `<section class="mx-miss"><div class="stx-lbl">Comes back tomorrow</div>${W.map(x=>`<div class="mx-mr"><span class="dot"></span><span class="tx"><span>${line(x)}</span></span></div>`).join("")}</section>` : ""}
+      ${P.from && P.from.make && P.label==="Practice" ? `<button class="btn primary" id="hwAgain" style="width:100%">Try again</button>` : ""}
+      <button class="stx-go" id="hwDone"><span>Back to homework</span><span class="pl">${ARROW}</span></button></div>`; },
   wireEnd: P=>{ $("#hwDone").onclick = ()=>{ HWV = {view:"list"}; renderHomework(); window.scrollTo(0,0); };
     if ($("#hwAgain")) $("#hwAgain").onclick = ()=>{ const f = P.from, qs = f.make(); startHwPractice(qs, f.label, f); }; },
 };
@@ -2289,7 +2438,7 @@ function renderOverview(){
   const hi = (h>=18 || h<4 ? "Bonsoir" : "Bonjour") + (nm ? ", " + esc(nm) : " !");
   const date = new Date().toLocaleDateString("en-GB", {weekday:"long", day:"numeric", month:"long"});
   const sp = weakSpots(), ck = checkupsDue(), rt = readyToday(), rtn = rt.reduce((s,e)=>s+e.ready,0);
-  const hwTxt = sp.length ? `${sp.length} weak spot${sp.length===1?"":"s"}` : ck.length ? "a quick check-up" : "nothing to fix today";
+  const hq = hwToday().qs.length, hwTxt = hq ? `${hq} question${hq===1?"":"s"}` : "nothing to fix today";
   el.innerHTML = `<div class="ovx">
     <div class="ovx-hi"><h2>${hi}</h2><div>${esc(date)}</div></div>
     <div class="ovx-week" role="group" aria-label="This week">${ovWeek()}</div>
