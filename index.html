@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#2b4cc4">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>French Flashcards</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
@@ -11,25 +13,40 @@
 <meta name="mobile-web-app-capable" content="yes">
 <style>
 :root{
-  --bg:#f5f6fa; --surface:#ffffff; --surface2:#eef0f7; --text:#1b1d29; --muted:#646a80;
-  --accent:#2b4cc4; --accent-ink:#ffffff; --good:#1f9d55; --bad:#d64545; --warn:#c98a00;
-  --border:#dde0ea; --shadow:0 4px 16px rgba(20,25,60,.08); --strong:#2b4cc4;
+  --bg:#f4f5fa; --surface:#ffffff; --surface2:#eceef5; --text:#14172a; --muted:#6b7088;
+  --accent:#a8841c; --accent-ink:#2a2100; --good:#1f8a78; --bad:#c43a4c; --warn:#a8841c;
+  --border:rgba(20,23,42,.09); --shadow:0 2px 10px rgba(20,23,42,.06); --strong:#dbb43d;
+  --grad:linear-gradient(135deg,#ffe28a 0%,#dbb43d 100%); --grad-ink:#2a2100; --glow:0 10px 26px rgba(219,180,61,.32);
+  --chip:rgba(20,23,42,.06); --sel:#dbb43d; --good-fill:#8fd9cc; --good-ink:#062a24;
+  --lilac:linear-gradient(135deg,#dcc8fa 0%,#9b73e0 100%); --lilac-ink:#1e0b3d; --lilac-tint:#efe6fd; --lilac-text:#6a45b8;
+  --bad-fill:#C90922; --bad-tint:#fdecee; --drawer-bg:rgba(20,23,42,.35);
+  --btn-bg:#ffffff; --hbtn-sh:0 2px 8px rgba(20,23,42,.08); --rev-go:rgba(255,255,255,.4); --done-dot:#4fbfac;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0f1220; --surface:#1a1e30; --surface2:#232842; --text:#eef0f8; --muted:#a3a9c2;
-    --accent:#6f8cff; --accent-ink:#0d1020; --good:#3ccf7d; --bad:#ff6b6b; --warn:#f2b632;
-    --border:#2c3250; --shadow:0 4px 16px rgba(0,0,0,.35); --strong:#3554d1;
+    --bg:#000000; --surface:#151827; --surface2:#1c1f2c; --text:#eef0f8; --muted:#8b90a8;
+    --accent:#8aa2ff; --accent-ink:#ffffff; --good:#9fd8ae; --bad:#ff8a95; --warn:#ffe28a;
+    --border:rgba(255,255,255,.07); --shadow:none; --strong:#3d5bdb;
+    --grad:linear-gradient(135deg,#8aa2ff 0%,#3d5bdb 100%); --grad-ink:#ffffff; --glow:0 10px 26px rgba(85,115,255,.35);
+    --chip:rgba(255,255,255,.06); --sel:#3d6bff; --good-fill:#9fd8ae; --good-ink:#0c2414;
+    --lilac:linear-gradient(135deg,#dcc8fa 0%,#9b73e0 100%); --lilac-ink:#1e0b3d; --lilac-tint:rgba(155,115,224,.14); --lilac-text:#d6c6ff;
+    --bad-fill:#C90922; --bad-tint:#1d1519; --drawer-bg:rgba(0,0,0,.65);
+    --btn-bg:rgba(255,255,255,.06); --hbtn-sh:none; --rev-go:rgba(255,255,255,.18); --done-dot:#9fd8ae;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0f1220; --surface:#1a1e30; --surface2:#232842; --text:#eef0f8; --muted:#a3a9c2;
-  --accent:#6f8cff; --accent-ink:#0d1020; --good:#3ccf7d; --bad:#ff6b6b; --warn:#f2b632;
-  --border:#2c3250; --shadow:0 4px 16px rgba(0,0,0,.35); --strong:#3554d1;
+    --bg:#000000; --surface:#151827; --surface2:#1c1f2c; --text:#eef0f8; --muted:#8b90a8;
+    --accent:#8aa2ff; --accent-ink:#ffffff; --good:#9fd8ae; --bad:#ff8a95; --warn:#ffe28a;
+    --border:rgba(255,255,255,.07); --shadow:none; --strong:#3d5bdb;
+    --grad:linear-gradient(135deg,#8aa2ff 0%,#3d5bdb 100%); --grad-ink:#ffffff; --glow:0 10px 26px rgba(85,115,255,.35);
+    --chip:rgba(255,255,255,.06); --sel:#3d6bff; --good-fill:#9fd8ae; --good-ink:#0c2414;
+    --lilac:linear-gradient(135deg,#dcc8fa 0%,#9b73e0 100%); --lilac-ink:#1e0b3d; --lilac-tint:rgba(155,115,224,.14); --lilac-text:#d6c6ff;
+    --bad-fill:#C90922; --bad-tint:#1d1519; --drawer-bg:rgba(0,0,0,.65);
+    --btn-bg:rgba(255,255,255,.06); --hbtn-sh:none; --rev-go:rgba(255,255,255,.18); --done-dot:#9fd8ae;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%}
-body{background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+body{background:var(--bg);color:var(--text);font:16px/1.4 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   display:flex;flex-direction:column;min-height:100vh}
 header{padding:14px 16px 8px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;max-width:640px;width:100%;margin:0 auto}
 header h1{font-size:21px;margin:0;text-align:center;white-space:nowrap}
@@ -433,6 +450,74 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 .simwarn{margin:8px 0 10px;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--warn) 18%,var(--surface));font-size:13px;line-height:1.45}
 .btn.primary{background:var(--strong);border-color:var(--strong);color:#fff}
 .tool.big1{background:var(--strong);color:#fff}
+
+/* ===== New look (build ff-2026-11-22-1): black + capsules + gradient; light = off-white + yellow ===== */
+body{-webkit-font-smoothing:antialiased}
+header{padding:16px 18px 8px}
+header h1{font-size:16px;font-weight:700}
+.hbtn{width:40px;height:40px;border-radius:999px;border:0;background:var(--btn-bg);box-shadow:var(--hbtn-sh)}
+#duePill{background:var(--grad);color:var(--grad-ink);font-weight:700;padding:6px 12px;box-shadow:var(--glow)}
+.pill{background:var(--chip)}
+main{padding:0 18px 32px}
+.card{border-radius:24px;border-color:var(--border)}
+.btn{border-radius:999px;border-color:var(--border);background:var(--btn-bg);font-weight:600}
+.btn.primary,.tool.big1{background:var(--grad)!important;color:var(--grad-ink)!important;border:0!important;box-shadow:var(--glow);font-weight:700}
+.btn.good{background:var(--good-fill);border-color:var(--good-fill);color:var(--good-ink)}
+.btn.bad{background:var(--bad-fill);border-color:var(--bad-fill);color:#FFF9F9}
+select,input[type=text],input[type=search]{border-radius:999px;padding-left:16px;padding-right:16px;border-color:var(--border);background:var(--surface)}
+textarea{border-radius:18px;border-color:var(--border);background:var(--surface)}
+.seg,.tseg{border-radius:999px;background:var(--chip)}
+.seg button,.tseg button{border-radius:999px}
+.seg button.on{background:var(--surface);box-shadow:none}
+.tseg button.on{background:var(--grad);color:var(--grad-ink)}
+input.switch{background:var(--chip);border-color:var(--border)}
+input.switch:checked{background:var(--grad);border-color:transparent}
+.scard{border-radius:24px}
+.sgroup{color:var(--muted)}
+.toast{border-radius:999px}
+.chip{border-radius:999px}
+.linkbtn{color:var(--accent)}
+.dcc{background:var(--chip);color:var(--text)}
+/* menu drawer */
+.drawer{background:var(--bg);border-right:1px solid var(--border);gap:8px}
+.drawer-bg{background:var(--drawer-bg)}
+.drawer-head{padding:0 2px 8px}
+.drawer-head b{font-size:26px;font-weight:800;letter-spacing:-.5px}
+.drawer button[data-go]{min-height:52px;border-radius:999px;background:var(--surface);border:1px solid var(--border);padding:0 18px}
+.drawer button[data-go].on{background:var(--grad);color:var(--grad-ink);border-color:transparent;box-shadow:var(--glow)}
+.dsep{background:transparent;margin:2px}
+/* overview */
+.ovx{display:flex;flex-direction:column;gap:20px;padding-top:4px}
+.ovx-hi h2{margin:0;font-size:32px;font-weight:800;letter-spacing:-.8px}
+.ovx-hi div{font-size:15px;color:var(--muted);margin-top:4px}
+.ovx-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.ovx-day{display:flex;flex-direction:column;align-items:center;gap:8px}
+.ovx-day .dn{font-size:12px;font-weight:600;color:var(--muted)}
+.ovx-day .dc{width:42px;height:42px;max-width:100%;aspect-ratio:1;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;border:1px solid var(--border);color:var(--muted)}
+.ovx-day .dd{width:5px;height:5px;border-radius:99px}
+.ovx-day.done .dc{background:var(--good-fill);color:var(--good-ink);border-color:transparent}
+.ovx-day.done .dd{background:var(--done-dot)}
+.ovx-day.miss .dc{background:var(--surface2);color:var(--muted);border-color:transparent;opacity:.55}
+.ovx-day.miss .dn{opacity:.55}
+.ovx-day.today .dc{background:var(--grad);color:var(--grad-ink);border-color:transparent;box-shadow:var(--glow)}
+.ovx-day.today .dn{color:var(--text)}
+.ovx-day.later{opacity:.6}
+.ovx-rev{display:flex;flex-direction:column;gap:16px;margin-top:16px;padding:20px;border-radius:22px;background:var(--grad);color:var(--grad-ink);box-shadow:var(--glow);border:0;font:inherit;text-align:left;cursor:pointer;width:100%}
+.ovx-rev .n{font-size:44px;font-weight:800;letter-spacing:-1.5px;line-height:1}
+.ovx-rev .l{font-size:16px;font-weight:600;opacity:.85;margin-left:8px}
+.ovx-rev .go{display:flex;align-items:center;justify-content:center;height:52px;border-radius:999px;background:var(--rev-go);font-size:16px;font-weight:700}
+.ovx-cap{display:flex;align-items:center;gap:12px;height:64px;padding:0 10px 0 20px;border-radius:999px;border:1px solid rgba(155,115,224,.32);background:var(--lilac-tint);color:var(--text);font:inherit;cursor:pointer;width:100%;text-align:left}
+.ovx-cap .t{flex:1;display:flex;align-items:baseline;gap:8px;min-width:0}
+.ovx-cap .t b{font-size:16px;font-weight:800}.ovx-cap .t span{font-size:13.5px;font-weight:600;color:var(--lilac-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ovx-cap .ar{width:44px;height:44px;flex:0 0 44px;border-radius:999px;background:var(--lilac);color:var(--lilac-ink);display:flex;align-items:center;justify-content:center}
+.ovx-cap.lv{border-color:color-mix(in srgb,var(--good-fill) 45%,transparent);background:color-mix(in srgb,var(--good-fill) 12%,transparent)}
+.ovx-cap.lv .t span{color:var(--good)}.ovx-cap.lv .ar{background:var(--good-fill);color:var(--good-ink)}
+/* name prompt */
+.namebg{position:fixed;inset:0;z-index:60;background:var(--drawer-bg);display:flex;align-items:center;justify-content:center;padding:24px}
+.namebox{width:100%;max-width:360px;background:var(--surface);border:1px solid var(--border);border-radius:28px;padding:24px 20px 20px;display:flex;flex-direction:column;gap:12px;text-align:center}
+.namebox h2{margin:0;font-size:22px;font-weight:800}
+.namebox p{margin:0;color:var(--muted);font-size:14px}
+.namebox .btn{width:100%}
 </style>
 </head>
 <body>
@@ -512,6 +597,10 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
   </section>
 
   <section class="view" id="v-settings">
+    <div class="sgroup">YOU</div>
+    <div class="scard">
+      <div class="srow"><label class="lbl" for="nameIn">Your name<span class="muted small">Used in the greeting on Overview</span></label><input type="text" id="nameIn" maxlength="30" placeholder="Your name" autocomplete="given-name" style="width:46%;font-size:16px;padding:9px 14px"></div>
+    </div>
     <div class="sgroup">STUDYING</div>
     <div class="scard">
       <div class="srow"><label class="lbl" for="newPerDaySel">New words per day</label>
@@ -577,7 +666,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-14-8";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-22-1";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -2002,41 +2091,35 @@ function weakSessionCards(){
   const cards = state.cards.filter(c=>!isNew(c) && (c.hard || (inWeak(c) && c.box<=3)));
   return cards.sort((a,b)=>(b.hard-a.hard) || a.box-b.box).slice(0,20);
 }
+function ovWeek(){                         // Mon–Sun of this week: green = flash cards done, dimmed = missed, today blue until something is done
+  const now = new Date(), d0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()), dow = (d0.getDay()+6)%7, today = dayKey(Date.now()), out = [];
+  for (let i=0;i<7;i++){
+    const d = new Date(d0); d.setDate(d0.getDate()-dow+i);
+    const k = dayKey(d.getTime()), lg = (state.daily||{})[k], did = !!(lg && lg.rev);
+    const cls = did ? "done" : k===today ? "today" : k<today ? "miss" : "later";
+    out.push(`<div class="ovx-day ${cls}"><span class="dn">${["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][i]}</span><span class="dc"${cls==="miss"?` aria-label="${d.getDate()}, missed"`:""}>${d.getDate()}</span><span class="dd"></span></div>`);
+  }
+  return out.join("");
+}
+const ARROW = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M13 6l6 6-6 6"></path></svg>`;
 function renderOverview(){
   const el = $("#ovArea");
   if (!state.cards.length){ needCards(el,1); return; }
-  const allP = state.cards, due = allDue(), nNew = due.filter(isNew).length, nRev = due.length - nNew, nLock = allP.filter(needsSentence).length;
-  const all = state.cards, learned = all.length ? Math.round(all.reduce((s,c)=>s+c.box,0)/(all.length*(INTERVALS.length-1))*100) : 0;
-  const dbc = dueByCat();
-  el.innerHTML = `
-    <section class="ov-today">
-      <div><div class="big2">${due.length ? `${due.length} card${due.length===1?"":"s"} to review` : "All caught up 🎉"}</div></div>
-      <div class="ov-chips"><span>${nRev} review${nRev===1?"":"s"}</span><span>${nNew} new</span>${nLock?`<span>🔒 ${nLock} locked</span>`:""}</div>
-      <button class="btn" id="ovStudy">${due.length ? "Start studying" : "Practise anyway"}</button>
-    </section>
-    ${(()=>{ const sp = weakSpots(), ck = checkupsDue(); if (!sp.length && !ck.length) return "";
-      return `<section class="hw-hero hw-ov"><div class="row" style="align-items:center;gap:12px"><span class="hw-ovic">📋</span><div style="flex:1;min-width:0">
-        <div style="font-weight:700;font-size:17px">Homework: ${sp.length ? `${sp.length} weak spot${sp.length===1?"":"s"}` : "a quick check-up"}</div>
-        <div class="hw-sub">${esc(sp.slice(0,2).map(w=>hwTitle(w.pat)).join(" · ") || "check you still remember")} · about 5 min</div></div></div>
-        <button class="btn hw-start" id="ovHw">Do my homework</button></section>`; })()}
-    <section class="ov-stats">
-      <div class="ov-stat"><b>${all.length}</b><span>words</span></div>
-      <div class="ov-stat"><b>${learned}%</b><span>learned</span></div>
-    </section>
-    <section class="card">
-      <div class="secthead"><h2>Due by category</h2>${dbc.length ? `<button class="linkbtn" id="ovWeak">See all</button>` : ""}</div>
-      ${dbc.length ? dbcOvRows(dbc.slice(0,4)) + `<p class="muted small" style="margin:6px 0 0">Tap a category to study just those cards.</p>` : `<p class="muted small" style="margin:4px 0">Nothing due right now 🎉</p>`}
-    </section>
-    ${(()=>{ const rt = readyToday(); if (!rt.length) return ""; return `<section class="card lv-card"><div class="secthead" style="margin-bottom:4px"><h2>⬆ Ready to level up</h2><span class="small" style="color:var(--good)">studied today</span></div>
-      ${rt.slice(0,4).map(e=>`<button class="dcrow ov" data-lv="${esc(e.cat)}"><span class="dcn"><b>${esc(e.cat===CONJ_ALL ? "🔤 Conjugations" : e.label)}</b></span><span class="dcc lvc">${e.ready} word${e.ready===1?"":"s"}</span></button>`).join("")}
-      <div class="lv-btns"><button class="btn lv-a" id="ovLvM">Match</button><button class="btn lv-b" id="ovLvW">Writing</button></div>
-      <p class="muted small" style="margin:6px 0 0">Words you've studied can go up one level a day in Match or Writing.</p></section>`; })()}`;
-  $("#ovStudy").onclick = ()=>{ state.settings.cat = ""; state.settings.hardOnly = false; save(); refreshCatFilter(); live.study = null; goKey("study"); };   // the Today card counts every category, so study them all
-  if ($("#ovWeak")) $("#ovWeak").onclick = ()=>goKey("weak");
-  el.querySelectorAll("[data-lv]").forEach(b=>b.onclick = ()=>goLevelUp("match", b.dataset.lv));
-  if ($("#ovLvM")){ const first = readyToday()[0].cat; $("#ovLvM").onclick = ()=>goLevelUp("match", first); $("#ovLvW").onclick = ()=>goLevelUp("writing", first); }
-  el.querySelectorAll("[data-dcat]").forEach(b=>b.onclick = ()=>practiseCat(b.dataset.dcat));
-  if ($("#ovHw")) $("#ovHw").onclick = ()=>goKey("homework");
+  const due = allDue(), nm = (state.settings.name||"").trim(), h = new Date().getHours();
+  const hi = (h>=18 || h<4 ? "Bonsoir" : "Bonjour") + (nm ? ", " + esc(nm) : " !");
+  const date = new Date().toLocaleDateString("en-GB", {weekday:"long", day:"numeric", month:"long"});
+  const sp = weakSpots(), ck = checkupsDue(), rt = readyToday(), rtn = rt.reduce((s,e)=>s+e.ready,0);
+  const hwTxt = sp.length ? `${sp.length} weak spot${sp.length===1?"":"s"}` : ck.length ? "a quick check-up" : "nothing to fix today";
+  el.innerHTML = `<div class="ovx">
+    <div class="ovx-hi"><h2>${hi}</h2><div>${esc(date)}</div></div>
+    <div class="ovx-week" role="group" aria-label="This week">${ovWeek()}</div>
+    <button class="ovx-rev" id="ovStudy"><span><span class="n">${due.length}</span><span class="l">${due.length===1?"card":"cards"} to review</span></span><span class="go">${due.length ? "Start studying" : "Practise anyway"}</span></button>
+    <button class="ovx-cap" id="ovHw"><span class="t"><b>Homework</b><span>${hwTxt}</span></span><span class="ar">${ARROW}</span></button>
+    ${rtn ? `<button class="ovx-cap lv" id="ovLv"><span class="t"><b>Ready to level up</b><span>${rtn} word${rtn===1?"":"s"} · Match or Writing</span></span><span class="ar">${ARROW}</span></button>` : ""}
+  </div>`;
+  $("#ovStudy").onclick = ()=>{ state.settings.cat = ""; state.settings.hardOnly = false; save(); refreshCatFilter(); live.study = null; goKey("study"); };   // counts every category, so study them all
+  $("#ovHw").onclick = ()=>goKey("homework");
+  if ($("#ovLv")) $("#ovLv").onclick = ()=>goLevelUp("match", rt[0].cat);
 }
 function renderHard(){
   const el = $("#hardArea"), all = hardList();
@@ -4472,6 +4555,8 @@ function deleteSelected(){
 function renderSettings(){
   $("#appVer").textContent = "App version " + APP_VERSION.replace(/^ff-/,"");
   paintBookInfo();
+  $("#nameIn").value = state.settings.name || "";
+  $("#nameIn").onchange = ()=>{ state.settings.name = $("#nameIn").value.trim(); state.settings.askedName = true; save(); };
   $("#lenient").checked = !!state.settings.lenient;
   $("#lockChk").checked = !!state.settings.lock;
   $("#themeSel").value = state.settings.theme || "auto"; paintThemeSeg();
@@ -4628,10 +4713,24 @@ let installEvt = null;
 window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); installEvt = e; const b = $("#installBtn"); if (b) b.hidden = false; });
 window.addEventListener("appinstalled", ()=>{ installEvt = null; const b = $("#installBtn"); if (b) b.hidden = true; toast("Installed — open it from your home screen"); });
 
+function askName(){                         // first open: "What should we call you?" (saved on this phone, editable in Settings)
+  if (state.settings.askedName || (state.settings.name||"").trim()) return;
+  const bg = document.createElement("div"); bg.className = "namebg";
+  bg.innerHTML = `<div class="namebox" role="dialog" aria-label="Your name"><h2>What should we call you?</h2><p>For your greeting. You can change it in Settings.</p>
+    <input type="text" id="askNameIn" maxlength="30" placeholder="Your name" autocomplete="given-name" style="text-align:center">
+    <button class="btn primary" id="askNameOk">Save</button><button class="linkbtn" id="askNameSkip">Skip</button></div>`;
+  document.body.appendChild(bg);
+  const done = v => { state.settings.name = (v||"").trim(); state.settings.askedName = true; save(); bg.remove(); if (navKey()==="overview") renderOverview(); };
+  $("#askNameOk").onclick = ()=>done($("#askNameIn").value);
+  $("#askNameIn").onkeydown = e=>{ if (e.key==="Enter") done($("#askNameIn").value); };
+  $("#askNameSkip").onclick = ()=>done("");
+}
+
 refreshCatFilter();
 updateDue();
 applyTheme();
 go("overview");
+askName();
 })();
 </script>
 </body>
