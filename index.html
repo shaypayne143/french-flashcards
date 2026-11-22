@@ -451,7 +451,7 @@ input.switch:checked{background:var(--strong);border-color:var(--strong)}input.s
 .btn.primary{background:var(--strong);border-color:var(--strong);color:#fff}
 .tool.big1{background:var(--strong);color:#fff}
 
-/* ===== New look (build ff-2026-11-22-2): black + capsules + gradient; light = off-white + yellow ===== */
+/* ===== New look (build ff-2026-11-22-3): black + capsules + gradient; light = off-white + yellow ===== */
 body{-webkit-font-smoothing:antialiased}
 header{padding:16px 18px 8px}
 header h1{font-size:16px;font-weight:700}
@@ -623,6 +623,57 @@ body.imm main{padding-top:16px}
 .mx-gp[hidden]{display:none}
 .mx-prev .mx-pcard{height:110px}.mx-prev .mx-pcard b{font-size:26px}.mx-prev .mx-popt{height:40px}.mx-prev .mx-pin{height:44px}
 .mx-pick{min-height:calc(100vh - 80px)}
+
+/* writing chat (build 3) */
+.ch{display:flex;flex-direction:column;gap:10px;min-height:calc(100vh - 40px)}
+.ch-head{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px}.ch-title{text-align:center;overflow:hidden;text-overflow:ellipsis}.ch-who>span:last-child span{white-space:nowrap}
+.ch-who{display:inline-flex;align-items:center;gap:8px}.ch-who>span:last-child{display:flex;flex-direction:column;line-height:1.2}.ch-who b{font-size:14px;font-weight:800}.ch-who>span:last-child span{font-size:11px;color:var(--muted)}
+.ch-av{width:34px;height:34px;border-radius:999px;background:var(--grad);color:var(--grad-ink);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800}
+.ch-title{border:0;background:none;color:var(--text);font:inherit;font-size:16px;font-weight:700;cursor:pointer;white-space:nowrap}
+.ch-head .hbtn{justify-self:end}
+.ch-goals{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:2px 0 12px;border-bottom:1px solid var(--border)}
+.ch-use{font-size:12px;font-weight:700;color:var(--muted);margin-right:2px}
+.ch-chip{display:inline-flex;align-items:center;height:28px;padding:0 11px;border-radius:999px;font-size:12px;font-weight:700;background:var(--chip);color:var(--text)}
+.ch-chip.on{background:var(--good-fill);color:var(--good-ink)}
+.ch-chip.tw{background:rgba(155,115,224,.16);color:var(--lilac-text)}.ch-chip.tw.on{background:var(--lilac);color:var(--lilac-ink)}
+.ch-msgs{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:8px 0}
+.ch-b{display:flex;align-items:flex-end;gap:6px}.ch-b.me{flex-direction:column;align-items:flex-end}
+.ch-bub{max-width:82%;padding:11px 15px;border-radius:22px;font-size:15.5px;line-height:1.4}
+.ch-b.bot .ch-bub{background:var(--surface);border:1.5px solid var(--sel);box-shadow:0 0 0 3px color-mix(in srgb,var(--sel) 10%,transparent);border-bottom-left-radius:8px}
+.ch-b.me .ch-bub{background:var(--grad);color:var(--grad-ink);border-bottom-right-radius:8px}
+.ch-en{display:block;margin-top:4px;font-size:12.5px;opacity:.7}
+.ch-enb{flex:0 0 auto;height:26px;padding:0 9px;border-radius:999px;border:0;background:var(--chip);color:var(--muted);font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.ch-sq{text-decoration:underline wavy #ff3b4f;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-skip-ink:none}
+.ch-fix{display:flex;align-items:center;gap:8px;max-width:82%;padding:8px 12px 8px 10px;border-radius:16px;background:var(--bad-tint);border:1px solid rgba(201,9,34,.14);font-size:12.5px}
+.ch-fix .dot{width:7px;height:7px;flex:0 0 7px;border-radius:99px;background:#ff5a6a}.ch-fix s{color:var(--bad)}.ch-fix b{color:var(--good)}
+.ch-typing{align-self:flex-start;padding:12px 16px;border-radius:22px;background:var(--surface);color:var(--muted);letter-spacing:2px}
+.ch-help{display:flex;flex-wrap:wrap;gap:6px}.ch-help[hidden]{display:none}
+.ch-st{height:32px;padding:0 12px;border-radius:999px;border:0;background:rgba(155,115,224,.16);color:var(--lilac-text);font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.ch-comp{display:flex;align-items:center;gap:8px;padding-top:10px;border-top:1px solid var(--border)}
+.ch-comp input{flex:1;min-width:0;height:44px;font-size:16px!important;margin:0}
+.ch-hb{height:44px;padding:0 14px;border:0;border-radius:999px;background:rgba(155,115,224,.16);color:var(--lilac-text);font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}.ch-hb.on{background:var(--lilac);color:var(--lilac-ink)}
+.ch-send{width:44px;height:44px;flex:0 0 44px;border:0;border-radius:999px;background:var(--grad);color:var(--grad-ink);box-shadow:var(--glow);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ch-acc{margin-bottom:6px}
+.ch-row .ch-sub{font-size:12.5px;color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ch-row .ch-sub u{color:var(--text);font-weight:600;text-underline-offset:3px}
+.ch-row{height:auto;min-height:66px;border-radius:22px;padding:10px 12px 10px 18px}.ch-row .nm{gap:3px}
+.ch-row.cur{border:1.5px solid var(--sel);box-shadow:0 0 0 3px color-mix(in srgb,var(--sel) 10%,transparent)}
+.ch-tag{height:28px;display:inline-flex;align-items:center;padding:0 10px;border-radius:999px;background:color-mix(in srgb,var(--sel) 16%,transparent);color:var(--accent);font-size:12px;font-weight:700;white-space:nowrap}
+.ch-dh{display:flex;align-items:center;gap:8px;padding:6px 0;border:0;background:transparent;color:var(--muted);font:inherit;font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;cursor:pointer}
+.ch-cnt{height:20px;display:inline-flex;align-items:center;padding:0 7px;border-radius:999px;background:var(--good-fill);color:var(--good-ink);letter-spacing:0}
+.stx-rows[hidden]{display:none}
+.ch-drow{display:flex;align-items:center;gap:12px;min-height:58px;padding:10px 14px 10px 18px;border-radius:22px;background:color-mix(in srgb,var(--good-fill) 8%,transparent);border:1px solid color-mix(in srgb,var(--good-fill) 20%,transparent)}
+.ch-drow .nm{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.ch-ok{height:28px;display:inline-flex;align-items:center;padding:0 11px;border-radius:999px;background:var(--good-fill);color:var(--good-ink);font-size:12px;font-weight:800}
+.ch-fh{display:flex;align-items:center;justify-content:space-between}
+.ch-hw{height:30px;padding:0 12px;border:0;border-radius:999px;background:var(--chip);color:var(--text);font:inherit;font-size:12.5px;font-weight:700;cursor:pointer}
+/* tap a word */
+.frx{cursor:pointer}
+.tapp{position:fixed;z-index:70;box-sizing:border-box;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;box-shadow:0 12px 30px rgba(0,0,0,.45);color:var(--text)}
+.tp-ar{position:absolute;top:-6px;width:10px;height:10px;background:var(--surface);border-left:1px solid var(--border);border-top:1px solid var(--border);transform:rotate(45deg)}.tp-ar.dn{top:auto;bottom:-6px;transform:rotate(225deg)}
+.tp-top{display:flex;align-items:center;gap:10px}.tp-w{font-size:18px;font-weight:800}.tp-s{font-size:11px;color:var(--muted)}
+.tp-spk{width:32px;height:32px;flex:0 0 32px;border:0;border-radius:999px;background:var(--chip);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.tp-en{font-size:15px;margin-top:2px}.tp-n{font-size:11.5px;color:var(--muted)}
+.tp-btn{height:36px;margin-top:8px;border:0;border-radius:999px;background:var(--grad);color:var(--grad-ink);font:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
+.tp-btn.have{background:color-mix(in srgb,var(--good-fill) 16%,transparent);color:var(--good);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--good-fill) 45%,transparent)}
 </style>
 </head>
 <body>
@@ -765,7 +816,7 @@ body.imm main{padding-top:16px}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-22-2";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-22-3";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -1886,7 +1937,7 @@ function levelGate(el, what){            // Match / Writing with nothing studied
   $("#lvStudy").onclick = ()=>goKey("study");
   return true;
 }
-function goLevelUp(where, cat){ if (where==="match"){ M.cat = cat; M.preset = true; M.screen = "pick"; } state.settings.cat = cat; state.settings.hardOnly = false; save(); refreshCatFilter(); live.match = null; live.create = null; goKey(where); }
+function goLevelUp(where, cat){ if (where==="match"){ M.cat = cat; M.preset = true; M.screen = "pick"; } if (where==="writing" && typeof CHV!=="undefined") CHV.view = "pick"; state.settings.cat = cat; state.settings.hardOnly = false; save(); refreshCatFilter(); live.match = null; live.create = null; goKey(where); }
 function gradeEasy(card){
   const r = grade(card, true); if (r==="locked") return r;
   if (!isLocked(card) && card.box < INTERVALS.length-1){
@@ -1966,7 +2017,7 @@ function say(text, slow, onend){
 /* ---------- navigation ---------- */
 let curView = "overview";
 const renderers = {overview:renderOverview, hard:renderHard, weak:renderWeak, mistakes:renderMistakes, homework:renderHomework, gym:renderGym, study:renderStudy, match:startMatch, speak:startSpeak, create:startCreate, words:renderWords, settings:renderSettings};
-const NAV = {overview:["overview"], study:["study"], match:["match"], speak:["speak"], journal:["create","journal"], writing:["create","words"], prep:["create","prep"], words:["words"], settings:["settings"], hard:["hard"], weak:["weak"], mistakes:["mistakes"], homework:["homework"], gym:["gym"], hardprac:["study"]};
+const NAV = {overview:["overview"], study:["study"], match:["match"], speak:["speak"], journal:["create","journal"], writing:["create","chat"], prep:["create","prep"], words:["words"], settings:["settings"], hard:["hard"], weak:["weak"], mistakes:["mistakes"], homework:["homework"], gym:["gym"], hardprac:["study"]};
 const TITLES = {overview:"Flashcards", study:"Study", match:"Match", speak:"Speak", journal:"Journal", writing:"Writing", prep:"Grammar gym", words:"Words", settings:"Settings", hard:"Hard words", hardprac:"Hard words", weak:"Due by category", mistakes:"Mistake log", homework:"Homework", gym:"Grammar gym"};
 function navKey(){
   if (curView==="study" && hardSess) return "hardprac";
@@ -2015,6 +2066,7 @@ function goKey(k, o={}){
   closeDrawer();
   if (k==="match" && !canResume("match")){ M.screen = "pick"; stopTimer(); }
   if (k==="study" && o.fresh){ SV.view = "home"; live.study = null; }
+  if (k==="writing" && o.fresh && CHV.view==="summary") CHV.view = "chat";
   if (k==="homework" && !(curView==="homework")) HWV = {view:"list"};
   if (k==="gym" && !(curView==="gym")) GV = {view:"hub"};      // opening Match → choose a game (unless one is in progress)
   if (m){ if (curView==="create" && C.mode==="words") { snapDraft(); save(); } if (C.mode!==m || m==="journal") live.create = null; C.mode = m; }
@@ -2030,7 +2082,7 @@ $("#drawer").addEventListener("click", e=>{ const b = e.target.closest("[data-go
 function go(v){
   curView = v; imm(false);
   document.querySelectorAll(".view").forEach(el=>el.classList.toggle("on", el.id==="v-"+v));
-  $("#catbar").style.display = (["words","settings","speak","overview","hard","weak","mistakes","homework","gym","study","match"].includes(v) || (v==="create" && (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep"))) ? "none" : "";
+  $("#catbar").style.display = (["words","settings","speak","overview","hard","weak","mistakes","homework","gym","study","match"].includes(v) || (v==="create" && (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep" || C.mode==="chat"))) ? "none" : "";
   $("#hardBtn").style.display = v==="study" || v==="match" || v==="create" ? "none" : "";
   if (v==="match" || v==="create" || v==="study"){ if (v!=="study" && state.settings.hardOnly){ state.settings.hardOnly = false; save(); } refreshCatFilter(); }          // Study has no ♡ Hard only filter (hard words are practised from their own list)
   if (v==="study" && state.settings.hardOnly){ state.settings.hardOnly = false; save(); refreshCatFilter(); }
@@ -2170,7 +2222,7 @@ function showStudyCard(){
          <div class="w sm">${esc(c.fr)}</div>
          <div class="pr">${c.pron ? `/${esc(c.pron)}/` : ""} <span class="spk" id="sSay2" role="button" aria-label="Hear it again">${SPK}</span></div>
          <div class="en">${esc(c.en)} <span>· ${esc(TYPE_INFO[wordType(c)])}</span></div>
-         ${c.ex ? `<div class="ex">${esc(c.ex)}<br><span>${esc(c.exEn)}</span></div>` : ""}
+         ${c.ex ? `<div class="ex"><span class="frx">${esc(c.ex)}</span><br><span>${esc(c.exEn)}</span></div>` : ""}
          <div style="flex:1"></div>
          <div class="tf">${esc(catLabel(catOf(c)))} · level ${c.box}/${INTERVALS.length-1}</div></div>
      </div>
@@ -2838,17 +2890,167 @@ function paintCreateSeg(){
   document.querySelectorAll("#cModeSeg button").forEach(b=>b.classList.toggle("on", b.dataset.m===(C.mode==="rewrite"?"journal":C.mode)));
   const n = (state.journal||[]).filter(j=>!j.checked).length;
   const jb = document.querySelector('#cModeSeg [data-m="journal"]'); if (jb) jb.textContent = "📓 Journal";
-  $("#catbar").style.display = (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep") ? "none" : "";
+  $("#catbar").style.display = (C.mode==="journal" || C.mode==="rewrite" || C.mode==="prep" || C.mode==="chat") ? "none" : "";
   if (curView==="create") paintNav();
 }
 $("#cModeSeg").onclick = e=>{ const b = e.target.closest("button"); if (!b) return; if (C.mode==="words") snapDraft(); save(); C.mode = b.dataset.m; startCreate(); };
 function startCreate(){
   live.create = fkey();
   paintCreateSeg();
+  $("#cModeSeg").style.display = C.mode==="chat" ? "none" : "";
   if (C.mode==="journal") return renderJournal();
   if (C.mode==="rewrite") return startRewrite();
   if (C.mode==="prep") return startPrep();
+  if (C.mode==="chat") return startChat();
   C.mode = "words"; refreshCatFilter(); if (levelGate($("#createArea"), "Writing")) return; return newChallenge();   // 🔒 3 words replaced About me
+}
+
+
+const CHATS = [{"id":"chez-moi","title":"Chez moi","category":"Furniture & household","alsoUses":["Rooms & building"],"targets":["le canapé","l'étagère","la chambre"],"twist":{"text":"Say why: use parce que","match":["parce que","parce qu'"]},"turns":[{"bot":{"fr":"Salut ! Ça va ?","en":"Hi! How are you?","tatoeba":true},"starters":["Ça va bien, merci.","Ça va, et toi ?"],"followups":[{"default":{"fr":"Super ! Tu habites où ?","en":"Great! Where do you live?","tatoeba":true}}]},{"bot":{"fr":"Ta maison est grande ?","en":"Is your house big?","tatoeba":true},"starters":["Non, ma maison est petite.","Oui, j'ai trois chambres."],"followups":[{"ifUses":"la chambre","bot":{"fr":"Ta chambre est grande ?","en":"Is your room big?","tatoeba":true}},{"default":{"fr":"Et ta chambre, elle est comment ?","en":"And your room, what's it like?","tatoeba":false}}]},{"bot":{"fr":"Qu'est-ce qu'il y a dans ton salon ?","en":"What's in your living room?","tatoeba":false},"starters":["Il y a un canapé et…","Dans mon salon, il y a…"],"followups":[{"ifUses":"le canapé","bot":{"fr":"Ah, tu regardes la télé sur le canapé ?","en":"Ah, do you watch TV on the sofa?","tatoeba":false}},{"ifUses":"l'étagère","bot":{"fr":"Ton étagère est pleine de livres ?","en":"Is your shelf full of books?","tatoeba":true}},{"default":{"fr":"Tu as un canapé ?","en":"Do you have a sofa?","tatoeba":false}}]},{"bot":{"fr":"Quelle est ta pièce préférée ? Pourquoi ?","en":"What's your favourite room? Why?","tatoeba":false},"starters":["Ma pièce préférée, c'est… parce que…"],"followups":[{"ifTwist":true,"bot":{"fr":"C'est vrai ! Moi aussi.","en":"That's true! Me too.","tatoeba":true}},{"default":{"fr":"Ah bon ? Pourquoi ?","en":"Really? Why?","tatoeba":true}}]}],"wrap":{"fr":"J'aime ta maison ! À bientôt.","en":"I love your house! See you soon.","tatoeba":true}},{"id":"mon-voisin","title":"Mon voisin","category":"Describing things","targets":["le voisin","bruyant","ennuyeux"],"twist":{"text":"Say why: use parce que","match":["parce que","parce qu'"]},"turns":[{"bot":{"fr":"Tu connais tes voisins ?","en":"Do you know your neighbours?","tatoeba":false},"starters":["Oui, j'ai un voisin…","Non, je ne connais pas mes voisins."],"followups":[{"default":{"fr":"J'ai un voisin bizarre, moi !","en":"I have a weird neighbour!","tatoeba":true}}]},{"bot":{"fr":"Il est comment, ton voisin ?","en":"What's your neighbour like?","tatoeba":false},"starters":["Mon voisin est sympa.","Il est un peu bruyant."],"followups":[{"ifUses":"bruyant","bot":{"fr":"Oh non ! C'est bruyant le soir ?","en":"Oh no! Is it noisy in the evening?","tatoeba":false}},{"default":{"fr":"Il est bruyant ou calme ?","en":"Is he noisy or quiet?","tatoeba":false}}]},{"bot":{"fr":"Il fait quoi, le soir ?","en":"What does he do in the evening?","tatoeba":false},"starters":["Il écoute de la musique…","Il regarde des films…"],"followups":[{"ifTwist":true,"bot":{"fr":"Je vois ce que tu veux dire.","en":"I see what you mean.","tatoeba":true}},{"default":{"fr":"Pourquoi ? Il fait la fête ?","en":"Why? Is he partying?","tatoeba":false}}]},{"bot":{"fr":"Et toi, tu es une bonne voisine ?","en":"And you, are you a good neighbour?","tatoeba":false},"starters":["Oui, parce que je suis calme.","Je ne suis pas ennuyeuse !"],"followups":[{"ifUses":"ennuyeux","bot":{"fr":"Ha ha, ce n'est pas ennuyeux, c'est calme !","en":"Ha ha, that's not boring, it's peaceful!","tatoeba":false}},{"default":{"fr":"Tu as raison.","en":"You're right.","tatoeba":true}}]}],"wrap":{"fr":"Bon courage avec ton voisin !","en":"Good luck with your neighbour!","tatoeba":false}},{"id":"ma-journee","title":"Ma journée","category":"Daily routine","alsoUses":["Time"],"targets":["je me lève","le petit-déjeuner","à quelle heure"],"twist":{"text":"Give a time: à … heures","match":["heure"]},"turns":[{"bot":{"fr":"Tu te lèves à six heures ?","en":"Do you get up at six?","tatoeba":true},"starters":["Non, je me lève à sept heures.","Oui, je me lève tôt."],"followups":[{"ifTwist":true,"bot":{"fr":"C'est tôt ! Moi, je suis lent le matin.","en":"That's early! I'm slow in the morning.","tatoeba":false}},{"default":{"fr":"À quelle heure tu te lèves, alors ?","en":"What time do you get up, then?","tatoeba":false}}]},{"bot":{"fr":"Qu'est-ce que tu prends au petit-déjeuner ?","en":"What do you have for breakfast?","tatoeba":false},"starters":["Je prends du pain et…","Je bois un café."],"followups":[{"ifUses":"le petit-déjeuner","bot":{"fr":"J'ai pris mon petit-déjeuner à huit heures.","en":"I ate breakfast at eight.","tatoeba":true}},{"default":{"fr":"Le café, ça réveille !","en":"Coffee wakes you up!","tatoeba":false}}]},{"bot":{"fr":"Tu travailles aujourd'hui ?","en":"Are you working today?","tatoeba":false},"starters":["Oui, je vais au travail à…","Non, je suis libre aujourd'hui."],"followups":[{"default":{"fr":"Comment va le travail ?","en":"How's work?","tatoeba":true}}]},{"bot":{"fr":"Et le soir, tu fais quoi ?","en":"And in the evening, what do you do?","tatoeba":false},"starters":["Le soir, je regarde un film.","Je me couche à onze heures."],"followups":[{"default":{"fr":"Pas mal ! C'est normal d'être fatiguée.","en":"Not bad! It's normal to be tired.","tatoeba":false}}]}],"wrap":{"fr":"Bonne soirée ! À demain.","en":"Have a nice evening! See you tomorrow.","tatoeba":false}},{"id":"le-week-end","title":"Le week-end","category":"Films & hobbies","targets":["nager","les dessins animés","la randonnée"],"twist":{"text":"Say what you did last weekend (j'ai…)","match":["j'ai ","je suis allé"]},"turns":[{"bot":{"fr":"Quels sont tes projets pour le week-end ?","en":"What are your weekend plans?","tatoeba":true},"starters":["Ce week-end, je vais…","Je ne sais pas encore."],"followups":[{"ifUses":"la randonnée","bot":{"fr":"Partons en randonnée ce week-end !","en":"Let's go hiking this weekend!","tatoeba":true}},{"default":{"fr":"Es-tu libre ce week-end ?","en":"Are you free this weekend?","tatoeba":true}}]},{"bot":{"fr":"Sais-tu nager ?","en":"Can you swim?","tatoeba":true},"starters":["Oui, je sais nager.","Non, je ne sais pas nager."],"followups":[{"ifUses":"nager","bot":{"fr":"Génial ! On va à la piscine ?","en":"Great! Shall we go to the pool?","tatoeba":false}},{"default":{"fr":"Tu aimes le sport ?","en":"Do you like sport?","tatoeba":true}}]},{"bot":{"fr":"Quel est ton film préféré ?","en":"What's your favourite film?","tatoeba":true},"starters":["Mon film préféré, c'est…","J'adore les dessins animés."],"followups":[{"ifUses":"les dessins animés","bot":{"fr":"Moi aussi ! Tu regardes des dessins animés le samedi ?","en":"Me too! Do you watch cartoons on Saturdays?","tatoeba":false}},{"default":{"fr":"Tu as vu ce film, n'est-ce pas ?","en":"You saw that film, didn't you?","tatoeba":true}}]},{"bot":{"fr":"Et le week-end dernier, qu'est-ce que tu as fait ?","en":"And last weekend, what did you do?","tatoeba":false},"starters":["Le week-end dernier, j'ai…"],"followups":[{"ifTwist":true,"bot":{"fr":"Ça a l'air génial !","en":"That sounds great!","tatoeba":true}},{"default":{"fr":"Tu peux le dire au passé ? « J'ai… »","en":"Can you say it in the past? « J'ai… »","tatoeba":false}}]}],"wrap":{"fr":"Bon week-end !","en":"Have a good weekend!","tatoeba":false}},{"id":"pres-de-chez-moi","title":"Près de chez moi","category":"Places","alsoUses":["Position & direction"],"targets":["près de","loin de","la gare"],"twist":{"text":"Use à côté de","match":["à côté de","à côté du"]},"turns":[{"bot":{"fr":"Tu habites où ?","en":"Where do you live?","tatoeba":true},"starters":["J'habite à…","J'habite près de…"],"followups":[{"default":{"fr":"C'est loin d'ici ?","en":"Is it far from here?","tatoeba":true}}]},{"bot":{"fr":"La gare est loin de chez toi ?","en":"Is the station far from your home?","tatoeba":false},"starters":["Non, la gare est près de chez moi.","Oui, c'est loin."],"followups":[{"ifUses":"près de","bot":{"fr":"C'est pratique !","en":"That's handy!","tatoeba":false}},{"default":{"fr":"Ce n'est pas très loin d'ici ?","en":"It's not very far from here?","tatoeba":true}}]},{"bot":{"fr":"Il y a un parc près de chez toi ?","en":"Is there a park near your home?","tatoeba":false},"starters":["Oui, il y a un parc à côté de…","Non, mais il y a…"],"followups":[{"ifTwist":true,"bot":{"fr":"J'aime ta ville !","en":"I love your city!","tatoeba":true}},{"default":{"fr":"Et à côté de ta maison, il y a quoi ?","en":"And next to your house, what is there?","tatoeba":false}}]},{"bot":{"fr":"Où est-ce que tu fais tes courses ?","en":"Where do you do your shopping?","tatoeba":false},"starters":["Je vais au supermarché…","Au marché, le samedi."],"followups":[{"default":{"fr":"Où est le marché ?","en":"Where is the market?","tatoeba":true}}]}],"wrap":{"fr":"Merci ! À bientôt.","en":"Thanks! See you soon.","tatoeba":false}}];
+const CHAT_REACT = [{"fr":"Ah bon ?","en":"Really?","tatoeba":true},{"fr":"Super !","en":"Great!","tatoeba":true},{"fr":"Moi aussi.","en":"Me too.","tatoeba":true},{"fr":"C'est vrai ?","en":"Is that true?","tatoeba":true},{"fr":"Génial !","en":"Terrific!","tatoeba":true},{"fr":"Tu as raison.","en":"You're right.","tatoeba":true},{"fr":"Pas mal !","en":"Well done!","tatoeba":true}];
+/* ---------- ✍️ WRITING CHAT (build 3): scripted chats with Camille, 3 of your words per round ---------- */
+const CHAT_AV = `<span class="ch-av" aria-hidden="true">C</span>`;
+const chatCats = ch => [ch.category].concat(ch.alsoUses||[]);
+const chatSt = () => (state.chat = state.chat || {byId:{}, active:null, logs:[]});
+const chatRec = id => (chatSt().byId[id] = chatSt().byId[id] || {used:[], rounds:0, done:false, started:false, at:0});
+function chatWords(ch){                     // your own words in this chat's categories
+  const cats = chatCats(ch).map(norm);
+  return state.cards.filter(c=>!isConj(c) && cats.includes(norm(catOf(c))));
+}
+function chatLeft(ch){ const used = new Set(chatRec(ch.id).used); return chatWords(ch).filter(c=>!used.has(c.id)); }
+function chatGoals(ch){
+  const left = chatLeft(ch), tg = (ch.targets||[]).map(t=>norm(t));
+  const score = c => (tg.includes(norm(c.fr)) ? -10 : 0) + c.box + (c.hard ? -2 : 0);
+  return left.slice().sort((a,b)=>score(a)-score(b)).slice(0,3);
+}
+function chatStatus(ch){
+  const r = chatRec(ch.id), left = chatLeft(ch).length, studied = new Set(recentCats().map(e=>e.cat));
+  if (r.done || (r.started && !left)) return "done";
+  if (r.started) return "progress";
+  if (!chatWords(ch).length) return "hidden";
+  return chatCats(ch).some(c=>studied.has(c)) ? "new" : "hidden";
+}
+let CHV = {view:"chat", doneOpen:false};
+function startChat(){
+  const st = chatSt(), A = st.active, el = $("#createArea"); imm(true);
+  $("#cModeSeg").style.display = "none";
+  if (CHV.view==="summary" && st.last) return chatSummary();
+  if (!A || CHV.view==="pick") return chatPicker();
+  chatRender();
+}
+function chatOpen(id){
+  const ch = CHATS.find(x=>x.id===id); if (!ch) return;
+  const st = chatSt(), r = chatRec(id);
+  if (st.active && st.active.id===id){ CHV.view = "chat"; return startChat(); }
+  const goals = chatGoals(ch);
+  r.started = true; r.at = Date.now();
+  st.active = {id, turn:0, msgs:[{who:"bot", fr:ch.turns[0].bot.fr, en:ch.turns[0].bot.en}], goals:goals.map(c=>c.id), usedNow:[], twist:false, lvl:[], fixes:[], replies:0, busy:false, done:false};
+  save(); CHV.view = "chat"; startChat();
+}
+function chatPicker(){
+  const el = $("#createArea"), st = chatSt();
+  const all = CHATS.map(ch=>({ch, s:chatStatus(ch), left:chatLeft(ch).length, r:chatRec(ch.id)})).filter(x=>x.s!=="hidden");
+  const prog = all.filter(x=>x.s==="progress"), nw = all.filter(x=>x.s==="new"), dn = all.filter(x=>x.s==="done");
+  const row = (x, kind) => { const rounds = Math.max(1, Math.ceil(x.left/3)), cur = st.active && st.active.id===x.ch.id;
+    return `<button class="stx-row ch-row ${cur?"cur":""}" data-chat="${x.ch.id}"><span class="nm"><span>${esc(x.ch.title)}</span><span class="ch-sub">${esc(x.ch.category)}${kind==="new" ? ` · ${rounds} round${rounds===1?"":"s"} · <u>${x.left} word${x.left===1?"":"s"} to unlock</u>` : ` · Round ${x.r.rounds+1} of ${x.r.rounds+rounds} · <u>${x.left} word${x.left===1?"":"s"} left</u>`}</span></span>${cur?`<span class="ch-tag">Open now</span>`:kind==="progress"?`<span class="ch-tag">Continue</span>`:""}<span class="ar">${ARROW}</span></button>`; };
+  el.innerHTML = `<div class="stx">
+    <div class="stx-head"><span></span><span></span>${st.active ? `<button class="hbtn" id="chpX" aria-label="Close">${XICON}</button>` : `<button class="hbtn" id="chpX" aria-label="Close">${XICON}</button>`}</div>
+    <div class="stx-hi"><h2>Pick a chat</h2><div>Chat with Camille using your own words</div></div>
+    ${prog.length ? `<div class="stx-lbl">In progress</div><div class="stx-rows">${prog.map(x=>row(x,"progress")).join("")}</div>` : ""}
+    ${nw.length ? `<div class="stx-lbl">New</div><div class="stx-rows">${nw.map(x=>row(x,"new")).join("")}</div>` : ""}
+    ${!prog.length && !nw.length ? `<p class="muted center" style="margin:6px 0">No chats yet. Study a category in flash cards (like Furniture &amp; household, Places or Daily routine) and its chat appears here.</p><button class="btn primary" id="chpStudy">Go to Study</button>` : ""}
+    ${dn.length ? `<button class="ch-dh" id="chDone" aria-expanded="${CHV.doneOpen}"><span>Completed</span><span class="ch-cnt">${dn.length}</span><span style="flex:1"></span><span style="transform:${CHV.doneOpen?"rotate(180deg)":"none"};display:inline-flex">⌄</span></button>
+      <div class="stx-rows" ${CHV.doneOpen?"":"hidden"}>${dn.map(x=>`<div class="ch-drow"><span class="nm"><b>${esc(x.ch.title)}</b><span class="ch-sub">${esc(x.ch.category)} · all ${chatWords(x.ch).length} words used</span></span><span class="ch-ok">✓ Done</span></div>`).join("")}</div>` : ""}
+  </div>`;
+  $("#chpX").onclick = ()=>{ if (st.active){ CHV.view = "chat"; startChat(); } else goKey("overview"); };
+  if ($("#chpStudy")) $("#chpStudy").onclick = ()=>goKey("study");
+  if ($("#chDone")) $("#chDone").onclick = ()=>{ CHV.doneOpen = !CHV.doneOpen; chatPicker(); };
+  el.querySelectorAll("[data-chat]").forEach(b=>b.onclick = ()=>chatOpen(b.dataset.chat));
+}
+function chatRender(){
+  const el = $("#createArea"), A = chatSt().active, ch = CHATS.find(x=>x.id===A.id);
+  const goals = A.goals.map(id=>state.cards.find(c=>c.id===id)).filter(Boolean);
+  const helpOpen = !!A.help, turn = ch.turns[A.turn];
+  el.innerHTML = `<div class="ch">
+    <div class="ch-head"><span class="ch-who">${CHAT_AV}<span><b>Camille</b><span>your chat partner</span></span></span><button class="ch-title" id="chPick">${esc(ch.title)} ▾</button><button class="hbtn" id="chX" aria-label="Close">${XICON}</button></div>
+    <div class="ch-goals"><span class="ch-use">Use these:</span>${goals.map(c=>`<span class="ch-chip ${A.usedNow.includes(c.id)?"on":""}">${A.usedNow.includes(c.id)?"✓ ":""}${esc(c.fr)}</span>`).join("")}${ch.twist ? `<span class="ch-chip tw ${A.twist?"on":""}" title="${esc(ch.twist.text)}">★ ${esc(ch.twist.match[0])}</span>` : ""}</div>
+    <div class="ch-msgs" id="chMsgs">${A.msgs.map((m,k)=>chatBubble(m,k)).join("")}${A.busy?`<div class="ch-typing">•••</div>`:""}</div>
+    ${A.done ? `<button class="mx-ready" id="chSum"><span><b>Chat complete · see summary</b></span><span class="pl">${ARROW}</span></button>` : `
+    <div class="ch-help" ${helpOpen?"":"hidden"}>${(turn.starters||[]).map(x=>`<button class="ch-st" data-st="${esc(x)}">${esc(x)}</button>`).join("")}</div>
+    <div class="ch-comp"><button class="ch-hb ${helpOpen?"on":""}" id="chHelp">Help me</button><input type="text" id="chIn" placeholder="Écris ta réponse…" autocomplete="off" autocapitalize="sentences" spellcheck="false" value="${esc(A.draft||"")}"><button class="ch-send" id="chSend" aria-label="Send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"></path><path d="M6 11l6-6 6 6"></path></svg></button></div>
+    <div class="mx-acc ch-acc">${ACC8.map(a=>`<button type="button">${a}</button>`).join("")}</div>`}
+  </div>`;
+  const box = $("#chMsgs"); box.scrollTop = box.scrollHeight; window.scrollTo(0, document.body.scrollHeight);
+  $("#chPick").onclick = ()=>{ CHV.view = "pick"; chatPicker(); };
+  $("#chX").onclick = ()=>{ CHV.view = "pick"; chatPicker(); };
+  el.querySelectorAll("[data-en]").forEach(b=>b.onclick = e=>{ e.stopPropagation(); const m = A.msgs[+b.dataset.en]; m.open = !m.open; chatRender(); });
+  if (A.done){ $("#chSum").onclick = chatFinish; return; }
+  const inp = $("#chIn");
+  inp.oninput = ()=>{ A.draft = inp.value; };
+  $("#chHelp").onclick = ()=>{ A.help = !A.help; chatRender(); };
+  el.querySelectorAll("[data-st]").forEach(b=>b.onclick = ()=>{ inp.value = b.dataset.st.replace(/…$/,""); A.draft = inp.value; inp.focus(); });
+  const acc = el.querySelector(".ch-acc"); acc.onmousedown = e=>e.preventDefault();
+  acc.onclick = e=>{ const b = e.target.closest("button"); if (!b) return; const a = inp.selectionStart ?? inp.value.length, z = inp.selectionEnd ?? a;
+    inp.value = inp.value.slice(0,a) + b.textContent + inp.value.slice(z); A.draft = inp.value; inp.setSelectionRange(a+1,a+1); inp.focus(); };
+  $("#chSend").onclick = ()=>chatSend(inp.value);
+  inp.onkeydown = e=>{ if (e.key==="Enter"){ e.preventDefault(); chatSend(inp.value); } };
+}
+function chatBubble(m, k){
+  if (m.who==="bot") return `<div class="ch-b bot"><div class="ch-bub frx">${esc(m.fr)}${m.open?`<span class="ch-en">${esc(m.en)}</span>`:""}</div><button class="ch-enb" data-en="${k}" aria-label="Show English">EN</button></div>`;
+  let html = esc(m.fr);
+  if (m.fixes && m.fixes.length){
+    let out = "", at = 0; m.fixes.slice().sort((a,b)=>a.o-b.o).forEach(f=>{ if (f.o < at) return; out += esc(m.fr.slice(at, f.o)) + `<span class="ch-sq">${esc(m.fr.slice(f.o, f.o+f.l))}</span>`; at = f.o + f.l; });
+    html = out + esc(m.fr.slice(at));
+  }
+  return `<div class="ch-b me"><div class="ch-bub frx">${html}</div>${(m.fixes||[]).map(f=>`<div class="ch-fix"><span class="dot"></span><span><s>${esc(m.fr.slice(f.o, f.o+f.l))}</s> → <b>${esc(f.fix||"?")}</b>${f.why?` · ${esc(f.why)}`:""}</span></div>`).join("")}</div>`;
+}
+const chatHas = (text, phrase) => { const t = toksOf(text), p = toksOf(phrase).map(x=>x.replace(/'$/,"")); for (let i=0;i+p.length<=t.length;i++) if (p.every((x,k)=>t[i+k].replace(/'$/,"")===x)) return true; return false; };
+function chatSend(raw){
+  const A = chatSt().active, text = (raw||"").trim(); if (!text || A.busy || A.done) return;
+  const ch = CHATS.find(x=>x.id===A.id), turn = ch.turns[A.turn];
+  const msg = {who:"me", fr:text}; A.msgs.push(msg); A.draft = ""; A.help = false; A.replies++;
+  // your words: tick, count as a sentence, level up (once a day for words that aren't due)
+  const toks = toksOf(text);
+  A.goals.forEach(id=>{ const c = state.cards.find(x=>x.id===id); if (!c || A.usedNow.includes(id) || !usesCard(c, toks)) return;
+    A.usedNow.push(id); c.sent = (c.sent||0) + 1; c.sentAt = Date.now(); c.sentOK = true; c.seenAt = Date.now();
+    const b0 = c.box; if (!bonusUsed(c)){ practiceGrade(c); if (c.box > b0) A.lvl.push(id); } else hardRight(c); });
+  if (ch.twist && !A.twist && ch.twist.match.some(p=>norm(text).includes(norm(p)))) A.twist = true;
+  // grammar check (online)
+  if (checkOn() && navigator.onLine!==false){
+    ltCheck(text).then(ms=>{ msg.fixes = ms.filter(m=>m.l).slice(0,3).map(m=>({o:m.o, l:m.l, fix:m.fix, why:ltEnglish(m.msg) || ""}));
+      msg.fixes.forEach(f=>{ A.fixes.push({you:text.slice(f.o,f.o+f.l), fix:f.fix, why:f.why, text}); logMistake({src:"chat", q:text, you:text.slice(f.o,f.o+f.l), right:f.fix, kind:f.why||"grammar", word:f.fix}); });
+      save(); if (curView==="create" && C.mode==="chat" && CHV.view==="chat") chatRender(); }).catch(()=>{});
+  }
+  // Camille answers: a follow-up that asks something waits for your reply before the next question
+  A.busy = true; save(); chatRender();
+  const step = (fn, ms) => setTimeout(()=>{ if (chatSt().active!==A) return; fn(); A.busy = false; save(); if (curView==="create" && C.mode==="chat" && CHV.view==="chat") chatRender(); }, ms);
+  const advance = ()=>{ A.turn++; A.wait = "turn";
+    if (A.turn < ch.turns.length) A.msgs.push({who:"bot", fr:ch.turns[A.turn].bot.fr, en:ch.turns[A.turn].bot.en});
+    else { if (ch.wrap) A.msgs.push({who:"bot", fr:ch.wrap.fr, en:ch.wrap.en}); A.done = true; } };
+  if (A.wait==="follow"){ step(()=>{ const r = CHAT_REACT[Math.floor(Math.random()*CHAT_REACT.length)]; if (r) A.msgs.push({who:"bot", fr:r.fr, en:r.en}); advance(); }, 900); return; }
+  const f = (turn.followups||[]).find(x=> x.ifUses ? chatHas(text, x.ifUses) : x.ifTwist ? A.twist : false) || (turn.followups||[]).find(x=>x.default) || {};
+  const next = f.bot || f.default;
+  step(()=>{ if (next){ A.msgs.push({who:"bot", fr:next.fr, en:next.en}); if (/\?\s*$/.test(next.fr) && A.turn < ch.turns.length-1){ A.wait = "follow"; return; } } advance(); }, 900);
+}
+function chatFinish(){
+  const st = chatSt(), A = st.active, ch = CHATS.find(x=>x.id===A.id), r = chatRec(A.id);
+  r.used = [...new Set(r.used.concat(A.usedNow))]; r.rounds++; r.at = Date.now();
+  if (!chatLeft(ch).length) r.done = true;
+  st.last = {id:A.id, goals:A.goals, used:A.usedNow, lvl:A.lvl, twist:A.twist, replies:A.replies, fixes:A.fixes};
+  st.logs = (st.logs||[]).concat([{id:A.id, title:ch.title, at:Date.now(), msgs:A.msgs.map(m=>({who:m.who, fr:m.fr, en:m.en||"", fixes:(m.fixes||[]).map(f=>({you:m.fr.slice(f.o,f.o+f.l), fix:f.fix}))}))}]).slice(-20);
+  st.active = null; save(); CHV.view = "summary"; chatSummary();
+}
+function chatSummary(){
+  const el = $("#createArea"), st = chatSt(), L = st.last; if (!L){ CHV.view = "pick"; return chatPicker(); }
+  const ch = CHATS.find(x=>x.id===L.id), card = id => state.cards.find(c=>c.id===id);
+  el.innerHTML = `<div class="stx">
+    <div class="stx-head"><span></span><b>${esc(ch.title)}</b><button class="hbtn" id="csX" aria-label="Close">${XICON}</button></div>
+    <div class="mx-score"><h2>Chat complete</h2><div><span class="n">${L.used.length}</span><span class="o">/ ${L.goals.length} words</span></div><span class="tm">${L.twist?"★ Twist done · ":""}${L.replies} replies</span></div>
+    ${L.lvl.length ? `<section class="mx-up"><span class="mx-upb">${UPI}${L.lvl.length} word${L.lvl.length===1?"":"s"} levelled up</span><div class="mx-pills">${L.lvl.map(card).filter(Boolean).map(c=>`<span class="mx-pill">${esc(c.fr)}</span>`).join("")}</div></section>` : ""}
+    ${L.fixes.length ? `<section class="mx-miss"><div class="ch-fh"><span class="stx-lbl">${L.fixes.length} fix${L.fixes.length===1?"":"es"}</span><button class="ch-hw" id="csHw">✓ Added to Homework ›</button></div>${L.fixes.map(f=>`<div class="mx-mr"><span class="dot"></span><span class="tx"><span><s style="color:var(--bad)">${esc(f.you)}</s> → <b style="color:var(--good)">${esc(f.fix||"?")}</b></span>${f.why?`<span class="yt">${esc(f.why)}</span>`:""}</span></div>`).join("")}</section>` : ""}
+    <button class="stx-go" id="csNext" style="margin-top:6px"><span>Pick next chat</span><span class="pl">${ARROW}</span></button></div>`;
+  $("#csX").onclick = $("#csNext").onclick = ()=>{ CHV.view = "pick"; chatPicker(); };
+  if ($("#csHw")) $("#csHw").onclick = ()=>goKey("homework");
 }
 
 
@@ -3776,7 +3978,7 @@ function ltBlock(j){
   if (!ms.length) return `<div class="ltbox"><span class="ltok">🔎 ✓ No mistakes found</span><div class="muted small">The free checker catches spelling and grammar, not whether it sounds natural — export it to Claude for that.</div></div>`;
   return `<div class="ltbox">
     <div class="small" style="font-weight:600;margin-bottom:6px">🔎 ${ms.length} suggestion${ms.length===1?"":"s"}</div>
-    <div class="jtext" style="margin-top:0">${ltHighlight(j)}</div>
+    <div class="jtext frx" style="margin-top:0">${ltHighlight(j)}</div>
     <ol class="ltlist">${ms.map(m=>{ const en = ltEnglish(m.msg);
       return `<li>${m.fix?`<b>${esc(j.text.slice(m.o,m.o+m.l))||"…"}</b> → <b class="ltfix">${esc(m.fix)}</b>${m.alt.length?` <span class="muted">(or ${m.alt.map(esc).join(", ")})</span>`:""}<br>`:""}${en
         ? `<span>${esc(en)}</span><br><span class="muted ltfr">${esc(m.msg)}</span>`
@@ -4193,6 +4395,56 @@ function catOptions(selected, extra){
     + `<option value="__new">＋ New category…</option>`;
 }
 
+/* ---------- 👆 tap any French word → small card: meaning, 🔊, + Add to words (build 3) ---------- */
+function wordAt(x, y){
+  let node, off;
+  if (document.caretRangeFromPoint){ const r = document.caretRangeFromPoint(x, y); if (!r) return ""; node = r.startContainer; off = r.startOffset; }
+  else if (document.caretPositionFromPoint){ const p = document.caretPositionFromPoint(x, y); if (!p) return ""; node = p.offsetNode; off = p.offset; }
+  if (!node || node.nodeType!==3) return "";
+  const t = node.textContent, isW = ch => /[A-Za-zÀ-ÖØ-öø-ÿœŒæÆ'’-]/.test(ch);
+  let a = off, b = off; while (a>0 && isW(t[a-1])) a--; while (b<t.length && isW(t[b])) b++;
+  let w = t.slice(a,b).replace(/^[-'’]+|[-'’]+$/g,"");
+  const m = w.match(/^(?:l|d|j|m|t|s|n|c|qu|jusqu|lorsqu|puisqu)['’](.+)$/i); if (m) w = m[1];   // l'étagère → étagère
+  return w;
+}
+function findWordCard(w){
+  const n = norm(w); if (!n) return null;
+  const toks = toksOf(w);
+  return state.cards.find(c=>norm(c.fr)===n) || state.cards.find(c=>norm(cardCore(c).core||"")===strip(n) || norm(cardCore(c).core||"")===n)
+    || state.cards.find(c=>!isConj(c) && formsFor(c).phrase.length<=1 && usesCard(c, toks));
+}
+function closeTapWord(){ const p = $("#tapPop"); if (p) p.remove(); }
+async function showTapWord(w, x, y){
+  closeTapWord();
+  const c = findWordCard(w), pop = document.createElement("div");
+  pop.id = "tapPop"; pop.className = "tapp"; pop.setAttribute("role","dialog"); pop.setAttribute("aria-label", "Word: " + w);
+  const W = Math.min(260, innerWidth - 24), left = Math.max(12, Math.min(innerWidth - W - 12, x - W/2)), below = y + 18 + 170 < innerHeight;
+  pop.style.cssText = `width:${W}px;left:${left}px;${below ? `top:${y+18}px` : `bottom:${innerHeight - y + 18}px`}`;
+  pop.innerHTML = `<span class="tp-ar ${below?"":"dn"}" style="left:${Math.max(14, Math.min(W-24, x-left-6))}px"></span>
+    <div class="tp-top"><div style="flex:1;min-width:0"><div class="tp-w">${esc(c ? c.fr : w)}</div><div class="tp-s">${c ? esc([c.pron, TYPE_INFO[wordType(c)]].filter(Boolean).join(" · ")) : ""}</div></div><button class="tp-spk" id="tpSay" aria-label="Hear it">${SPK}</button></div>
+    <div class="tp-en" id="tpEn">${c ? esc(c.en) : navigator.onLine===false ? "" : "…"}</div>
+    <div class="tp-n" id="tpNote">${c ? "In your words · " + esc(catLabel(catOf(c))) : navigator.onLine===false ? "No signal: add it anyway, the meaning fills in later" : "Not in your words yet"}</div>
+    ${c ? `<button class="tp-btn have" id="tpGo">✓ In your words</button>` : `<button class="tp-btn" id="tpGo">＋ Add to words</button>`}`;
+  document.body.appendChild(pop);
+  $("#tpSay").onclick = e=>{ e.stopPropagation(); say(c ? c.fr : w); };
+  $("#tpGo").onclick = e=>{ e.stopPropagation(); closeTapWord();
+    if (c){ goKey("words"); $("#search").value = c.fr; $("#search").dispatchEvent(new Event("input")); return; }
+    openAdd(); const f = $("#aFr"); f.value = w; f.dispatchEvent(new Event("input", {bubbles:true})); if (navigator.onLine!==false) autoFillForm(false); };
+  say(c ? c.fr : w);
+  if (!c && navigator.onLine!==false){ try { const t = await translateFr(w); const e = $("#tpEn"); if (e && $("#tapPop")===pop) e.textContent = t; const n = $("#tpNote"); if (n) n.textContent = "Not in your words yet · meaning looked up online"; } catch(err){ const e = $("#tpEn"); if (e) e.textContent = ""; } }
+}
+document.addEventListener("click", e=>{
+  if (e.target.closest("#tapPop")) return;
+  const host = e.target.closest(".frx");
+  if (!host){ closeTapWord(); return; }
+  if (e.target.closest("button:not(.frx),a,input,textarea,select")) return;
+  const w = wordAt(e.clientX, e.clientY);
+  if (!w || w.length < 2){ closeTapWord(); return; }
+  e.stopPropagation(); e.preventDefault();
+  showTapWord(w, e.clientX, e.clientY);
+}, true);
+window.addEventListener("scroll", closeTapWord, {passive:true});
+
 /* ---------- add-word pop-up ---------- */
 function addWord(fr,en,cat,pron,ex,exEn,exPron){
   fr=fr.trim(); en=en.trim(); if (!fr||!en) return false;
@@ -4214,7 +4466,7 @@ function currentSelection(){
   return sel.toString();
 }
 function updateSelAdd(){
-  const b = $("#selAdd"); if (!b) return;
+  const b = $("#selAdd"); if (!b) return; b.classList.remove("on"); return;   // replaced by tap-a-word (build 3)
   const t = currentSelection().replace(/\s+/g," ").replace(/^[\s.,;:!?«»"“”()…-]+|[\s.,;:!?«»"“”()…-]+$/g,"").trim();
   if (!t || t.length > 40 || t.split(" ").length > 5 || $("#modalBg").classList.contains("on")){ b.classList.remove("on"); selText = ""; return; }
   selText = t;
