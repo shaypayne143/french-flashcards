@@ -707,6 +707,12 @@ body.imm main{padding-top:16px}
 .hwx-got{margin-top:auto;height:56px;border:0;border-radius:999px;background:linear-gradient(135deg,#8aa2ff 0%,#3d5bdb 100%);box-shadow:0 10px 26px rgba(85,115,255,.35);color:#fff;font:inherit;font-size:17px;font-weight:800;cursor:pointer}
 .hwx .stx-head{grid-template-columns:44px 1fr 44px}
 .qzx{border-radius:24px}.qzx .prepo{border-radius:999px}
+.ov-fab{position:fixed;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));z-index:20;width:60px;height:60px;border-radius:999px;border:0;background:var(--grad);color:var(--grad-ink);box-shadow:var(--glow);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ov-fab:active{transform:scale(.94)}
+#ovArea{padding-bottom:90px}
+.imp-opt{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:10px 14px;border-radius:18px;background:var(--chip);font-size:14px;font-weight:600;cursor:pointer}
+.imp-opt input{width:20px;height:20px;flex:0 0 20px}
+.inote.del{color:var(--bad)}.irow.delrow .ifields input[type=text]{text-decoration:line-through;opacity:.7}
 /* category bottom sheet */
 .catbtn{width:100%;height:48px;display:flex;align-items:center;gap:10px;padding:0 6px 0 16px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-size:16px;font-weight:600;text-align:left;cursor:pointer}
 .catbtn .cb-l{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -897,7 +903,7 @@ body:has(.view.on .stx-hi) #pageTitle{visibility:hidden}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-23-1";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-23-2";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -2501,9 +2507,11 @@ function renderOverview(){
     <button class="ovx-rev" id="ovStudy"><span><span class="n">${due.length}</span><span class="l">${due.length===1?"card":"cards"} to review</span></span><span class="go">${due.length ? "Start studying" : "Practise anyway"}</span></button>
     <button class="ovx-cap" id="ovHw"><span class="t"><b>Homework</b><span>${hwTxt}</span></span><span class="ar">${ARROW}</span></button>
     ${rtn ? `<button class="ovx-cap lv" id="ovLv"><span class="t"><b>Ready to level up</b><span>${rtn} word${rtn===1?"":"s"} · Match or Writing</span></span><span class="ar">${ARROW}</span></button>` : ""}
-  </div>`;
+  </div>
+  <button class="ov-fab" id="ovAdd" aria-label="Add a word" title="Add a word"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button>`;
   $("#ovStudy").onclick = ()=>{ state.settings.cat = ""; state.settings.hardOnly = false; save(); refreshCatFilter(); live.study = null; goKey("study"); };   // counts every category, so study them all
   $("#ovHw").onclick = ()=>goKey("homework");
+  $("#ovAdd").onclick = ()=>openAdd();
   if ($("#ovLv")) $("#ovLv").onclick = ()=>goLevelUp("match", rt[0].cat);
 }
 function renderHard(){
@@ -5076,9 +5084,11 @@ function parseCSV(text){
   }
   return rows;
 }
-const FIELD_NAMES = {fr:"French", en:"English", pron:"Sounds like", cat:"Category", ex:"Example (French)", exEn:"Example (English)", exPron:"Example sounds like", hard:"Hard (yes/no)", type:"Type (noun, verb…)", skip:"— ignore —"};
+const FIELD_NAMES = {was:"Old French (to rename)", act:"Action (delete)", fr:"French", en:"English", pron:"Sounds like", cat:"Category", ex:"Example (French)", exEn:"Example (English)", exPron:"Example sounds like", hard:"Hard (yes/no)", type:"Type (noun, verb…)", skip:"— ignore —"};
 function guessField(h){
   h = strip(norm(h));
+  if (/^(was|old|old french|previously|ancien|rename|renamed from)$/.test(h)) return "was";
+  if (/^(action|delete|remove|supprimer)$/.test(h)) return "act";
   if (/^(fr|french|francais|front|word|mot|term|terme)$/.test(h) || /french|francais/.test(h) && !/example|exemple|sentence|phrase/.test(h)) return "fr";
   if (/^(en|english|anglais|back|meaning|translation|traduction|definition)$/.test(h) || /english|anglais|translat|meaning/.test(h) && !/example|sentence/.test(h)) return "en";
   if (/(example|exemple|sentence|phrase)/.test(h) && /pron|sound|phonetic/.test(h)) return "exPron";
@@ -5151,9 +5161,11 @@ function openMapping(rows, name){
 /* words you already have: the file can fill in / update their details — your progress is never touched */
 const UPD_FIELDS = [["en","English"],["pron","sounds like"],["ex","example"],["exEn","example English"],["exPron","example sounds like"]];
 function classifyRow(r){
-  const card = state.cards.find(c=>norm(c.fr)===norm(r.fr));
+  const card = state.cards.find(c=>norm(c.fr)===norm(r.fr)) || (r.was ? state.cards.find(c=>norm(c.fr)===norm(r.was)) : null);
   r.cardId = card ? card.id : null;
   r.changes = card ? UPD_FIELDS.filter(([k])=>(r[k]||"").trim() && (r[k]||"").trim()!==(card[k]||"").trim()).map(([,l])=>l) : [];
+  if (card && norm(card.fr)!==norm(r.fr) && r.fr.trim()) r.changes.unshift(`French (was “${card.fr}”)`);
+  else if (card && card.fr!==r.fr.trim() && r.fr.trim()) r.changes.unshift("spelling");
   if (card && r.cat && catOf(card)!==UNCAT && r.cat!==catOf(card) && r.catTouched) r.changes.push("category");
   r.dup = !!card;
   return r;
@@ -5161,18 +5173,30 @@ function classifyRow(r){
 function openReview(rows, defCat, source){
   const seenFile = new Set();
   imp = rows.map(r=>{
-    const fr = (r.fr||"").trim(), en = (r.en||"").trim();
-    const fileDup = seenFile.has(norm(fr)); seenFile.add(norm(fr));
-    const card = state.cards.find(c=>norm(c.fr)===norm(fr));
-    let cat = card && catOf(card)!==UNCAT ? catOf(card) : ((r.cat||"").trim() || defCat), sugg = false;
+    const fr = (r.fr||"").trim(), en = (r.en||"").trim(), was = (r.was||"").trim();
+    const del = /^(delete|remove|supprimer|del|x)$/i.test((r.act||"").trim());
+    const fileDup = !del && seenFile.has(norm(fr)); if (!del) seenFile.add(norm(fr));
+    const card = state.cards.find(c=>norm(c.fr)===norm(fr)) || (was ? state.cards.find(c=>norm(c.fr)===norm(was)) : null);
+    const fileCat = (r.cat||"").trim();
+    let cat = card && catOf(card)!==UNCAT ? catOf(card) : (fileCat || defCat), sugg = false;
     if (!cat){ const s = suggestCats(fr, en)[0]; if (s){ cat = s.name; sugg = true; } }
-    const row = classifyRow({fr, en, pron:r.pron||"", ex:r.ex||"", exEn:r.exEn||"", exPron:r.exPron||"", hard:!!r.hard, type:normType(r.type), cat, sugg, fileDup});
+    const row = classifyRow({fr, en, was, del, pron:r.pron||"", ex:r.ex||"", exEn:r.exEn||"", exPron:r.exPron||"", hard:!!r.hard, type:normType(r.type), cat, fileCat, cardCat: card ? catOf(card) : "", sugg, fileDup});
+    if (del){ row.on = !!row.cardId; return row; }
     row.on = !fileDup && !!fr && (!row.dup || row.changes.length>0);
     return row;
   });
+  // words you already have that the file puts in a different category
+  const moves = imp.filter(r=>!r.del && r.cardId && r.fileCat && cleanCat(r.fileCat)!==r.cardCat).length;
+  const useFileCats = on => imp.forEach(r=>{
+    if (r.del || !r.cardId || !r.fileCat) return;
+    if (on){ r.cat = cleanCat(r.fileCat); r.catTouched = r.cat!==r.cardCat; } else { r.cat = r.cardCat; r.catTouched = false; }
+    classifyRow(r); if (!r.fileDup) r.on = r.changes.length>0;
+  });
+  if (moves) useFileCats(true);
   impCats = new Set(imp.map(r=>r.cat).concat(defCat).filter(Boolean));
   openModal(`<div class="row" style="align-items:center"><h2 style="margin:0;flex:1">Check ${imp.length} word${imp.length===1?"":"s"}</h2><button class="icon-btn" id="rX" aria-label="Close">✕</button></div>
     <p class="small muted" style="margin:4px 0 10px">Fix anything that looks wrong and untick words you don't want. Words you already have are <b>updated</b> (sounds like, examples…) — your levels, due dates and ♥ stay the same. 💡 = suggested category.</p>
+    ${moves ? `<label class="imp-opt"><input type="checkbox" id="rFileCats" checked><span>Move ${moves} word${moves===1?"":"s"} you already have into the file's categories</span></label>` : ""}
     <div class="row" style="margin-bottom:8px">
       <select id="rAll" style="flex:2;font-size:15px">${`<option value="__none" selected>Category for all…</option>` + catOptions("", [...impCats])}</select>
       <button class="btn sm" id="rApply">Apply</button>
@@ -5184,6 +5208,7 @@ function openReview(rows, defCat, source){
     </div>`);
   $("#modal").onclick = null;
   drawReview();
+  if ($("#rFileCats")) $("#rFileCats").onchange = e=>{ useFileCats(e.target.checked); drawReview(); };
   $("#rX").onclick = $("#rCancel").onclick = ()=>{ if (confirm("Discard these words?")) closeModal(); };
   $("#rApply").onclick = ()=>{
     let v = $("#rAll").value;
@@ -5191,7 +5216,7 @@ function openReview(rows, defCat, source){
     if (v==="__new"){ const n = prompt("New category name"); if (!n || !n.trim()) return; v = cleanCat(n); impCats.add(v); } imp.forEach(r=>{ r.cat = v; r.sugg = false; }); drawReview(); toast(v ? "All set to " + v : "Categories cleared"); };
   $("#rSwap").onclick = ()=>{
     const seen2 = new Set(state.cards.map(c=>norm(c.fr)));
-    imp.forEach(r=>{ [r.fr, r.en] = [r.en, r.fr]; classifyRow(r); r.on = !!r.fr && (!r.dup || r.changes.length>0); });
+    imp.forEach(r=>{ if (r.del) return; [r.fr, r.en] = [r.en, r.fr]; classifyRow(r); r.on = !!r.fr && (!r.dup || r.changes.length>0); });
     drawReview();
   };
   const onRow = e=>{
@@ -5209,11 +5234,15 @@ function openReview(rows, defCat, source){
   };
   $("#rList").addEventListener("input", onRow); $("#rList").addEventListener("change", onRow);
   $("#rGo").onclick = ()=>{
-    let n = 0, skipped = 0, u = 0;
+    let n = 0, skipped = 0, u = 0, d = 0;
+    const gone = new Set(imp.filter(r=>r.on && r.del && r.cardId).map(r=>r.cardId));
+    if (gone.size){ state.cards = state.cards.filter(c=>!gone.has(c.id)); d = gone.size; }
     imp.forEach(r=>{
-      if (!r.on) return;
+      if (!r.on || r.del) return;
       if (r.cardId){
         const c = state.cards.find(x=>x.id===r.cardId); if (!c){ skipped++; return; }
+        const nf = r.fr.trim();
+        if (nf && nf!==c.fr && !state.cards.some(x=>x!==c && norm(x.fr)===norm(nf))) c.fr = nf;      // rename / fix spelling
         UPD_FIELDS.forEach(([k])=>{ const v = (r[k]||"").trim(); if (v) c[k] = v; });   // levels, due dates, ♥ and sentences stay as they are
         if (r.type) c.type = r.type;
         if (r.catTouched && r.cat) c.cat = ensureCat(r.cat);
@@ -5225,17 +5254,18 @@ function openReview(rows, defCat, source){
       else skipped++;
     });
     save(); closeModal(); if (curView==="words") renderWords();
-    toast([n?`Added ${n} new word${n===1?"":"s"}`:"", u?`updated ${u} existing (progress kept)`:"", skipped?`${skipped} skipped`:""].filter(Boolean).join(" · ") || "Nothing imported");
+    toast([n?`Added ${n} new word${n===1?"":"s"}`:"", u?`updated ${u} existing (progress kept)`:"", d?`removed ${d}`:"", skipped?`${skipped} skipped`:""].filter(Boolean).join(" · ") || "Nothing imported");
   };
 }
 function impNote(r){
+  if (r.del) return r.cardId ? `<span class="inote del">🗑 Removes this word</span>` : `<span class="inote">Not in your words</span>`;
   if (r.fileDup) return `<span class="inote warn">Repeated in the file</span>`;
   if (r.dup) return r.changes.length ? `<span class="inote upd">↻ Updates ${esc(r.changes.join(", "))} · progress kept</span>` : `<span class="inote">✓ Already up to date</span>`;
   return !r.en.trim() ? `<span class="inote warn">Needs English</span>` : "";
 }
 function rowHtml(r, i){
   const note = impNote(r);
-  return `<div class="irow ${r.on?"":"off"}" data-row="${i}">
+  return `<div class="irow ${r.on?"":"off"} ${r.del?"delrow":""}" data-row="${i}">
     <input type="checkbox" data-i="${i}" data-k="on" ${r.on?"checked":""} aria-label="Include">
     <div class="ifields">
       <div class="row" style="gap:6px"><input type="text" data-i="${i}" data-k="fr" value="${esc(r.fr)}" placeholder="French" autocapitalize="off">
@@ -5254,9 +5284,10 @@ function paintRow(i){
 }
 function updateReviewCount(){
   document.querySelectorAll(".irow").forEach(el=>el.classList.toggle("off", !imp[+el.dataset.row].on));
-  const n = imp.filter(r=>r.on && !r.cardId && r.fr.trim() && r.en.trim()).length;
-  const u = imp.filter(r=>r.on && r.cardId).length;
-  const b = $("#rGo"); if (b){ b.textContent = [n?`Add ${n} new`:"", u?`Update ${u}`:""].filter(Boolean).join(" · ") || "Import"; b.disabled = !(n+u); }
+  const n = imp.filter(r=>r.on && !r.del && !r.cardId && r.fr.trim() && r.en.trim()).length;
+  const u = imp.filter(r=>r.on && !r.del && r.cardId).length;
+  const d = imp.filter(r=>r.on && r.del && r.cardId).length;
+  const b = $("#rGo"); if (b){ b.textContent = [n?`Add ${n} new`:"", u?`Update ${u}`:"", d?`Remove ${d}`:""].filter(Boolean).join(" · ") || "Import"; b.disabled = !(n+u+d); }
 }
 
 /* export words as CSV (opens in Excel / Google Sheets) */
