@@ -749,6 +749,12 @@ body:has(.view.on .stx-hi) #pageTitle{visibility:hidden}
 .s-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
 .lvlp{height:28px;display:inline-flex;align-items:center;padding:0 11px;border-radius:999px;border:0;background:var(--chip);color:var(--muted);font:inherit;font-size:12.5px;font-weight:700;white-space:nowrap}
 .lvlp.lk{background:rgba(155,115,224,.16);color:var(--lilac-text);cursor:pointer}
+.lvlp.new{background:var(--lilac);color:var(--lilac-ink);box-shadow:0 4px 14px rgba(155,115,224,.3)}
+.qz-top{align-items:center}.qz-enb{margin-left:8px;height:28px;padding:0 11px;border-radius:999px;border:0;background:var(--chip);color:var(--muted);font:inherit;font-size:12px;font-weight:800;cursor:pointer;flex:0 0 auto}
+.qz-enb.on{background:var(--grad);color:var(--grad-ink)}
+.qz-en{margin-top:6px;font-size:15px;color:var(--muted)}
+.ovx-cap.fin{background:var(--good-fill);border-color:color-mix(in srgb,var(--good) 40%,transparent)}.ovx-cap.fin,.ovx-cap.fin .t b,.ovx-cap.fin .t span{color:var(--good-ink)}
+.hwx-fin p{margin:0;font-size:14px;color:var(--muted);line-height:1.45}
 .ch-top{position:sticky;top:0;z-index:6;background:var(--bg);margin:-16px -18px 0;padding:16px 18px 0;display:flex;flex-direction:column;gap:10px}
 .wov-card{display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:26px;background:color-mix(in srgb,var(--sel) 12%,transparent);border:1px solid color-mix(in srgb,var(--sel) 32%,transparent)}
 .wov-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}.wov-top span:first-child{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--accent)}.wov-top span:last-child{font-size:13px;color:var(--muted);text-align:right}
@@ -903,7 +909,7 @@ body:has(.view.on .stx-hi) #pageTitle{visibility:hidden}
 <script>
 (function(){
 "use strict";
-const APP_VERSION = "ff-2026-11-23-2";   // keep in step with VERSION in sw.js
+const APP_VERSION = "ff-2026-11-24-1";   // keep in step with VERSION in sw.js
 const KEY = "flashfr.v2"; // fresh start (v1 data is left untouched)
 const DAY = 864e5;
 const INTERVALS = [0, 1, 2, 4, 7, 15, 30]; // days per level (Leitner)
@@ -1248,11 +1254,11 @@ function hwExample(w){
 const WHY_GN = {ms:"masculine, just one", fs:"feminine, just one", mp:"masculine, more than one", fp:"feminine, more than one"};
 function qTout(pat, n){
   const want = (HW_INFO[pat]||{}).want || [];
-  if (pat==="tout-fixed") return shuffle(TOUT_FIXED.slice()).slice(0, n).map(([s,en])=>({pat, kind:"choice", prompt:s, en, options:["tout","toute","tous","toutes"], answer:"tout", hint:"It's a set phrase",
+  if (pat==="tout-fixed") return shuffle(TOUT_FIXED.slice()).slice(0, n).map(([s,en])=>({pat, kind:"choice", prompt:s, en, tr:true, options:["tout","toute","tous","toutes"], answer:"tout", hint:"It's a set phrase",
       why:{q:"Why is it tout?", options:["It's a set phrase — it never changes","The next word is masculine","The next word is plural"], answer:0}, say:s.replace("___","tout")}));
   const pool = shuffle(TOUT_BANK.slice());
   const pick = pool.filter(x=>want.includes(x[3])).slice(0, Math.ceil(n*0.7)).concat(pool.filter(x=>!want.includes(x[3]))).slice(0, n);
-  return shuffle(pick).map(([s,en,np,g])=>({pat, kind:"choice", prompt:s, en, options:["tout","toute","tous","toutes"], answer:TOUT_FORMS[g],
+  return shuffle(pick).map(([s,en,np,g])=>({pat, kind:"choice", prompt:s, en, tr:true, options:["tout","toute","tous","toutes"], answer:TOUT_FORMS[g],
     why:{q:`Why is it ${TOUT_FORMS[g]}?`, options:shuffle(Object.values(WHY_GN)).map(x=>`${np.replace(/^(les|la|le|l'|mes|tes|ses)\s?/,"")} is ${x}`), answerText:`${np.replace(/^(les|la|le|l'|mes|tes|ses)\s?/,"")} is ${WHY_GN[g]}`},
     explain:`<i>${esc(np)}</i> ${TOUT_WHY[g]}`, hint:`${np} → ${WHY_GN[g]}`, say:s.replace("___", TOUT_FORMS[g])}));
 }
@@ -1263,7 +1269,7 @@ function qAde(pat, n){
     const why = pat==="ade-prep"
       ? {q:`Why ${q.prep}?`, options:shuffle([q.why.replace(/<[^>]+>/g,""), ...shuffle(Object.values(PREP_BANK).map(b=>b.why.replace(/<[^>]+>/g,"")).filter(w=>w!==q.why.replace(/<[^>]+>/g,""))).slice(0,2)]), answerText:q.why.replace(/<[^>]+>/g,"")}
       : {q:`Why ${right}?`, options:shuffle(Object.entries(PREP_ART).map(([a,t])=>`${q.noun} ${t.replace(/<[^>]+>/g,"")}`)), answerText:`${q.noun} ${PREP_ART[q.art].replace(/<[^>]+>/g,"")}`};
-    return {pat, prep:q.prep, art:q.art, kind:"choice", prompt:`${q.pre} ___ ${q.noun}.`, en:q.en, options:opts, answer:right, why, hint:`${q.art==="l'"?"l'"+q.noun:q.art+" "+q.noun} ${PREP_ART[q.art].split(" → ")[0]}`, explain:`${q.why} · <i>${esc(q.art==="l'"?"l'"+q.noun:q.art+" "+q.noun)}</i> ${PREP_ART[q.art]} · ${q.prep} + ${q.art} = <b>${esc(right)}</b>`, say:full};
+    return {pat, prep:q.prep, art:q.art, kind:"choice", prompt:`${q.pre} ___ ${q.noun}.`, en:q.en, tr:true, options:opts, answer:right, why, hint:`${q.art==="l'"?"l'"+q.noun:q.art+" "+q.noun} ${PREP_ART[q.art].split(" → ")[0]}`, explain:`${q.why} · <i>${esc(q.art==="l'"?"l'"+q.noun:q.art+" "+q.noun)}</i> ${PREP_ART[q.art]} · ${q.prep} + ${q.art} = <b>${esc(right)}</b>`, say:full};
   });
 }
 const GENDER_TIPS = [[/(tion|sion|té|ure|ette|ance|ence|ée|ie|ude)$/, "f", "Words ending in -tion, -té, -ure, -ette, -ance/-ence are usually feminine."],
@@ -1289,7 +1295,7 @@ function qWords(w, n){
   return shuffle(cards).slice(0, n).map(c=>({pat:"words", kind:"type", prompt:c.en, en:"Type it in French", answer:c.fr, card:c.id, say:c.fr, explain: c.ex ? `<i>${esc(c.ex)}</i>` : ""}));
 }
 function qCustom(c, n){
-  return shuffle(c.qs.slice()).slice(0, n).map(q=>({pat:"custom:"+c.id, kind:"choice", prompt:q.s, en:q.en||"", options:shuffle([q.a, ...q.wrong]), answer:q.a, explain:q.why ? esc(q.why) : "", say:q.s.replace("___", q.a)}));
+  return shuffle(c.qs.slice()).slice(0, n).map(q=>({pat:"custom:"+c.id, kind:"choice", prompt:q.s, en:q.en||"", tr:!!q.en, options:shuffle([q.a, ...q.wrong]), answer:q.a, explain:q.why ? esc(q.why) : "", say:q.s.replace("___", q.a)}));
 }
 /* "write it in French" phrases for tout (English → French) */
 const TOUT_PHRASES = [["every day","tous les jours","mp","un jour"],["every week","toutes les semaines","fp","une semaine"],["all day","toute la journée","fs","une journée"],
@@ -1396,11 +1402,29 @@ function hwItemQ(it){
   while (others.length < 2){ const x = state.cards[Math.floor(Math.random()*state.cards.length)]; if (x && x.id!==c.id && !others.includes(x.fr)) others.push(x.fr); else break; }
   return {pat:"words", label:L, kind:"choice", prompt:c.en, en:"", options:shuffle([c.fr, ...others]), answer:c.fr, say:c.fr, card:c.id, item:it.key};
 }
-function hwToday(){                          // [questions], spot
-  const spot = hwSpot(), qs = [];
-  if (spot) questionsFor(spot, 3).forEach(q=>{ q.label = HW_SRC.spot.label + " · " + hwTitle(spot.pat); qs.push(q); });
-  hwOpen().forEach(it=>{ if (qs.length < 10){ const q = hwItemQ(it); if (q) qs.push(q); } });
-  return {qs, spot};
+/* today's sheet is made once, the first time you look at it, and then stays the same all day.
+   Each question is asked once: right → done; wrong → it's on tomorrow's sheet. */
+function hwSheet(){
+  const D = hwDaily();
+  if (!Array.isArray(D.qs)){
+    const spot = hwSpot(), qs = [];
+    if (spot) questionsFor(spot, 3).forEach(q=>{ q.label = HW_SRC.spot.label + " · " + hwTitle(spot.pat); qs.push(q); });
+    hwOpen().forEach(it=>{ const q = hwItemQ(it); if (q) qs.push(q); });
+    D.qs = JSON.parse(JSON.stringify(qs)); D.spotPat = spot ? spot.pat : null; D.pos = 0; D.res = []; D.fin = false;
+    save();
+  }
+  return D;
+}
+function hwToday(){                          // the questions still to do today
+  const D = hwSheet(), qs = D.qs.slice(D.pos || 0);
+  const spot = D.spotPat && !D.pos ? (weakSpots().find(w=>w.pat===D.spotPat) || null) : null;
+  return {qs, spot, all:D.qs, pos:D.pos||0, fin:!!D.fin, right:(D.res||[]).filter(Boolean).length};
+}
+function startHwSheet(){
+  const D = hwSheet(); if (!D.qs.length || D.fin){ renderHomework(); return; }
+  D.qs.forEach((q,k)=>{ if (k >= (D.pos||0)) delete q.answered; });
+  HWV = {view:"practice", daily:true, qs:D.qs, i:D.pos||0, right:(D.res||[]).filter(Boolean).length, res:(D.res||[]).slice(), label:"Homework", stage:"answer", wrongs:(D.wrongs||[]).slice()};
+  renderHomework(); window.scrollTo(0,0);
 }
 function hwBreakdown(){
   const T = hwToday(), rows = [];
@@ -1427,16 +1451,21 @@ function renderHwHub(el){
     <div class="hwx-toast" role="status" ${sent?"":"hidden"}><b>✓ Copied for Claude</b><span>${HWV.sentInfo || ""}</span><span class="m">Paste into Claude for better chat replies and a new worksheet.</span></div>`;
   el.innerHTML = `<div class="stx hwx">
     <div class="stx-hi"><h2>Homework</h2></div>
-    ${nQ ? `<section class="hwx-card">
+    ${T.fin ? `<section class="hwx-card hwx-fin">
+      <div class="hwx-top"><span>Today’s worksheet</span><span>done</span></div>
+      <div class="hwx-n"><span>${T.right}</span><span>/ ${T.all.length} right</span></div>
+      <p>✓ Done for today. ${T.all.length-T.right ? `The ${T.all.length-T.right} you missed ${T.all.length-T.right===1?"is":"are"} on tomorrow’s sheet.` : "Perfect — nothing carried over."} Your next sheet is ready tomorrow morning.</p>
+      ${SEND}</section>`
+    : nQ ? `<section class="hwx-card">
       <div class="hwx-top"><span>Today’s worksheet</span><span>about ${Math.max(2, Math.round(nQ/2))} min</span></div>
-      <div class="hwx-n"><span>${nQ}</span><span>question${nQ===1?"":"s"}</span></div>
+      <div class="hwx-n"><span>${nQ}</span><span>${T.pos ? "left" : "question" + (nQ===1?"":"s")}</span></div>
       <div class="hwx-rows">${rows.map(r=>`<div class="hwx-row"><span class="dot" style="background:${r.dot}"></span><span class="l">${esc(r.label)}</span><span class="nt">${esc(r.note)}</span><span class="c">${r.n}</span></div>`).join("")}</div>
-      <button class="hwx-go" id="hwStart">Start homework</button>${SEND}</section>`
+      <button class="hwx-go" id="hwStart">${T.pos ? `Continue (${nQ} left)` : "Start homework"}</button>${SEND}</section>`
     : `<section class="hwx-card hwx-none"><h3>Nothing to fix today 🎉</h3><p>Homework is built each morning from yesterday’s mistakes in Match it, Type it and your chats, plus your hard words.</p><button class="hwx-go" id="hwChat">Have a chat</button>${SEND}</section>`}
     ${state.book ? `<div class="stx-lbl">📘 ${esc(state.book.title || "Your book")}</div><div class="stx-rows">${state.book.units.map(u=>`<button class="stx-row ch-row" data-bu="${u.n}"><span class="nm"><span>Unité ${u.n}</span><span class="ch-sub">${esc(u.title)}</span></span><span class="ar">${ARROW}</span></button>`).join("")}</div>` : ""}
     <button class="linkbtn" id="hwPaste" style="align-self:center">Paste a worksheet from Claude</button>
   </div>`;
-  if ($("#hwStart")) $("#hwStart").onclick = ()=>{ const t = hwToday(); if (t.spot){ HWV = {view:"spot", spot:t.spot, qs:t.qs, sel:null}; renderHomework(); window.scrollTo(0,0); } else startHwPractice(t.qs, "Homework", {make:()=>hwToday().qs, label:"Homework"}); };
+  if ($("#hwStart")) $("#hwStart").onclick = ()=>{ const t = hwToday(); if (t.spot){ HWV = {view:"spot", spot:t.spot, qs:t.qs, sel:null}; renderHomework(); window.scrollTo(0,0); } else startHwSheet(); };
   if ($("#hwChat")) $("#hwChat").onclick = ()=>{ CHV.view = "pick"; goKey("writing"); };
   el.querySelectorAll("[data-bu]").forEach(b=>b.onclick = ()=>openBookUnit(+b.dataset.bu));
   $("#hwPaste").onclick = hwPasteModal;
@@ -1488,7 +1517,7 @@ function renderHwSpot(el){
     <button class="hwx-got" id="spGo">Got It !</button></div>`;
   $("#spX").onclick = ()=>{ HWV = {view:"list"}; renderHomework(); };
   el.querySelectorAll("[data-tile]").forEach(b=>b.onclick = ()=>{ const k = +b.dataset.tile; H.sel = H.sel===k ? null : k; if (H.sel!=null) say(T[k].w); renderHwSpot(el); });
-  $("#spGo").onclick = ()=>startHwPractice(H.qs, "Homework", {make:()=>hwToday().qs, label:"Homework"});
+  $("#spGo").onclick = ()=>startHwSheet();
 }
 function renderHomework(){
   const el = $("#hwArea");
@@ -1620,15 +1649,22 @@ function renderPractice(el, P, O){
     : `<div class="row" style="align-items:center;margin-bottom:6px"><button class="linkbtn" id="qzQuit">✕ Stop</button><span style="flex:1"></span><span class="muted small">${P.i+1} / ${P.qs.length}</span></div>
     <div class="progress"><div style="width:${P.i/P.qs.length*100}%"></div></div>`) + `
     <section class="card qz-card${O.seg?" qzx":""}">
-      <div class="qz-top"><span class="qz-kind">${esc(KIND_LABEL(q).toUpperCase())}</span><span class="qz-topic">${esc(O.kicker(q))}</span></div>
+      <div class="qz-top"><span class="qz-kind">${esc(KIND_LABEL(q).toUpperCase())}</span><span class="qz-topic">${esc(O.kicker(q))}</span>${hasEN(q) ? `<button class="qz-enb ${state.settings.hwEN?"on":""}" id="qzEnB" aria-pressed="${!!state.settings.hwEN}" aria-label="Show the English">EN</button>` : ""}</div>
       <div class="prepq${q.big?" hw-bigq":""}${q.sentences?" qz-sent":""}${q.pat!=="words"?" frx":""}">${parts.length>1 ? `${esc(parts[0])}<span class="gap qz-gap">${q.kind==="type"?"&nbsp;":"___"}</span>${esc(parts[1])}` : esc(q.prompt)}</div>
-      ${q.en ? `<div class="muted small" style="margin-top:4px">${esc(q.en)}</div>` : ""}
+      ${q.en && !q.tr ? `<div class="muted small" style="margin-top:4px">${esc(q.en)}</div>` : ""}
+      ${hasEN(q) ? `<div class="qz-en" id="qzEn" ${state.settings.hwEN ? "" : "hidden"}>${esc(q.tr ? q.en : (q.trText || "…"))}</div>` : ""}
       ${q.kind==="type" ? `<div class="qz-inrow"><input type="text" id="hwIn" class="hw-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${q.sentence ? "Type it in French" : q.gap ? "Type the word" : "Type the French…"}"><button class="btn qz-check" id="hwCheck">Check</button></div>${accentBar("hwIn")}
         ${hint ? `<button class="linkbtn qz-hintb" id="hwHint">💡 Show a hint</button><div class="qz-hint" id="hwHintBox" hidden>Hint: ${esc(hint)}</div>` : ""}`
         : `<div class="prepopts"><div class="preprow${q.sentences?" qz-col":""}">${q.options.map(o=>`<button class="prepo" data-a="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`}
       <div id="hwFb"></div>
     </section>`;
   $("#qzQuit").onclick = ()=>{ if (confirm("Stop here? Your answers so far still count.")) O.quit(); };
+  if ($("#qzEnB")){
+    const fill = ()=>{ if (q.tr || q.trText) return; const src = q.say || q.prompt.replace("___", "…");
+      translateFr(src).then(t=>{ q.trText = t || "No translation (offline?)"; const b = $("#qzEn"); if (b) b.textContent = q.trText; const f = $("#qzEnFull"); if (f) f.textContent = q.trText; }); };
+    if (state.settings.hwEN) fill();
+    $("#qzEnB").onclick = ()=>{ state.settings.hwEN = !state.settings.hwEN; save(); $("#qzEnB").classList.toggle("on", state.settings.hwEN); $("#qzEnB").setAttribute("aria-pressed", state.settings.hwEN); $("#qzEn").hidden = !state.settings.hwEN; if (state.settings.hwEN) fill(); };
+  }
   if ($("#hwHint")) $("#hwHint").onclick = ()=>{ $("#hwHintBox").hidden = false; $("#hwHint").hidden = true; q.hinted = true; };
   if (q.kind==="type"){
     const inp = $("#hwIn"); wireAccentBar("hwIn"); setTimeout(()=>inp.focus(), 50);
@@ -1637,8 +1673,10 @@ function renderPractice(el, P, O){
     $("#hwCheck").onclick = check; inp.onkeydown = e=>{ if (e.key==="Enter") check(); };
   } else el.querySelectorAll(".prepo").forEach(b=>b.onclick = ()=>quizAnswer(el, P, O, q, b.dataset.a, b.dataset.a===q.answer));
 }
+const hasEN = q => !!q.tr || (q.pat!=="words" && q.pat!=="accents" && !q.sentence && !/^Write in French/.test(q.prompt));
 function quizAnswer(el, P, O, q, a, ok, nearAccent){
   if (q.answered) return; q.answered = true;
+  if (hasEN(q) && !q.tr && !q.trText && (q.say || q.prompt)) translateFr(q.say || q.prompt.replace("___","…")).then(t=>{ if (!t) return; q.trText = t; const f = $("#qzEnFull"); if (f) f.textContent = t; });
   if (ok) P.right++; else (P.wrongs = P.wrongs || []).push({q, a});
   (P.res = P.res || [])[P.i] = ok;
   if (q.kind==="type" && q.gap){ const g = document.querySelector(".qz-gap"); if (g){ g.textContent = q.answer; g.classList.add(ok ? "okc" : "badc"); } }
@@ -1650,7 +1688,7 @@ function quizAnswer(el, P, O, q, a, ok, nearAccent){
     ${q.why && ok ? `<div class="hw-why"><div class="hw-kicker" style="color:#c9b6ff">NOW: ${esc(q.why.q.toUpperCase())}</div>
       ${q.why.options.map((o,i)=>`<button class="hw-whyo" data-w="${i}">${esc(o)}</button>`).join("")}</div>` : ""}
     ${!ok || !q.why ? `${q.explain ? `<div class="small" style="margin-top:10px">${q.explain}</div>` : ""}` : ""}
-    ${full ? `<div class="prepfull"><span class="frx" style="flex:1">${esc(full)}</span><button class="jicon sm" id="hwSay" aria-label="Hear it">🔊</button></div>` : ""}
+    ${full ? `<div class="prepfull"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span class="frx">${esc(full)}</span>${hasEN(q) ? `<span class="muted small" id="qzEnFull">${esc(q.tr ? q.en : (q.trText || ""))}</span>` : ""}</span><button class="jicon sm" id="hwSay" aria-label="Hear it">🔊</button></div>` : ""}
     ${O.after ? O.after(P, q, ok) : ""}
     <button class="btn primary" id="hwNext" style="width:100%;margin-top:10px" ${q.why && ok ? "hidden" : ""}>${P.i+1<P.qs.length ? "Next →" : "See my score"}</button>`;
   if ($("#hwSay")) $("#hwSay").onclick = ()=>say(full);
@@ -1669,6 +1707,10 @@ const HW_QUIZ = {
   quit: ()=>{ HWV = {view:"list"}; renderHomework(); },
   rerender: ()=>renderHomework(),
   onAnswer: (q, a, ok, nearAccent)=>{
+    if (HWV.daily){ const D = hwDaily(), k = HWV.i;
+      D.res = D.res || []; D.res[k] = ok; D.pos = k + 1;
+      if (!ok) D.wrongs = (D.wrongs||[]).concat({q:{prompt:q.prompt, answer:q.answer}, a});
+      if (D.pos >= (D.qs||[]).length){ D.fin = true; D.finAt = Date.now(); } }
     if (q.item){ const it = hwDaily().items.find(x=>x.key===q.item); if (it){ it.tries = (it.tries||0) + 1; it.done = ok; } }
     if (q.card && ok){ const c = state.cards.find(c=>c.id===q.card); if (c) hardRight(c); }
     if (q.item && !ok) return;                                    // wrong → back in tomorrow's homework
@@ -1683,6 +1725,7 @@ const HW_QUIZ = {
     return `<div class="stx">
       <div class="mx-score"><h2>${P.label==="Practice" ? "Practice done" : "Homework done"}</h2><div><span class="n">${P.right}</span><span class="o">/ ${P.qs.length}</span></div>
         <span class="tm">${P.right===P.qs.length ? "Perfect! 🌟" : W.length ? `${W.length} back tomorrow` : "Nice work"}</span></div>
+      ${P.daily ? `<p class="small muted" style="text-align:center;margin:0">That’s today’s homework done. Your next sheet is ready tomorrow.</p>` : ""}
       ${fixed.length ? `<section class="mx-up"><span class="mx-upb">✓ Fixed: ${fixed.map(p=>esc(hwTitle(p))).join(", ")}</span><span class="small muted">It comes back once next week to check.</span></section>` : ""}
       ${W.length ? `<section class="mx-miss"><div class="stx-lbl">Comes back tomorrow</div>${W.map(x=>`<div class="mx-mr"><span class="dot"></span><span class="tx"><span class="frx">${line(x)}</span></span></div>`).join("")}</section>` : ""}
       ${P.from && P.from.make && P.label==="Practice" ? `<button class="btn primary" id="hwAgain" style="width:100%">Try again</button>` : ""}
@@ -2456,7 +2499,7 @@ function showStudyCard(){
   document.querySelectorAll("#flip [data-lvw]").forEach(b=>b.onclick = e=>{ e.stopPropagation(); writeWith([c]); });
   setTimeout(()=>{ if (studyCard===c && curView==="study") say(c.fr); }, 250);     // read each new card aloud
 }
-const lvPill = c => isNew(c) ? `<span class="lvlp">New</span>` : isLocked(c) ? `<button class="lvlp lk" data-lvw="1" aria-label="Level ${c.box}, locked. Write a sentence to level up">Level ${c.box} 🔒</button>` : `<span class="lvlp">Level ${c.box}</span>`;
+const lvPill = c => isNew(c) ? `<span class="lvlp new">New</span>` : isLocked(c) ? `<button class="lvlp lk" data-lvw="1" aria-label="Level ${c.box}, locked. Write a sentence to level up">Level ${c.box} 🔒</button>` : `<span class="lvlp">Level ${c.box}</span>`;
 function writeWith(cards){ pushNav("writing"); C.mode = "words"; C.force = cards; live.create = null; go("create"); armBack(); }
 const tallyHtml = left => `<div class="tallybox"><div class="secthead"><h2 style="font-size:15px">This session</h2>${left!=null?`<span class="muted small">${left} left</span>`:""}</div><div class="tally"><div><b style="color:var(--bad)">${sess.again}</b><span>again</span></div><div><b style="color:var(--good)">${sess.got}</b><span>got it</span></div><div><b style="color:var(--accent)">${sess.easy}</b><span>easy</span></div></div></div>`;
 
@@ -2500,12 +2543,12 @@ function renderOverview(){
   const hi = (h>=18 || h<4 ? "Bonsoir" : "Bonjour") + (nm ? ", " + esc(nm) : " !");
   const date = new Date().toLocaleDateString("en-GB", {weekday:"long", day:"numeric", month:"long"});
   const sp = weakSpots(), ck = checkupsDue(), rt = readyToday(), rtn = rt.reduce((s,e)=>s+e.ready,0);
-  const hq = hwToday().qs.length, hwTxt = hq ? `${hq} question${hq===1?"":"s"}` : "nothing to fix today";
+  const HT = hwToday(), hq = HT.qs.length, hwTxt = HT.fin ? "✓ Done for today" : hq ? (HT.pos ? `${hq} left` : `${hq} question${hq===1?"":"s"}`) : "nothing to fix today";
   el.innerHTML = `<div class="ovx">
     <div class="ovx-hi"><h2>${hi}</h2><div>${esc(date)}</div></div>
     <div class="ovx-week" role="group" aria-label="This week">${ovWeek()}</div>
     <button class="ovx-rev" id="ovStudy"><span><span class="n">${due.length}</span><span class="l">${due.length===1?"card":"cards"} to review</span></span><span class="go">${due.length ? "Start studying" : "Practise anyway"}</span></button>
-    <button class="ovx-cap" id="ovHw"><span class="t"><b>Homework</b><span>${hwTxt}</span></span><span class="ar">${ARROW}</span></button>
+    <button class="ovx-cap ${HT.fin?"fin":""}" id="ovHw"><span class="t"><b>Homework</b><span>${hwTxt}</span></span><span class="ar">${ARROW}</span></button>
     ${rtn ? `<button class="ovx-cap lv" id="ovLv"><span class="t"><b>Ready to level up</b><span>${rtn} word${rtn===1?"":"s"} · Match or Writing</span></span><span class="ar">${ARROW}</span></button>` : ""}
   </div>
   <button class="ov-fab" id="ovAdd" aria-label="Add a word" title="Add a word"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button>`;
@@ -4184,7 +4227,9 @@ function ltBestFix(orig, reps){
     const reorder = rw.length===ow.length && rw.slice().sort().join(" ")===ow.slice().sort().join(" ") && rw.join(" ")!==ow.join(" ");
     if (reorder) return;
     // a word that only gains or loses an accent (chambre → chambré) is a spelling guess, not a grammar fix
-    const risky = rw.some((w,i)=>ow[i] && w!==ow[i] && !LT_SMALL.has(w) && letters(w)===letters(ow[i]));
+    const DET = new Set("le la l' un une mon ma ton ta son sa ce cet cette du au".split(" "));
+    const risky = rw.some((w,i)=>ow[i] && w!==ow[i] && !LT_SMALL.has(w) && (letters(w)===letters(ow[i])                          // only an accent changed (chambre → chambré)
+      || (i>0 && i===rw.length-1 && DET.has(ow[i-1]) && rw[i-1]===ow[i-1] && w.startsWith(ow[i]) && w.length > ow[i].length)));                     // noun bent to fit the wrong article (ma lit → ma lite)
     const score = same + (smallOnly ? 2 : 0) - (risky ? 3 : 0);
     if (score > bestScore){ best = r; bestScore = score; }
   });
@@ -5255,6 +5300,11 @@ function openReview(rows, defCat, source){
     });
     save(); closeModal(); if (curView==="words") renderWords();
     toast([n?`Added ${n} new word${n===1?"":"s"}`:"", u?`updated ${u} existing (progress kept)`:"", d?`removed ${d}`:"", skipped?`${skipped} skipped`:""].filter(Boolean).join(" · ") || "Nothing imported");
+    const empty = state.cats.filter(c=>c && c!==UNCAT && !inCat(c).length);
+    if (empty.length) setTimeout(()=>{
+      if (confirm(`${empty.length} categor${empty.length===1?"y is":"ies are"} now empty:\n\n${empty.map(catLabel).join("\n")}\n\nRemove ${empty.length===1?"it":"them"}?`)){
+        state.cats = state.cats.filter(c=>!empty.includes(c)); save(); if (curView==="words") renderWords(); toast(`Removed ${empty.length} empty categor${empty.length===1?"y":"ies"}`); }
+    }, 400);
   };
 }
 function impNote(r){
@@ -5499,12 +5549,17 @@ function askName(){                         // first open: "What should we call 
   $("#askNameSkip").onclick = ()=>done("");
 }
 
+if (state.fixClean1 && !state.fixClean2) state.fixClean1 = false;   // run the clean-up again with the stricter check
 if (!state.fixClean1){                         // one-time: drop old chat "corrections" that were wrong (mon chambré, ma lite…)
   const bad = (you, right) => right==null || ltBestFix(you||"", [right])===null;
   state.mistakes = (state.mistakes||[]).filter(m=>!(m.src==="chat" && bad(m.you, m.right)));
   ((state.chat||{}).logs||[]).forEach(l=>(l.msgs||[]).forEach(m=>{ if (m.fixes) m.fixes = m.fixes.filter(f=>!bad(f.you, f.fix)); }));
   if (state.hwDaily && state.hwDaily.items) state.hwDaily.items = state.hwDaily.items.filter(it=>!(it.src==="chat" && bad(it.you, it.right)));
-  state.fixClean1 = true; save();
+  if (state.hwDaily && Array.isArray(state.hwDaily.qs) && !state.hwDaily.fin){                 // and from today's sheet
+    const D = state.hwDaily, left = new Set((D.items||[]).map(it=>it.key));
+    const keep = D.qs.map((q,k)=>k < (D.pos||0) || !(q.item && q.item.startsWith("chat:") && !left.has(q.item)));
+    D.qs = D.qs.filter((q,k)=>keep[k]); if ((D.pos||0) >= D.qs.length && D.qs.length) D.fin = true; }
+  state.fixClean1 = true; state.fixClean2 = true; save();
 }
 refreshCatFilter();
 updateDue();
